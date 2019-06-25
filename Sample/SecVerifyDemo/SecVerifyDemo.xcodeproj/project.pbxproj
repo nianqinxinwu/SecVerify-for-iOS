@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2E12030122A63862004D6442 /* SVDSerive.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E12030022A63862004D6442 /* SVDSerive.m */; };
 		2E1F44EB22B229BE00E07E2D /* SecVerify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E5099B32297D510000EE9A1 /* SecVerify.framework */; };
+		2E1F44F322B2513100E07E2D /* SecVerifyDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F44F222B2513100E07E2D /* SecVerifyDemoTests.m */; };
 		2E1F44FE22B25AE100E07E2D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E1F44FD22B25AE100E07E2D /* LaunchScreen.storyboard */; };
 		2E379A2222A3BCF2003E872A /* SecVerify.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2E379A2122A3BAE4003E872A /* SecVerify.bundle */; };
 		2E5099A42293E20C000EE9A1 /* EAccountApiSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E5099992293E20C000EE9A1 /* EAccountApiSDK.framework */; };
@@ -34,9 +35,22 @@
 		2EBF5AD222A0F85600433C61 /* SVDSuccessViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EBF5AD122A0F85600433C61 /* SVDSuccessViewController.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2E1F44F522B2513100E07E2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2E5E00BC228D6AF400A4BE80 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2E5E00C3228D6AF400A4BE80;
+			remoteInfo = SecVerifyDemo;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		2E1202FF22A63862004D6442 /* SVDSerive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVDSerive.h; sourceTree = "<group>"; };
 		2E12030022A63862004D6442 /* SVDSerive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVDSerive.m; sourceTree = "<group>"; };
+		2E1F44F022B2513000E07E2D /* SecVerifyDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SecVerifyDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E1F44F222B2513100E07E2D /* SecVerifyDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecVerifyDemoTests.m; sourceTree = "<group>"; };
+		2E1F44F422B2513100E07E2D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2E1F44FD22B25AE100E07E2D /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2E379A2122A3BAE4003E872A /* SecVerify.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SecVerify.bundle; sourceTree = "<group>"; };
 		2E379A2422A3DB7E003E872A /* SVDPrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVDPrefixHeader.pch; sourceTree = "<group>"; };
@@ -81,6 +95,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2E1F44ED22B2513000E07E2D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2E5E00C1228D6AF400A4BE80 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -97,6 +118,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2E1F44F122B2513100E07E2D /* SecVerifyDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				2E1F44F222B2513100E07E2D /* SecVerifyDemoTests.m */,
+				2E1F44F422B2513100E07E2D /* Info.plist */,
+			);
+			path = SecVerifyDemoTests;
+			sourceTree = "<group>";
+		};
 		2E379A2522A3DBD4003E872A /* ThirdLibs */ = {
 			isa = PBXGroup;
 			children = (
@@ -183,6 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				2E5E00C6228D6AF400A4BE80 /* SecVerifyDemo */,
+				2E1F44F122B2513100E07E2D /* SecVerifyDemoTests */,
 				2E5E00C5228D6AF400A4BE80 /* Products */,
 				2E5099B22297D510000EE9A1 /* Frameworks */,
 			);
@@ -192,6 +223,7 @@
 			isa = PBXGroup;
 			children = (
 				2E5E00C4228D6AF400A4BE80 /* SecVerifyDemo.app */,
+				2E1F44F022B2513000E07E2D /* SecVerifyDemoTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -254,6 +286,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2E1F44EF22B2513000E07E2D /* SecVerifyDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2E1F44F922B2513100E07E2D /* Build configuration list for PBXNativeTarget "SecVerifyDemoTests" */;
+			buildPhases = (
+				2E1F44EC22B2513000E07E2D /* Sources */,
+				2E1F44ED22B2513000E07E2D /* Frameworks */,
+				2E1F44EE22B2513000E07E2D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2E1F44F622B2513100E07E2D /* PBXTargetDependency */,
+			);
+			name = SecVerifyDemoTests;
+			productName = SecVerifyDemoTests;
+			productReference = 2E1F44F022B2513000E07E2D /* SecVerifyDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		2E5E00C3228D6AF400A4BE80 /* SecVerifyDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2E5E00DA228D6AF600A4BE80 /* Build configuration list for PBXNativeTarget "SecVerifyDemo" */;
@@ -280,6 +330,10 @@
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = mob;
 				TargetAttributes = {
+					2E1F44EF22B2513000E07E2D = {
+						CreatedOnToolsVersion = 10.1;
+						TestTargetID = 2E5E00C3228D6AF400A4BE80;
+					};
 					2E5E00C3228D6AF400A4BE80 = {
 						CreatedOnToolsVersion = 10.1;
 					};
@@ -299,11 +353,19 @@
 			projectRoot = "";
 			targets = (
 				2E5E00C3228D6AF400A4BE80 /* SecVerifyDemo */,
+				2E1F44EF22B2513000E07E2D /* SecVerifyDemoTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2E1F44EE22B2513000E07E2D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2E5E00C2228D6AF400A4BE80 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -320,6 +382,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2E1F44EC22B2513000E07E2D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E1F44F322B2513100E07E2D /* SecVerifyDemoTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2E5E00C0228D6AF400A4BE80 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -342,7 +412,61 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2E1F44F622B2513100E07E2D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2E5E00C3228D6AF400A4BE80 /* SecVerifyDemo */;
+			targetProxy = 2E1F44F522B2513100E07E2D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		2E1F44F722B2513100E07E2D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LW5266U92D;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../../SDK/**";
+				INFOPLIST_FILE = SecVerifyDemoTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mob.SecVerifyDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SecVerifyDemo.app/SecVerifyDemo";
+			};
+			name = Debug;
+		};
+		2E1F44F822B2513100E07E2D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LW5266U92D;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../../SDK/**";
+				INFOPLIST_FILE = SecVerifyDemoTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mob.SecVerifyDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SecVerifyDemo.app/SecVerifyDemo";
+			};
+			name = Release;
+		};
 		2E5E00D8228D6AF600A4BE80 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -512,6 +636,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2E1F44F922B2513100E07E2D /* Build configuration list for PBXNativeTarget "SecVerifyDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2E1F44F722B2513100E07E2D /* Debug */,
+				2E1F44F822B2513100E07E2D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2E5E00BF228D6AF400A4BE80 /* Build configuration list for PBXProject "SecVerifyDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

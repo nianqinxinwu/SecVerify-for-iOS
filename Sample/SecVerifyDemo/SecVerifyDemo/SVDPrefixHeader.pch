@@ -3,7 +3,7 @@
 //  SecVerifyDemo
 //
 //  Created by lujh on 2019/6/2.
-//  Copyright © 2019 mob. All rights reserved.
+//  Copyright © 2019 lujh. All rights reserved.
 //
 
 #ifndef SVDPrefixHeader_pch
@@ -20,12 +20,21 @@
 #define SVD_ScreenWidth ([UIScreen mainScreen].bounds.size.width)
 #define SVD_ScreenHeight ([UIScreen mainScreen].bounds.size.height)
 
+//开启则为测试环境
 //#define SVD_TEST
 
 #ifdef SVD_TEST
+//测试
 #define SVD_LoginURL @"http://10.18.97.63:22345/demo/sdkLogin"
+
 #else
+
 #define SVD_LoginURL @"http://demo.verify.mob.com/demo/sdkLogin"
+
+//#define SVD_LoginURL @"http://demo.accuratead.cn/demo/sdkLogin"
+//#define SVD_LoginURL @"http://demo.accuratead.cn/demo/agencySdkLogin"
 #endif
+
+//moba6b6c6d6 //b89d2427a3bc7ad1aea1e1e8c1d36bf3
 
 #endif /* SVDPrefixHeader_pch */

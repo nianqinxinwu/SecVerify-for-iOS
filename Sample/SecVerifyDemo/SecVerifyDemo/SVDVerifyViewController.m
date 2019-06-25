@@ -3,7 +3,7 @@
 //  SecVerifyDemo
 //
 //  Created by lujh on 2019/5/31.
-//  Copyright © 2019 mob. All rights reserved.
+//  Copyright © 2019 lujh. All rights reserved.
 //
 
 #import "SVDVerifyViewController.h"
@@ -140,7 +140,7 @@
                         else
                         {
                             NSLog(@"服务器验证失败");
-                            [self showAlert:@"服务器验证失败" message:error.userInfo[@"description"]];
+                            [self showAlert:@"当前网络状态不稳定" message:error.userInfo[@"description"]];
                         }
                         [self preLogin:nil];
                     }];
@@ -157,7 +157,16 @@
         }
         else
         {
-            [self showAlert:@"当前网络状态不稳定" message:nil];
+            NSString *title = @"当前网络状态不稳定";
+            if (error.code == 170005)
+            {
+                title = @"未安装SIM卡";
+            }
+            if (error.code == 170003)
+            {
+                title = @"不支持的运营商";
+            }
+            [self showAlert:title message:nil];
             
             [self enableVerifyBtn:YES];
         }
@@ -193,7 +202,7 @@
     verifyLabel.center = CGPointMake(SVD_ScreenWidth / 2.0, SVD_StatusBarSafeBottomMargin + SVD_ScreenWidth + 50.0 / 603 * (SVD_ScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin) + 15 + 44);
     
     verifyLabel.textAlignment = NSTextAlignmentCenter;
-    verifyLabel.text = @"开始秒验!";
+    verifyLabel.text = @"开始验证!";
     verifyLabel.font = [UIFont fontWithName:@"PingFangSC-Semibold" size:22.f]? : [UIFont systemFontOfSize:22.f];
     verifyLabel.textColor = [UIColor colorWithRed:47/255.0 green:51/255.0 blue:51/255.0 alpha:1/1.0];
     

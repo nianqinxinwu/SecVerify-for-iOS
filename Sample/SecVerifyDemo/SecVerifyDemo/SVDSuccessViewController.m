@@ -3,7 +3,7 @@
 //  SecVerifyDemo
 //
 //  Created by lujh on 2019/5/31.
-//  Copyright © 2019 mob. All rights reserved.
+//  Copyright © 2019 lujh. All rights reserved.
 //
 
 #import "SVDSuccessViewController.h"
