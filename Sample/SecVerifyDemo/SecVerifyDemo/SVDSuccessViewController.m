@@ -82,6 +82,7 @@
     [successBtn addTarget:self action:@selector(verifyAgain) forControlEvents:UIControlEventTouchUpInside];
     
     [successBtn setBackgroundColor:[UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0]];
+
     
     [self.view addSubview:imageV];
     [self.view addSubview:successLabel];

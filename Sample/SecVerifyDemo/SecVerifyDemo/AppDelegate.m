@@ -7,8 +7,11 @@
 //
 
 #import "AppDelegate.h"
+#import <Bugly/Bugly.h>
 
 #import "SVDVerifyViewController.h"
+
+
 
 @interface AppDelegate ()
 
@@ -19,11 +22,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     
     self.window.backgroundColor = [UIColor whiteColor];
     
     self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[SVDVerifyViewController new]];
+    
+    [Bugly startWithAppId:@"e21ce79e66"];
     
     [self.window makeKeyAndVisible];
     

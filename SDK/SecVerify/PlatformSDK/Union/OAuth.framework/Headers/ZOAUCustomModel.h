@@ -7,7 +7,6 @@ typedef NS_ENUM(NSUInteger, ControllerType) {
 
 @interface ZOAUCustomModel : NSObject
 
-
 //MARK:授权页*************
 
 /**授权页背景颜色*/
@@ -16,8 +15,11 @@ typedef NS_ENUM(NSUInteger, ControllerType) {
 @property (nonatomic,assign) ControllerType controllerType;
 /**授权页销毁是否交由app处理*/
 @property (nonatomic,assign) BOOL destroyCrollerBySelf;
-/** 授权页销魂时是否自动释放SDK内部的单例对象（默认为自动释放）*/
+/** 授权页销毁时是否自动释放SDK内部的单例对象（默认为自动释放）*/
 @property (nonatomic,assign) BOOL isAutoRelease;
+/** 是否在授权页WillDisappear时销毁单例（默认为NO）；
+ 如果您确认使用此属性，并设置为YES，授权页会在页面销毁前更在的时机销毁SDK单例对象*/
+@property (nonatomic,assign) BOOL isAutoReleaseEarlier;
 
 //MARK:导航栏设置*************
 
@@ -96,7 +98,6 @@ typedef NS_ENUM(NSUInteger, ControllerType) {
 
 
 //MARK:登录按钮设置************
-
 /**登录按钮文本*/
 @property (nonatomic,strong) NSString *logBtnText;
 /**登录按钮字体*/
@@ -111,11 +112,14 @@ typedef NS_ENUM(NSUInteger, ControllerType) {
 @property (nonatomic,strong) UIColor *logBtnUsableBGColor;
 /**登录按钮背景颜色(不可用状态)*/
 @property (nonatomic,strong) UIColor *logBtnUnusableBGColor;
+/**登录按钮宽度 (<=0无效）loginButtonWidth = screenWidth - logBtnLeading*2 */
+@property (nonatomic,assign) CGFloat logBtnLeading;
+/**登录按钮高度 (<=0无效)*/
+@property (nonatomic,assign) CGFloat logBtnHeight;
+
 
 
 //MARK:其他登录方式设置************
-
-
 /**其他登录方式字体颜色*/
 @property (nonatomic,strong) UIColor *swithAccTextColor;
 /**其他登录方式字体*/
@@ -130,7 +134,6 @@ typedef NS_ENUM(NSUInteger, ControllerType) {
 
 
 //MARK:隐私条款设置************
-
 /**隐藏复选框（默认显示）*/
 @property (nonatomic,assign) BOOL checkBoxHidden;
 /**复选框默认值（默认不选中）*/
@@ -175,5 +178,10 @@ typedef NS_ENUM(NSUInteger, ControllerType) {
 /**loading背景色*/
 @property (nonatomic,strong) UIColor *loadingBgColor;
 
+
+
+//MARK：协议页设置************
+//如果授权页设置了透明导航栏 在点击打开协议时 是否为协议页添加背景 (默认不透明白色)
+@property(nonatomic,assign)BOOL ifAddPrivacyPageBG;
 
 @end

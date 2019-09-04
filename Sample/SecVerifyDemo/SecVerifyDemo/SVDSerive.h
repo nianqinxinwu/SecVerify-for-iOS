@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedSerive;
 
-- (void)phoneLogin:(NSDictionary *)result completion:(void (^) (BOOL success, NSString *phone))handler;
+- (void)phoneLogin:(NSDictionary *)result completion:(void (^) (NSError *error, NSString *phone))handler;
 
 @end
 

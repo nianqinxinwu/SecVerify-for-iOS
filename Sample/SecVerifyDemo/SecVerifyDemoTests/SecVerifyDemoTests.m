@@ -40,34 +40,84 @@
 
 - (void)testProLogin
 {
-    sleep(2);
     
     __block XCTestExpectation *exp = [self expectationWithDescription:@"testProLogin"];
     
-    [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-        XCTAssertNotNil(error,@"预取号不会成功的");
-        NSLog(@"预取号失败：%@",error);
-        [exp fulfill];
-        exp = nil;
-    }];
-    [self waitForExpectationsWithTimeout:5 handler:^(NSError * _Nullable error) {
+    dispatch_queue_t queue = dispatch_queue_create(0, DISPATCH_QUEUE_SERIAL);
+    dispatch_async(queue, ^{
+        
+        sleep(5);
+        [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+            XCTAssertNil(error, @"预区号成功");
+           
+            [exp fulfill];
+            exp = nil;
+        }];
+    });
+    
+    [self waitForExpectationsWithTimeout:50 handler:^(NSError * _Nullable error) {
         NSLog(@"%@", error);
     }];
 }
 
 - (void)testLogin_NilModel
 {
-    sleep(2);
-    __block XCTestExpectation *exp = [self expectationWithDescription:@"testLogin_NilModel"];
-    [SecVerify loginWithModel:nil completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-        XCTAssertNotNil(error,@"必须报错哦");
-        NSLog(@"登录失败：%@",error);
-        [exp fulfill];
-        exp = nil;
-    }];
-    [self waitForExpectationsWithTimeout:5 handler:^(NSError * _Nullable error) {
+    __block XCTestExpectation *exp = [self expectationWithDescription:@"testLogin_Model"];
+    
+    dispatch_queue_t queue = dispatch_queue_create(0, DISPATCH_QUEUE_SERIAL);
+    dispatch_async(queue, ^{
+        
+        sleep(5);
+        [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+            XCTAssertNil(error, @"预区号成功");
+            
+            [SecVerify loginWithModel:nil completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+                XCTAssertNotNil(error, @"登录失败");
+                
+                [exp fulfill];
+                exp = nil;
+            }];
+            
+        }];
+    });
+    
+    [self waitForExpectationsWithTimeout:50 handler:^(NSError * _Nullable error) {
         NSLog(@"%@", error);
     }];
+}
+
+- (void)testLogin_Model
+{
+    __block XCTestExpectation *exp = [self expectationWithDescription:@"testLogin_Model"];
+    
+    dispatch_queue_t queue = dispatch_queue_create(0, DISPATCH_QUEUE_SERIAL);
+    dispatch_async(queue, ^{
+        sleep(5);
+        [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+            XCTAssertNil(error, @"预区号成功");
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                SecVerifyCustomModel *model = [[SecVerifyCustomModel alloc] init];
+                model.currentViewController = [MOBFViewController currentViewController];
+                [SecVerify loginWithModel:model completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+                    XCTAssertNil(error, @"登录成功");
+                    NSLog(@"登录成功1：%@",resultDic);
+                    
+                    
+                    [exp fulfill];
+                    exp = nil;
+                }];
+            });
+            
+            
+        }];
+    });
+    
+    [self waitForExpectationsWithTimeout:50 handler:^(NSError * _Nullable error) {
+        NSLog(@"%@", error);
+    }];
+
 }
 
 - (void)testPreLogin
@@ -86,25 +136,34 @@
                 //            XCTAssertNotNil(error,@"预取号不会成功的");
                 //            NSLog(@"预取号失败：%@",error);
                 NSLog(@"预取号成功：%@",resultDic);
-                //            [exp fulfill];
-                //            exp = nil;
-                SecVerifyCustomModel *model = [[SecVerifyCustomModel alloc] init];
-                model.currentViewController = [MOBFViewController currentViewController];
-                [SecVerify loginWithModel:model completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-                    NSLog(@"登录成功1：%@",resultDic);
-                }];
-                dispatch_async(queue, ^{
-                    sleep(10);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    SecVerifyCustomModel *model = [[SecVerifyCustomModel alloc] init];
+                    model.currentViewController = [MOBFViewController currentViewController];
                     [SecVerify loginWithModel:model completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-                        NSLog(@"登录成功2：%@",resultDic);
+                        NSLog(@"登录成功1：%@",resultDic);
+                        
+                        [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+                            
+                            [SecVerify loginWithModel:model completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+                                NSLog(@"登录成功2：%@",resultDic);
+                                
+                                [exp fulfill];
+                                exp = nil;
+                            }];
+                            
+                        }];
                     }];
+                    
                 });
+
+               
                 
             }];
         });
     }
     
-    [self waitForExpectationsWithTimeout:50 handler:^(NSError * _Nullable error) {
+    [self waitForExpectationsWithTimeout:100 handler:^(NSError * _Nullable error) {
         NSLog(@"%@", error);
     }];
 }

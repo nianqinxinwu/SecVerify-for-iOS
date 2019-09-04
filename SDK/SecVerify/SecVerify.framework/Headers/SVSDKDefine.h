@@ -17,4 +17,7 @@
  */
 typedef void(^SecVerifyResultHander)(NSDictionary * _Nullable resultDic, NSError * _Nullable error);
 
+typedef void(^SecVerifyCommonHander)(void);
+
+
 #endif /* SVSDKDefine_h */
