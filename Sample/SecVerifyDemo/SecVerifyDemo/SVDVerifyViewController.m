@@ -16,7 +16,6 @@
 #import <SecVerify/SecVerify.h>
 #import <SecVerify/SVSDKHelpExt.h>
 #import <SecVerify/SVSDKLoginManager.h>
-
 #import "Masonry.h"
 
 #import "SVProgressHUD.h"
@@ -36,240 +35,7 @@ static BOOL resetAlertModel = NO;
 //复杂登录
 static BOOL resetFuModel = NO;
 
-@interface SVDSheetPresentAnimation : NSObject <UIViewControllerAnimatedTransitioning>
-
-@property (nonatomic, assign) BOOL isPresent;
-
-@end
-
-@implementation SVDSheetPresentAnimation
-
-- (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext{
-    return 0.2f;
-}
-
-- (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext{
-    
-    UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    
-    UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    
-    UIView* toView = nil;
-    UIView* fromView = nil;
-    UIView* transView = nil;
-    
-    if ([transitionContext respondsToSelector:@selector(viewForKey:)]) {
-        fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
-        toView = [transitionContext viewForKey:UITransitionContextToViewKey];
-    } else {
-        fromView = fromViewController.view;
-        toView = toViewController.view;
-    }
-    
-    if (_isPresent) {
-        transView = toView;
-        [[transitionContext containerView] addSubview:toView];
-        
-    }else {
-        transView = fromView;
-        [[transitionContext containerView] insertSubview:toView belowSubview:fromView];
-    }
-    
-    CGFloat width = [UIScreen mainScreen].bounds.size.width;
-    CGFloat height = [UIScreen mainScreen].bounds.size.height;
-    
-    transView.frame = CGRectMake( 0,_isPresent ?height :0, width, height);
-    if(_isPresent)
-    {
-        transView.alpha = 0;
-        [SVSDKLoginManager setLoginVcBgColor:[UIColor clearColor]];
-    }
-    else
-    {
-        [SVSDKLoginManager setLoginVcBgColor:[UIColor colorWithRed:0/225.0 green:0/225.0 blue:0/225.0 alpha:0.5]];
-        
-        
-    }
-    
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-        
-        if(self->_isPresent)
-        {
-            transView.alpha = 1;
-            [SVSDKLoginManager setLoginVcBgColor:[UIColor colorWithRed:0/225.0 green:0/225.0 blue:0/225.0 alpha:0.5]];
-        }
-        else
-        {
-            [SVSDKLoginManager setLoginVcBgColor:[UIColor clearColor]];
-        }
-        transView.frame = CGRectMake(0,self->_isPresent ?0 :height, width, height);
-        
-    } completion:^(BOOL finished) {
-        transView.alpha = 0;
-        [transitionContext completeTransition:!transitionContext.transitionWasCancelled];
-    }];
-    
-}
-
-@end
-
-
-@interface SVDPushPresentAnimation : NSObject <UIViewControllerAnimatedTransitioning>
-
-@property (nonatomic, assign) BOOL isPresent;
-
-@end
-
-@implementation SVDPushPresentAnimation
-
-- (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext{
-    return 0.2f;
-}
-
-- (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext{
-    
-    UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    
-    UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    
-    UIView* toView = nil;
-    UIView* fromView = nil;
-    UIView* transView = nil;
-    
-    if ([transitionContext respondsToSelector:@selector(viewForKey:)]) {
-        fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
-        toView = [transitionContext viewForKey:UITransitionContextToViewKey];
-    } else {
-        fromView = fromViewController.view;
-        toView = toViewController.view;
-    }
-    
-    if (_isPresent) {
-        transView = toView;
-        [[transitionContext containerView] addSubview:toView];
-        
-    }else {
-        transView = fromView;
-        [[transitionContext containerView] insertSubview:toView belowSubview:fromView];
-    }
-    
-    CGFloat width = [UIScreen mainScreen].bounds.size.width;
-    CGFloat height = [UIScreen mainScreen].bounds.size.height;
-    
-    transView.frame = CGRectMake(_isPresent ?width :0, 0, width, height);
-    
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-        transView.frame = CGRectMake(_isPresent ?0 :width, 0, width, height);
-    } completion:^(BOOL finished) {
-        [transitionContext completeTransition:!transitionContext.transitionWasCancelled];
-    }];
-    
-}
-
-@end
-
-@interface SVDAlertPresentAnimation : NSObject <UIViewControllerAnimatedTransitioning>
-
-@property (nonatomic, assign) BOOL isPresent;
-
-@end
-
-@implementation SVDAlertPresentAnimation
-
-- (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext{
-    return 0.2f;
-}
-
-- (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext{
-    
-    UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    
-    UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    
-    UIView* toView = nil;
-    UIView* fromView = nil;
-    UIView* transView = nil;
-    
-    if ([transitionContext respondsToSelector:@selector(viewForKey:)]) {
-        fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
-        toView = [transitionContext viewForKey:UITransitionContextToViewKey];
-    } else {
-        fromView = fromViewController.view;
-        toView = toViewController.view;
-    }
-    
-    if (_isPresent) {
-        transView = toView;
-        [[transitionContext containerView] addSubview:toView];
-        
-    }else {
-        transView = fromView;
-        [[transitionContext containerView] insertSubview:toView belowSubview:fromView];
-    }
-    
-    CGFloat width = [UIScreen mainScreen].bounds.size.width;
-    CGFloat height = [UIScreen mainScreen].bounds.size.height;
-    
-    transView.frame = CGRectMake(0, 0, width, height);
-    if(_isPresent)
-    {
-        // 第一步：将view宽高缩至无限小（点）
-        transView.transform = CGAffineTransformScale(CGAffineTransformIdentity,
-                                                     CGFLOAT_MIN, CGFLOAT_MIN);
-    }
-    
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-        
-        if(_isPresent)
-        {
-            // 第二步： 以动画的形式将view慢慢放大至原始大小的1.2倍
-            transView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.2, 1.2);
-        }
-        else
-        {
-            // 第一步： 以动画的形式将view慢慢放大至原始大小的1.2倍
-            transView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.2, 1.2);
-        }
-        
-    } completion:^(BOOL finished) {
-        
-        if(_isPresent)
-        {
-            [UIView animateWithDuration:0.2
-                             animations:^{
-                                 // 第三步： 以动画的形式将view恢复至原始大小
-                                 transView.transform = CGAffineTransformIdentity;
-                                 
-                             } completion:^(BOOL finished) {
-                                 [transitionContext completeTransition:!transitionContext.transitionWasCancelled];
-                                 
-                             }];
-        }
-        else
-        {
-            [SVSDKLoginManager setLoginVcBgColor:[UIColor colorWithRed:0/225.0 green:0/225.0 blue:0/225.0 alpha:0]];
-            
-            [UIView animateWithDuration:0.3
-                             animations:^{
-                                 // 第二步： 以动画的形式将view缩小至原来的1/1000分之1倍
-                                 transView.transform = CGAffineTransformScale(
-                                                                              CGAffineTransformIdentity, 0.001, 0.001);
-                             }
-                             completion:^(BOOL finished) {
-                                 [transitionContext completeTransition:!transitionContext.transitionWasCancelled];
-                             }];
-        }
-        
-        
-    }];
-    
-}
-
-@end
-
-//static UIView *topArrowView = nil;
-////static UIView *otherView = nil;
-//static UIButton *borderBtn = nil;
+static BOOL resetPushModel = NO;
 
 @interface SVDVerifyViewController () <UIViewControllerTransitioningDelegate>
 
@@ -293,49 +59,6 @@ static BOOL resetFuModel = NO;
 @end
 
 @implementation SVDVerifyViewController
-
-// present动画
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source{
-    
-    id<UIViewControllerAnimatedTransitioning> presentAnimation = nil;
-    if(resetModel)
-    {
-        presentAnimation = [[SVDPushPresentAnimation alloc] init];
-        [(SVDPushPresentAnimation*)presentAnimation setIsPresent:YES];
-    }
-    else if(resetAlertModel)
-    {
-        presentAnimation = [[SVDAlertPresentAnimation alloc] init];
-        [(SVDAlertPresentAnimation*)presentAnimation setIsPresent:YES];
-        
-    }
-    else if(translucentBg)
-    {
-        presentAnimation = [[SVDSheetPresentAnimation alloc] init];
-        [(SVDSheetPresentAnimation*)presentAnimation setIsPresent:YES];
-        
-    }
-    return presentAnimation;
-    
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed{
-    id<UIViewControllerAnimatedTransitioning> presentAnimation = nil;
-    if(resetModel)
-    {
-        presentAnimation = [[SVDPushPresentAnimation alloc] init];
-        [(SVDPushPresentAnimation*)presentAnimation setIsPresent:NO];
-    }
-    else if(resetAlertModel)
-    {
-        presentAnimation = [[SVDAlertPresentAnimation alloc] init];
-        [(SVDAlertPresentAnimation*)presentAnimation setIsPresent:NO];
-        
-    }
-    return presentAnimation;
-    
-}
-
 
 + (BOOL)isPhoneX {
     BOOL iPhoneX = NO;
@@ -381,17 +104,6 @@ static BOOL resetFuModel = NO;
     [super viewDidAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     
-}
-
-//支持旋转
--(BOOL)shouldAutorotate{
-    return NO;
-}
-
-//支持的方向
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    
-    return UIInterfaceOrientationMaskPortrait;
 }
 
 
@@ -489,6 +201,11 @@ static BOOL resetFuModel = NO;
     
 }
 
+- (void)resetPushAction:(UIButton *)btn {
+    resetPushModel = !resetPushModel;
+    btn.selected = !btn.selected;
+
+}
 //test login
 
 - (void)leftAction
@@ -529,327 +246,6 @@ static BOOL resetFuModel = NO;
     backButton.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0); // 这里微调返回键的位置可以让它看上去和左边紧贴
     
     return backButton;
-}
-
-
-- (void)resettranslucentBgCustomModel:(SecVerifyCustomModel *)model
-{
-    //左侧按钮
-    UIButton *backButton = [self backBtn];
-    
-    //右侧按钮
-    UIButton *rightButton = [self rightBtn];
-    
-    //导航title属性文字
-    NSMutableAttributedString *attStr = [[NSMutableAttributedString alloc] initWithString:@"登录验证"];
-    UIColor *titleColor = [UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0];
-    
-    NSRange range = NSMakeRange(0, 4);
-    if(range.location != NSNotFound)
-    {
-        
-        [attStr addAttributes:@{
-                                NSForegroundColorAttributeName : titleColor,
-                                NSFontAttributeName: [UIFont systemFontOfSize:25.0f]
-                                }
-                        range:NSMakeRange(2, 2)];
-    }
-    
-    
-    //*******导航条设置*******
-    //  导航栏背景色
-    //    model.navBarTintColor = [UIColor grayColor];
-    // 导航栏标题
-    model.navText = @"登录";
-    // 导航返回图标
-    model.navReturnImg = [UIImage imageNamed:@"close"];
-    // 隐藏导航栏尾部线条
-    model.navBottomLineHidden = @(YES);
-    // 导航栏隐藏
-    model.navBarHidden = @(YES);
-    // 导航栏隐藏
-    model.navStatusBarHidden = @(NO);
-    // 导航栏返回按钮隐藏
-    model.navTranslucent = @(NO);
-    // 导航栏返回按钮隐藏
-    model.navBackBtnHidden = @(YES);
-    //针对电信卡执行动画
-    model.animateCtccType = translucentBg ? @(SVDCtccAnimateStyleSheet) : @(NO);
-    // 导航栏左边按钮
-    //    model.navLeftControl = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-    // 导航栏右边按钮
-    model.navRightControl = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-    // 导航栏属性标题
-    model.navAttributesText = attStr;
-    //    // 导航栏标题颜色
-    //    model.navTintColor = [UIColor redColor];
-    //    //  导航栏文字字体
-    //    model.navTextFont = [UIFont systemFontOfSize:25];
-    //  导航栏背景图片
-    //model.navBackgroundImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(SVD_ScreenWidth, 44)];
-    //  导航栏配合背景图片设置，用来控制在不同状态下导航栏的显示(横竖屏是否显示)
-    model.navBarMetrics = @(UIBarMetricsDefault);
-    //  导航栏导航栏底部分割线
-    model.navShadowImage = [self createImageWithColor:[UIColor greenColor] withSize:CGSizeMake(300, 2)];
-    //  导航栏barStyle
-    model.navBarStyle = @(UIBarStyleDefault);
-    //  导航栏背景透明
-    model.navBackgroundClear = @(NO);
-    
-    
-    //*******授权页背景*******
-    // 授权页背景颜色
-    model.backgroundColor = [UIColor colorWithRed:0/225.0 green:0/225.0 blue:0/225.0 alpha:0.5];
-    
-    //    model.backgroundColor = [UIColor lightGrayColor];
-    //背景图片
-    //    model.bgImg = [UIImage imageNamed:@"loginbgimg.jpeg"];
-    //单击实现取消操作
-    model.cancelBySingleClick = @(YES);
-    
-    model.modalPresentationStyleOCC = @(YES);
-    
-    
-    //*******授权页logo*******
-    // Logo图片
-    model.logoImg = [UIImage imageNamed:@"AppIcon"];
-    // Logo是否隐藏
-    model.logoHidden = @(NO);
-    // Logos圆角
-    model.logoCornerRadius = @(10);
-    
-    //*******号码设置*******
-    // 手机号码字体颜色
-    model.numberColor = [UIColor grayColor];
-    // 字体
-    model.numberFont = [UIFont boldSystemFontOfSize:16];
-    // 手机号对其方式
-    model.numberTextAlignment = @(NSTextAlignmentCenter);
-    // 手机号码背景颜色
-    //    model.numberBgColor = [UIColor redColor];
-    
-    //*******切换账号设置*******
-    // 切换账号背景颜色
-    //    model.switchBgColor = [UIColor yellowColor];
-    // 切换账号字体颜色
-    model.switchColor = [UIColor orangeColor];
-    // 切换账号字体
-    model.switchFont =  [UIFont systemFontOfSize:14];
-    // 切换账号对其方式
-    model.switchTextHorizontalAlignment = @(UIControlContentHorizontalAlignmentLeft);
-    // 切换账号标题
-    model.switchText = @"切换账号";
-    // 隐藏切换账号按钮
-    model.switchHidden = @(YES);
-    
-    
-    //*******复选框*******
-    // 复选框选中时的图片
-    model.checkedImg = [UIImage imageNamed:@"checked"];
-    // 复选框未选中时的图片
-    model.uncheckedImg = [UIImage imageNamed:@"unchecked"];
-    // 隐私条款check框默认状态
-    model.checkDefaultState = @(YES);
-    // 复选框尺寸
-    model.checkSize = [NSValue valueWithCGSize:CGSizeMake(20, 20)];
-    // 隐私条款check框是否隐藏
-    model.checkHidden = @(NO);
-    
-    //*******隐私条款设置*******
-    // 隐私条款基本文字颜色
-    model.privacyTextColor = [UIColor greenColor];
-    // 隐私条款协议文字字体
-    model.privacyTextFont =  [UIFont systemFontOfSize:12];
-    // 隐私条款对其方式
-    model.privacyTextAlignment = @(NSTextAlignmentCenter);
-    // 隐私条款协议文字颜色
-    model.privacyAgreementColor = [UIColor redColor];
-    // 隐私条款协议背景颜色
-    //    model.privacyAgreementBgColor = [UIColor yellowColor];
-    // 隐私条款应用名称
-    model.privacyAppName = @"秒验";
-    // 协议文本前后符号@[@"《",@"》"]
-    //    model.privacyProtocolMarkArr = @[@"《",@"》"];
-    // 隐私条款多行时行距
-    model.privacyLineSpacing = @(4.0);
-    // 隐私条款WEB页面标题
-    model.privacyWebTitle = attStr;
-    // 隐私条款WEB页面返回按钮图片
-//    model.privacyWebBackBtnImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(40, 40)];
-    
-    
-    //*******登陆按钮设置*******
-    // 登录按钮文本
-    model.loginBtnText = @"登录";
-    // 登录按钮文本颜色
-    //    model.loginBtnTextColor = [UIColor greenColor];
-    // 登录按钮背景颜色
-    //    model.loginBtnBgColor = [UIColor blueColor];
-    // 登录按钮边框宽度
-    //    model.loginBtnBorderWidth = @(1);
-    // 登录按钮边框颜色
-    //    model.loginBtnBorderColor = [UIColor cyanColor];
-    // 登录按钮圆角
-    model.loginBtnCornerRadius = @(5);
-    // 登录按钮文字字体
-    model.loginBtnTextFont = [UIFont boldSystemFontOfSize:14];
-    // 登录按钮背景图片
-    model.loginBtnBgImgArr = @[
-                               [self createImageWithColor:[UIColor blueColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor grayColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)]
-                               ];
-    
-    //*******运营商品牌标签*******
-    //运营商品牌文字字体
-    model.sloganTextFont = [UIFont systemFontOfSize:10];
-    //运营商品牌文字颜色
-    model.sloganTextColor = [UIColor grayColor];
-    //运营商品牌文字对齐方式
-    model.sloganTextAlignment = @(NSTextAlignmentCenter);
-    //运营商品牌背景颜色
-    //    model.sloganBgColor = [UIColor redColor];
-    
-    
-    //*******loading 视图*******
-    // loading 是否显示
-    model.hiddenLoading = @(NO);
-    //    //Loading 背景色
-    //    model.loadingBackgroundColor = [UIColor blackColor];
-    //    //Loading Indicator渲染色
-    //    model.loadingTintColor = [UIColor whiteColor];
-    //    //Loading 圆角
-    //    model.loadingCornerRadius = @(10);
-    //    //style (例:@(UIActivityIndicatorViewStyleWhiteLarge))
-    //    model.loadingIndicatorStyle = @(UIActivityIndicatorViewStyleGray);
-    //    //Loading 大小
-    //    model.loadingSize = [NSValue valueWithCGSize:CGSizeMake(100, 100)];
-    
-    //自定义loading视图
-    [model setLoadingView:^(UIView *contentView) {
-        
-        [SVProgressHUD setContainerView:contentView];
-        [SVProgressHUD showWithStatus:@"数据加载中..."];
-        
-    }];
-    
-    //自定义视图
-    [model setCustomViewBlock:^(UIView *customView) {
-        
-        UIView *bottomView = [[UIView alloc] init];
-        bottomView.backgroundColor = [UIColor whiteColor];
-        {
-            [customView addSubview:bottomView];
-            
-            [bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(0);
-                make.centerX.mas_equalTo(customView);
-                make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width);
-                make.height.mas_equalTo(372 + SVD_TabbarSafeBottomMargin);
-            }];
-            
-            UIButton *button = [[UIButton alloc] init];
-            [button setImage:[UIImage imageNamed:@"success"] forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:14];
-            [button setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-            [button addTarget:self action:@selector(weixinLoginAction) forControlEvents:UIControlEventTouchUpInside];
-            [bottomView addSubview:button];
-            
-            [button mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(-330);
-                make.right.mas_equalTo(-20);
-                make.width.height.mas_equalTo(30);
-            }];
-            
-        }
-        
-        [customView bringSubviewToFront:bottomView];
-        
-        
-    }];
-    
-    
-    //logo 距离上边距离
-    float topHeight = 412 - 60;
-    
-    //登录页面协议size
-    CGSize size = [SVSDKHelpExt loginProtocolSize:model maxWidth:(SVD_ScreenWidth - 65)];
-    
-    
-    //布局
-    SecVerifyCustomLayouts *layouts = [[SecVerifyCustomLayouts alloc] init];
-    
-    //logo
-    {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutBottom = @(-topHeight+80 - SVD_TabbarSafeBottomMargin);
-        layout.layoutCenterX = @(0);
-        layout.layoutWidth = @(40);
-        layout.layoutHeight = @(40);
-        
-        layouts.logoLayout = layout;
-    }
-    
-    //phone
-    {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutBottom = @(-topHeight + 60 + 50 - SVD_TabbarSafeBottomMargin);
-        layout.layoutRight = @(-20);
-        layout.layoutLeft = @(20);
-        layout.layoutHeight = @(20);
-        
-        layouts.phoneLayout = layout;
-    }
-    
-    
-    //登录按钮
-    {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutBottom = @(-topHeight + 160 - SVD_TabbarSafeBottomMargin);
-        layout.layoutRight = @(-30);
-        layout.layoutLeft = @(30);
-        layout.layoutHeight = @(30);
-        
-        layouts.loginLayout = layout;
-    }
-    
-    
-    //check(相对隐私协议)复选框
-    {
-        SecVerifyCheckPrivacyLayout *layout = [[SecVerifyCheckPrivacyLayout alloc] init];
-        layout.layoutCenterY = @(0);
-        layout.layoutRight = @(-5);
-        layout.layoutWidth = @(20);
-        layout.layoutHeight = @(20);
-        
-        layouts.checkPrivacyLayout = layout;
-    }
-    
-    //隐私条款
-    {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutRight = @(-20);
-        layout.layoutBottom = @(-topHeight + 240 - SVD_TabbarSafeBottomMargin);
-        layout.layoutLeft = @(50);
-        layout.layoutHeight = @(size.height);
-        
-        layouts.privacyLayout = layout;
-    }
-    
-    
-    //运营商品牌
-    {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutRight = @(-20);
-        layout.layoutBottom = @(- 10 - SVD_TabbarSafeBottomMargin);
-        layout.layoutLeft = @(20);
-        layout.layoutHeight = @(20);
-        
-        layouts.sloganLayout = layout;
-    }
-    
-    model.layouts = layouts;
-    
 }
 
 - (void)resetCustomModel:(SecVerifyCustomModel *)model
@@ -893,18 +289,13 @@ static BOOL resetFuModel = NO;
     model.navTranslucent = @(NO);
     // 导航栏返回按钮隐藏
     model.navBackBtnHidden = @(YES);
-     model.animateCtccType = resetModel ? @(SVDCtccAnimateStylePush) : @(NO);
     // 导航栏左边按钮
     model.navLeftControl = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     // 导航栏右边按钮
     model.navRightControl = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
     // 导航栏属性标题
     model.navAttributesText = attStr;
-    //    // 导航栏标题颜色
-    //    model.navTintColor = [UIColor redColor];
-    //    //  导航栏文字字体
-    //    model.navTextFont = [UIFont systemFontOfSize:25];
-    //  导航栏背景图片
+ 
     //model.navBackgroundImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(SVD_ScreenWidth, 44)];
     //  导航栏配合背景图片设置，用来控制在不同状态下导航栏的显示(横竖屏是否显示)
     model.navBarMetrics = @(UIBarMetricsDefault);
@@ -920,8 +311,6 @@ static BOOL resetFuModel = NO;
     model.backgroundColor = [UIColor lightGrayColor];
     //背景图片
     model.bgImg = [UIImage imageNamed:@"loginbgimg.jpeg"];
-    //自定义动画效果
-    model.presentAnimationDelegate = self;
     
     
     //*******授权页logo*******
@@ -939,12 +328,8 @@ static BOOL resetFuModel = NO;
     model.numberFont = [UIFont boldSystemFontOfSize:16];
     // 手机号对其方式
     model.numberTextAlignment = @(NSTextAlignmentLeft);
-    // 手机号码背景颜色
-    //    model.numberBgColor = [UIColor redColor];
     
     //*******切换账号设置*******
-    // 切换账号背景颜色
-    //    model.switchBgColor = [UIColor yellowColor];
     // 切换账号字体颜色
     model.switchColor = [UIColor orangeColor];
     // 切换账号字体
@@ -979,7 +364,7 @@ static BOOL resetFuModel = NO;
     // 隐私条款协议文字颜色
     model.privacyAgreementColor = [UIColor redColor];
     // 隐私条款协议背景颜色
-    //    model.privacyAgreementBgColor = [UIColor yellowColor];
+
     // 隐私条款应用名称
     model.privacyAppName = @"秒验";
     // 协议文本前后符号@[@"《",@"》"]
@@ -993,7 +378,7 @@ static BOOL resetFuModel = NO;
     // 隐私条款WEB页面标题
     model.privacyWebTitle = attStr;
     // 隐私条款WEB页面返回按钮图片
-//    model.privacyWebBackBtnImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(30, 30)];
+    model.privacyWebBackBtnImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(40, 40)];
     
     //*******登陆按钮设置*******
     // 登录按钮文本
@@ -1023,48 +408,35 @@ static BOOL resetFuModel = NO;
     //运营商品牌文字颜色
     model.sloganTextColor = [UIColor grayColor];
     //运营商品牌文字对齐方式
-    model.sloganTextAlignment = @(NSTextAlignmentRight);
-    //运营商品牌背景颜色
-    //    model.sloganBgColor = [UIColor redColor];
+    model.sloganTextAlignment = @(NSTextAlignmentCenter);
+
     
     //*******loading 视图*******
     // loading 是否显示
     model.hiddenLoading = @(NO);
-    //    //Loading 背景色
-    //    model.loadingBackgroundColor = [UIColor blackColor];
-    //    //Loading Indicator渲染色
-    //    model.loadingTintColor = [UIColor whiteColor];
-    //    //Loading 圆角
-    //    model.loadingCornerRadius = @(10);
-    //    //style (例:@(UIActivityIndicatorViewStyleWhiteLarge))
-    //    model.loadingIndicatorStyle = @(UIActivityIndicatorViewStyleGray);
-    //    //Loading 大小
-    //    model.loadingSize = [NSValue valueWithCGSize:CGSizeMake(100, 100)];
-    
+ 
     //自定义loading视图
     [model setLoadingView:^(UIView *contentView) {
-        
         [SVProgressHUD setContainerView:contentView];
         [SVProgressHUD showWithStatus:@"数据加载中..."];
         
     }];
-    
+    float realScreenWidth = (SVD_ScreenWidth > SVD_ScreenHeight)?SVD_ScreenHeight:SVD_ScreenWidth;
+    float realScreenHeight = (SVD_ScreenWidth > SVD_ScreenHeight)?SVD_ScreenWidth:SVD_ScreenHeight;
     //自定义视图
     [model setCustomViewBlock:^(UIView *customView) {
         
-        float height = [SVDVerifyViewController isPhoneX]?(160+36.0):160;
+        float height = [SVDVerifyViewController isPhoneX]?(115+36.0):115;
         
         UIView *bottomView = [[UIView alloc] init];
         {
             [customView addSubview:bottomView];
-            
             [bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.bottom.mas_equalTo(0);
                 make.centerX.mas_equalTo(customView);
-                make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width);
+                make.width.mas_equalTo(realScreenWidth);
                 make.height.mas_equalTo(height);
             }];
-            
             
             UILabel *mLbl = [[UILabel alloc] init];
             mLbl.textAlignment = NSTextAlignmentCenter;
@@ -1092,29 +464,37 @@ static BOOL resetFuModel = NO;
             [button mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.top.mas_equalTo(40);
                 make.centerX.mas_equalTo(bottomView);
-                make.width.height.mas_equalTo(50);
+                make.width.height.mas_equalTo(40);
             }];
             
         }
         
+        //获取当前横竖屏状态
+        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
+            bottomView.hidden = status;
+            NSLog(@"currentSize: %@", NSStringFromCGSize(size));
+        }];
+        
         [customView bringSubviewToFront:bottomView];
-        
-        
     }];
     
     
-    //logo 距离上边距离
-    float topHeight = 50.0/603.0 *(SVD_ScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
-    
     //登录页面协议size
-    CGSize size = [SVSDKHelpExt loginProtocolSize:model maxWidth:(SVD_ScreenWidth - 65)];
+    CGSize size = [SVSDKHelpExt loginProtocolSize:model maxWidth:(realScreenWidth - 65)];
     
+    //logo 距离上边距离
+    float topHeight = 50.0/603.0 *(realScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
+    
+    SecVerifyCustomLayouts *layouts = nil;
+    if (!model.portraitLayouts) {
+        layouts = [[SecVerifyCustomLayouts alloc] init];
+    }else {
+        layouts = model.portraitLayouts;
+    }
     
     //布局
-    SecVerifyCustomLayouts *layouts = [[SecVerifyCustomLayouts alloc] init];
     
-    //logo
-    {
+    if (!layouts.logoLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
         layout.layoutTop = @(topHeight);
         layout.layoutLeft = @(20);
@@ -1125,7 +505,7 @@ static BOOL resetFuModel = NO;
     }
     
     //phone
-    {
+    if (!layouts.phoneLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
         layout.layoutTop = @(topHeight + 20);
         layout.layoutRight = @(-20);
@@ -1136,7 +516,7 @@ static BOOL resetFuModel = NO;
     }
     
     //其他方式登录
-    {
+    if (!layouts.switchLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
         layout.layoutTop = @(topHeight + 50);
         layout.layoutRight = @(-20);
@@ -1147,11 +527,11 @@ static BOOL resetFuModel = NO;
     }
     
     //登录按钮
-    {
+    if (!layouts.loginLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
         layout.layoutTop = @(topHeight + 100);
-        layout.layoutRight = @(-20);
-        layout.layoutLeft = @(20);
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
         layout.layoutHeight = @(40);
         
         layouts.loginLayout = layout;
@@ -1159,7 +539,8 @@ static BOOL resetFuModel = NO;
     
     
     //check(相对隐私协议)复选框
-    {
+    
+    if (!layouts.checkPrivacyLayout) {
         SecVerifyCheckPrivacyLayout *layout = [[SecVerifyCheckPrivacyLayout alloc] init];
         layout.layoutCenterY = @(0);
         layout.layoutRight = @(-5);
@@ -1169,304 +550,124 @@ static BOOL resetFuModel = NO;
         layouts.checkPrivacyLayout = layout;
     }
     
+    
     //隐私条款
-    {
+    if (!layouts.privacyLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
         layout.layoutRight = @(-20);
         layout.layoutTop = @(topHeight + 150);
         layout.layoutLeft = @(50);
         layout.layoutHeight = @(size.height);
-        
+
         layouts.privacyLayout = layout;
     }
-    
-    
     //运营商品牌
-    {
+    if (!layouts.sloganLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutRight = @(-5);
+//        layout.layoutRight = @(-5);
         layout.layoutBottom = @(- 10 - SVD_TabbarSafeBottomMargin);
-        layout.layoutWidth = @(250);
+        layout.layoutWidth = @(120);
         layout.layoutHeight = @(20);
-        
+        layout.layoutCenterX = @(0);
         layouts.sloganLayout = layout;
     }
     
-    model.layouts = layouts;
     
-  
+    model.portraitLayouts = layouts;
     
-}
-
-
-- (void)resetAlertCustomModel:(SecVerifyCustomModel *)model
-{
+    SecVerifyCustomLayouts *landscapeLayouts = nil;
+    if (!model.landscapeLayouts) {
+        landscapeLayouts = [[SecVerifyCustomLayouts alloc] init];
+    }else{
+        landscapeLayouts = model.landscapeLayouts;
+    }
     
-    
-    //*******导航条设置*******
-    //  导航栏背景色
-    //    model.navBarTintColor = [UIColor grayColor];
-    // 导航栏标题
-    
-    // 导航栏隐藏
-    model.navBarHidden = @(YES);
-    // 导航栏隐藏
-    model.navStatusBarHidden = @(NO);
-    
-    
-    //*******授权页背景*******
-    // 授权页背景颜色
-    model.backgroundColor = [UIColor colorWithRed:0/225.0 green:0/225.0 blue:0/225.0 alpha:0.5];
-    
-    //    model.backgroundColor = [UIColor lightGrayColor];
-    //背景图片
-    //    model.bgImg = [UIImage imageNamed:@"loginbgimg.jpeg"];
-    //单击实现取消操作
-    model.cancelBySingleClick = @(YES);
-    
-    model.modalPresentationStyleOCC = @(YES);
-    
-    model.presentAnimationDelegate = self;
-    
-    //*******授权页logo*******
-    // Logo图片
-    model.logoImg = [UIImage imageNamed:@"AppIcon"];
-    // Logo是否隐藏
-    model.logoHidden = @(NO);
-    // Logos圆角
-    model.logoCornerRadius = @(10);
-    
-    //*******号码设置*******
-    // 手机号码字体颜色
-    model.numberColor = [UIColor grayColor];
-    // 字体
-    model.numberFont = [UIFont boldSystemFontOfSize:16];
-    // 手机号对其方式
-    model.numberTextAlignment = @(NSTextAlignmentCenter);
-    // 手机号码背景颜色
-    //    model.numberBgColor = [UIColor redColor];
-    
-    //*******切换账号设置*******
-    // 切换账号背景颜色
-    //    model.switchBgColor = [UIColor yellowColor];
-    // 切换账号字体颜色
-    model.switchColor = [UIColor orangeColor];
-    // 切换账号字体
-    model.switchFont =  [UIFont systemFontOfSize:14];
-    // 切换账号对其方式
-    model.switchTextHorizontalAlignment = @(UIControlContentHorizontalAlignmentLeft);
-    // 切换账号标题
-    model.switchText = @"切换账号";
-    // 隐藏切换账号按钮
-    model.switchHidden = @(YES);
-    model.animateCtccType = resetAlertModel ? @(SVDCtccAnimateStyleAlert) : @(NO);
-    
-    //*******复选框*******
-    // 复选框选中时的图片
-    model.checkedImg = [UIImage imageNamed:@"checked"];
-    // 复选框未选中时的图片
-    model.uncheckedImg = [UIImage imageNamed:@"unchecked"];
-    // 隐私条款check框默认状态
-    model.checkDefaultState = @(YES);
-    // 复选框尺寸
-    model.checkSize = [NSValue valueWithCGSize:CGSizeMake(20, 20)];
-    // 隐私条款check框是否隐藏
-    model.checkHidden = @(NO);
-    
-    //*******隐私条款设置*******
-    // 隐私条款基本文字颜色
-    model.privacyTextColor = [UIColor greenColor];
-    // 隐私条款协议文字字体
-    model.privacyTextFont =  [UIFont systemFontOfSize:12];
-    // 隐私条款对其方式
-    model.privacyTextAlignment = @(NSTextAlignmentCenter);
-    // 隐私条款协议文字颜色
-    model.privacyAgreementColor = [UIColor redColor];
-    // 隐私条款协议背景颜色
-    //    model.privacyAgreementBgColor = [UIColor yellowColor];
-    // 隐私条款应用名称
-    model.privacyAppName = @"秒验";
-    // 协议文本前后符号@[@"《",@"》"]
-    //    model.privacyProtocolMarkArr = @[@"《",@"》"];
-    // 隐私条款多行时行距
-    model.privacyLineSpacing = @(4.0);
-    // 隐私条款WEB页面返回按钮图片
-//    model.privacyWebBackBtnImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(40, 40)];
-    
-    
-    //*******登陆按钮设置*******
-    // 登录按钮文本
-    model.loginBtnText = @"登录";
-    // 登录按钮文本颜色
-    //    model.loginBtnTextColor = [UIColor greenColor];
-    // 登录按钮背景颜色
-    //    model.loginBtnBgColor = [UIColor blueColor];
-    // 登录按钮边框宽度
-    //    model.loginBtnBorderWidth = @(1);
-    // 登录按钮边框颜色
-    //    model.loginBtnBorderColor = [UIColor cyanColor];
-    // 登录按钮圆角
-    model.loginBtnCornerRadius = @(5);
-    // 登录按钮文字字体
-    model.loginBtnTextFont = [UIFont boldSystemFontOfSize:14];
-    // 登录按钮背景图片
-    model.loginBtnBgImgArr = @[
-                               [self createImageWithColor:[UIColor blueColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor grayColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)]
-                               ];
-    
-    //*******运营商品牌标签*******
-    //运营商品牌文字字体
-    model.sloganTextFont = [UIFont systemFontOfSize:10];
-    //运营商品牌文字颜色
-    model.sloganTextColor = [UIColor grayColor];
-    //运营商品牌文字对齐方式
-    model.sloganTextAlignment = @(NSTextAlignmentCenter);
-    //运营商品牌背景颜色
-    //    model.sloganBgColor = [UIColor redColor];
-    
-    
-    //*******loading 视图*******
-    // loading 是否显示
-    model.hiddenLoading = @(NO);
-    //Loading 背景色
-    model.loadingBackgroundColor = [UIColor blackColor];
-    //Loading Indicator渲染色
-    model.loadingTintColor = [UIColor whiteColor];
-    //Loading 圆角
-    model.loadingCornerRadius = @(10);
-    //style (例:@(UIActivityIndicatorViewStyleWhiteLarge))
-    model.loadingIndicatorStyle = @(UIActivityIndicatorViewStyleGray);
-    //Loading 大小
-    model.loadingSize = [NSValue valueWithCGSize:CGSizeMake(100, 100)];
-    
-    //自定义loading视图
-    //    [model setLoadingView:^(UIView *contentView) {
-    //
-    //        [SVProgressHUD setContainerView:contentView];
-    //        [SVProgressHUD showWithStatus:@"数据加载中..."];
-    //
-    //    }];
-    
-    //自定义视图
-    [model setCustomViewBlock:^(UIView *customView) {
-        
-        UIView *bottomView = [[UIView alloc] init];
-        bottomView.backgroundColor = [UIColor whiteColor];
-        {
-            [customView addSubview:bottomView];
-            
-            [bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.centerX.mas_equalTo(customView);
-                make.centerY.mas_equalTo(customView);
-                make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width*0.8);
-                make.height.mas_equalTo(372);
-            }];
-            
-            UIButton *button = [[UIButton alloc] init];
-            [button setImage:[UIImage imageNamed:@"success"] forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:14];
-            [button setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-            [button addTarget:self action:@selector(weixinLoginAction) forControlEvents:UIControlEventTouchUpInside];
-            [bottomView addSubview:button];
-            
-            [button mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(10);
-                make.right.mas_equalTo(-10);
-                make.width.height.mas_equalTo(30);
-            }];
-            
-        }
-        
-        [customView bringSubviewToFront:bottomView];
-        
-        
-    }];
-    
-    
-    //logo 距离上边距离
-    float topHeight = (SVD_ScreenHeight-372)/2.0+ 372;
-    
-    //登录页面协议size
-    CGSize size = [SVSDKHelpExt loginProtocolSize:model maxWidth:(SVD_ScreenWidth - 65)];
-    
-    
-    //布局
-    SecVerifyCustomLayouts *layouts = [[SecVerifyCustomLayouts alloc] init];
+    //横屏
+    float landscapeTopOffset = realScreenWidth*0.1;
     
     //logo
-    {
+    
+    if (!landscapeLayouts.logoLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutBottom = @(-topHeight+80);
+        layout.layoutTop = @(landscapeTopOffset-10);
+        layout.layoutWidth = @(60);
+        layout.layoutHeight = @(60);
         layout.layoutCenterX = @(0);
-        layout.layoutWidth = @(40);
-        layout.layoutHeight = @(40);
         
-        layouts.logoLayout = layout;
+        landscapeLayouts.logoLayout = layout;
     }
     
     //phone
-    {
+    if (!landscapeLayouts.phoneLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutBottom = @(-topHeight + 60 + 50 );
-        layout.layoutRight = @(-20);
-        layout.layoutLeft = @(20);
+        layout.layoutTop = @(landscapeTopOffset + 60);
+        layout.layoutCenterX = @(0);
         layout.layoutHeight = @(20);
+        layout.layoutWidth = @(100);
         
-        layouts.phoneLayout = layout;
+        landscapeLayouts.phoneLayout = layout;
     }
     
+    if (!landscapeLayouts.switchLayout) {
+        //切换按钮
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutTop = @(topHeight + 75);
+        layout.layoutHeight = @(20);
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(80);
+        
+        landscapeLayouts.switchLayout = layout;
+    }
     
     //登录按钮
-    {
+    if (!landscapeLayouts.loginLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutBottom = @(-topHeight + 160 );
-        layout.layoutRight = @(-30-SVD_ScreenWidth*0.1);
-        layout.layoutLeft = @(30+SVD_ScreenWidth*0.1);
-        layout.layoutHeight = @(25);
+        layout.layoutTop = @(topHeight + 100);
+
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(40);
         
-        layouts.loginLayout = layout;
+        landscapeLayouts.loginLayout = layout;
     }
     
-    
     //check(相对隐私协议)复选框
-    {
+    if (!landscapeLayouts.checkPrivacyLayout) {
         SecVerifyCheckPrivacyLayout *layout = [[SecVerifyCheckPrivacyLayout alloc] init];
-        layout.layoutCenterY = @(0);
+        //            layout.layoutCenterY = @(0);
         layout.layoutRight = @(-5);
         layout.layoutWidth = @(20);
         layout.layoutHeight = @(20);
-        
-        layouts.checkPrivacyLayout = layout;
+        layout.layoutTop = @(-3);
+        landscapeLayouts.checkPrivacyLayout = layout;
     }
     
     //隐私条款
-    {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutRight = @(-20-SVD_ScreenWidth*0.1);
-        layout.layoutBottom = @(-topHeight + 240 );
-        layout.layoutLeft = @(50+SVD_ScreenWidth*0.1);
-        layout.layoutHeight = @(size.height);
-        
-        layouts.privacyLayout = layout;
-    }
-    
+//    if (!landscapeLayouts.privacyLayout) {
+//        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+//        layout.layoutRight = @(-20-landscapeLeftOffset);
+//        layout.layoutTop = @(landscapeTopOffset +160);
+//        layout.layoutLeft = @(50+landscapeLeftOffset);
+//        layout.layoutHeight = @(size.height);
+//        landscapeLayouts.privacyLayout = layout;
+//    }
     
     //运营商品牌
-    {
+    if (!landscapeLayouts.sloganLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutRight = @(-20);
-        layout.layoutBottom = @(- 10 - (SVD_ScreenHeight - 371)/2.0);
-        layout.layoutLeft = @(20);
+        layout.layoutBottom = @(- 5 - SVD_TabbarSafeBottomMargin);
         layout.layoutHeight = @(20);
+        layout.layoutWidth = @(250);
+        layout.layoutCenterX = @(0);
         
-        layouts.sloganLayout = layout;
+        landscapeLayouts.sloganLayout = layout;
     }
     
-    model.layouts = layouts;
-    
+    model.landscapeLayouts = landscapeLayouts;
 }
+
+
+
 
 // 登录
 - (void)login
@@ -1486,32 +687,35 @@ static BOOL resetFuModel = NO;
             model.currentViewController = weakSelf;
             //外部手动管理关闭界面
             model.manualDismiss = @(dismissLoginVcBySelf);
+            model.leftControlImage = [UIImage imageNamed:@"success"];
+            //自定义按钮事件
+            model.leftTouchAction = @selector(clickAction);
+
+//            model.loginBtnBgColor = [UIColor redColor];
             
-            //半透明设置
-            /*
-             {
-             model.bgImg = [UIImage imageNamed:@"loginbgimg.jpeg"];
-             model.navBackgroundImage = [UIImage new];
-             model.navShadowImage = [UIImage new];
-             model.navTranslucent = @(YES);
-             }
-             */
-            
-            
-            
-            //重置ui
             if(translucentBg)
             {
-                [weakSelf resettranslucentBgCustomModel:model];
+                //左边按钮隐藏
+                model.leftControlHidden = @(YES);
+                model.shouldAutorotate = @(YES);
+                model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
+                model.cancelBySingleClick = @(YES);
+                model.showType = @(SVDShowStyleSheet);
             }
             else if(resetModel)
             {
+                model.animateType = @(SVDAnimateStylePush);
+                model.shouldAutorotate = @(YES);
+                model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
                 [weakSelf resetCustomModel:model];
                 
             }
             else if(resetAlertModel)
             {
-                [weakSelf resetAlertCustomModel:model];
+                model.cancelBySingleClick = @(YES);
+                model.shouldAutorotate = @(YES);
+                model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
+                model.showType = @(SVDShowStyleAlert);
                 
             }
             else if(resetFuModel)
@@ -1519,6 +723,13 @@ static BOOL resetFuModel = NO;
                 [weakSelf resetFuModel:model];
             }
             
+            else if (resetPushModel) {
+                
+                model.showType = @(SVDShowStylePush);
+            }
+
+            model.navLeftControlHidden = @(NO);
+
             
             [SecVerify loginWithModel:model showLoginVc:^{
                 
@@ -1614,7 +825,6 @@ static BOOL resetFuModel = NO;
                     [weakSelf preLogin:nil];
                 }
                 
-                
             }];
             
         }
@@ -1650,11 +860,11 @@ static BOOL resetFuModel = NO;
             [weakSelf enableVerifyBtn:YES];
         }
     }];
-    
-    
-   
 }
-
+- (void)clickAction {
+    NSLog(@"自定义事件");
+    [self weixinLoginAction];
+}
 - (void)phoneAction
 {
     [self.topArrowView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -1936,7 +1146,7 @@ static BOOL resetFuModel = NO;
     }];
     
     //logo 距离上边距离
-//    float topHeight = 50.0/603.0 *(SVD_ScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
+    float topHeight = 50.0/603.0 *(SVD_ScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
     
     //登录页面协议size
     CGSize size = [SVSDKHelpExt loginProtocolSize:model maxWidth:(SVD_ScreenWidth - 65)];
@@ -2000,7 +1210,7 @@ static BOOL resetFuModel = NO;
         layouts.privacyLayout = layout;
     }
     
-    model.layouts = layouts;
+    model.portraitLayouts = layouts;
     
 }
 
@@ -2108,6 +1318,14 @@ static BOOL resetFuModel = NO;
     [alertBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
     [alertBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
     
+    UIButton *pushBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [pushBtn setTitle:@"推" forState:UIControlStateNormal];
+    [pushBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    pushBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
+    [pushBtn addTarget:self action:@selector(resetPushAction:) forControlEvents:UIControlEventTouchUpInside];
+    [pushBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
+    [pushBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    
     UIButton *fuBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [fuBtn setTitle:@"复" forState:UIControlStateNormal];
     [fuBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
@@ -2127,8 +1345,8 @@ static BOOL resetFuModel = NO;
     [self.view addSubview:autoDismissbtn];
     [self.view addSubview:translucentBtn];
     [self.view addSubview:alertBtn];
-    
-    
+    [self.view addSubview:pushBtn];
+
     
     [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
         
@@ -2157,6 +1375,13 @@ static BOOL resetFuModel = NO;
         make.width.height.mas_equalTo(30);
         make.right.mas_equalTo(0);
         make.top.mas_equalTo(200);
+    }];
+    
+    
+    [pushBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(30);
+        make.right.mas_equalTo(0);
+        make.top.mas_equalTo(250);
     }];
     
     [resetModelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -2198,14 +1423,6 @@ static BOOL resetFuModel = NO;
     
 }
 
-//- (SVDSuccessViewController *)successVC
-//{
-//    if (!_successVC)
-//    {
-//        _successVC = [[SVDSuccessViewController alloc] init];
-//    }
-//    return _successVC;
-//}
 
 - (void)showAlert:(NSString *)title message:(NSString *)message
 {

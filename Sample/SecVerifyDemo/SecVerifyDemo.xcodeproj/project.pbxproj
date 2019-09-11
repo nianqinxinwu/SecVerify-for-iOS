@@ -12,7 +12,6 @@
 		2E1F44F322B2513100E07E2D /* SecVerifyDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F44F222B2513100E07E2D /* SecVerifyDemoTests.m */; };
 		2E1F44FE22B25AE100E07E2D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E1F44FD22B25AE100E07E2D /* LaunchScreen.storyboard */; };
 		2E379A2222A3BCF2003E872A /* SecVerify.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2E379A2122A3BAE4003E872A /* SecVerify.bundle */; };
-		2E5099A52293E20C000EE9A1 /* TYRZResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2E50999B2293E20C000EE9A1 /* TYRZResource.bundle */; };
 		2E5099A92293E20C000EE9A1 /* MOBFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E5099A32293E20C000EE9A1 /* MOBFoundation.framework */; };
 		2E5099B62297D526000EE9A1 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E5099B52297D526000EE9A1 /* libc++.tbd */; };
 		2E5E00C9228D6AF500A4BE80 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E5E00C8228D6AF500A4BE80 /* AppDelegate.m */; };
@@ -24,7 +23,6 @@
 		2EA289FE22A006740095D259 /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EA289F522A006730095D259 /* AFURLRequestSerialization.m */; };
 		2EA289FF22A006740095D259 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EA289F722A006730095D259 /* AFNetworkReachabilityManager.m */; };
 		2EA28A0022A006740095D259 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EA289F822A006730095D259 /* AFSecurityPolicy.m */; };
-		2EBBDC60229EB56200931EB2 /* TYRZSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EBBDC5F229EB56200931EB2 /* TYRZSDK.framework */; };
 		2EBF5ABD22A0E4A400433C61 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EBF5AB922A0E4A400433C61 /* FLAnimatedImage.m */; };
 		2EBF5ABE22A0E4A400433C61 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EBF5ABA22A0E4A400433C61 /* FLAnimatedImageView.m */; };
 		2EBF5AC722A0E80800433C61 /* SVDVerifyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EBF5AC622A0E80800433C61 /* SVDVerifyViewController.m */; };
@@ -52,6 +50,9 @@
 		912109872306697A00985770 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 912109862306697900985770 /* libz.tbd */; };
 		917A8BBA230F9FF000F96469 /* OAuth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 917A8BB9230F9FF000F96469 /* OAuth.framework */; };
 		91AA463B23068DFA007DF37C /* Bugly.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91AA463A23068DFA007DF37C /* Bugly.framework */; };
+		91CDB997231CD161001D3D48 /* SVDVerifyNaviationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 91CDB996231CD161001D3D48 /* SVDVerifyNaviationViewController.m */; };
+		91E1308C231FA90900D4D346 /* TYRZResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 91E1308A231FA90900D4D346 /* TYRZResource.bundle */; };
+		91E1308D231FA90900D4D346 /* TYRZSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E1308B231FA90900D4D346 /* TYRZSDK.framework */; };
 		91E519AB231376A500F102A4 /* EAccountOpenPageResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 91E519A9231376A500F102A4 /* EAccountOpenPageResource.bundle */; };
 		91E519BA2313D00300F102A4 /* EAccountHYSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E519B92313D00300F102A4 /* EAccountHYSDK.framework */; };
 /* End PBXBuildFile section */
@@ -75,7 +76,6 @@
 		2E1F44FD22B25AE100E07E2D /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2E379A2122A3BAE4003E872A /* SecVerify.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SecVerify.bundle; sourceTree = "<group>"; };
 		2E379A2422A3DB7E003E872A /* SVDPrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVDPrefixHeader.pch; sourceTree = "<group>"; };
-		2E50999B2293E20C000EE9A1 /* TYRZResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TYRZResource.bundle; sourceTree = "<group>"; };
 		2E5099A32293E20C000EE9A1 /* MOBFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MOBFoundation.framework; sourceTree = "<group>"; };
 		2E5099B32297D510000EE9A1 /* SecVerify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecVerify.framework; path = ../../SDK/SecVerify/SecVerify.framework; sourceTree = "<group>"; };
 		2E5099B52297D526000EE9A1 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -100,7 +100,6 @@
 		2EA289F822A006730095D259 /* AFSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFSecurityPolicy.m; sourceTree = "<group>"; };
 		2EA289F922A006730095D259 /* AFCompatibilityMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFCompatibilityMacros.h; sourceTree = "<group>"; };
 		2EA289FA22A006730095D259 /* AFHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPSessionManager.h; sourceTree = "<group>"; };
-		2EBBDC5F229EB56200931EB2 /* TYRZSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TYRZSDK.framework; sourceTree = "<group>"; };
 		2EBF5AB922A0E4A400433C61 /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
 		2EBF5ABA22A0E4A400433C61 /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImageView.m; sourceTree = "<group>"; };
 		2EBF5ABB22A0E4A400433C61 /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
@@ -152,6 +151,10 @@
 		912109862306697900985770 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		917A8BB9230F9FF000F96469 /* OAuth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OAuth.framework; sourceTree = "<group>"; };
 		91AA463A23068DFA007DF37C /* Bugly.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bugly.framework; sourceTree = "<group>"; };
+		91CDB995231CD161001D3D48 /* SVDVerifyNaviationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVDVerifyNaviationViewController.h; sourceTree = "<group>"; };
+		91CDB996231CD161001D3D48 /* SVDVerifyNaviationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVDVerifyNaviationViewController.m; sourceTree = "<group>"; };
+		91E1308A231FA90900D4D346 /* TYRZResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TYRZResource.bundle; sourceTree = "<group>"; };
+		91E1308B231FA90900D4D346 /* TYRZSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TYRZSDK.framework; sourceTree = "<group>"; };
 		91E519A9231376A500F102A4 /* EAccountOpenPageResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = EAccountOpenPageResource.bundle; sourceTree = "<group>"; };
 		91E519B92313D00300F102A4 /* EAccountHYSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EAccountHYSDK.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -172,11 +175,11 @@
 				912109872306697A00985770 /* libz.tbd in Frameworks */,
 				912109852306695600985770 /* Security.framework in Frameworks */,
 				912109832306693F00985770 /* SystemConfiguration.framework in Frameworks */,
+				91E1308D231FA90900D4D346 /* TYRZSDK.framework in Frameworks */,
 				2E1F44EB22B229BE00E07E2D /* SecVerify.framework in Frameworks */,
 				2E5099B62297D526000EE9A1 /* libc++.tbd in Frameworks */,
 				91E519BA2313D00300F102A4 /* EAccountHYSDK.framework in Frameworks */,
 				2E5099A92293E20C000EE9A1 /* MOBFoundation.framework in Frameworks */,
-				2EBBDC60229EB56200931EB2 /* TYRZSDK.framework in Frameworks */,
 				917A8BBA230F9FF000F96469 /* OAuth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -247,8 +250,8 @@
 		2E50999A2293E20C000EE9A1 /* Mobile */ = {
 			isa = PBXGroup;
 			children = (
-				2EBBDC5F229EB56200931EB2 /* TYRZSDK.framework */,
-				2E50999B2293E20C000EE9A1 /* TYRZResource.bundle */,
+				91E1308A231FA90900D4D346 /* TYRZResource.bundle */,
+				91E1308B231FA90900D4D346 /* TYRZSDK.framework */,
 			);
 			path = Mobile;
 			sourceTree = "<group>";
@@ -308,6 +311,8 @@
 				2E5E00C8228D6AF500A4BE80 /* AppDelegate.m */,
 				2EBF5AC522A0E80800433C61 /* SVDVerifyViewController.h */,
 				2EBF5AC622A0E80800433C61 /* SVDVerifyViewController.m */,
+				91CDB995231CD161001D3D48 /* SVDVerifyNaviationViewController.h */,
+				91CDB996231CD161001D3D48 /* SVDVerifyNaviationViewController.m */,
 				2EBF5AD022A0F85600433C61 /* SVDSuccessViewController.h */,
 				2EBF5AD122A0F85600433C61 /* SVDSuccessViewController.m */,
 				2E1202FF22A63862004D6442 /* SVDSerive.h */,
@@ -502,7 +507,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E379A2222A3BCF2003E872A /* SecVerify.bundle in Resources */,
-				2E5099A52293E20C000EE9A1 /* TYRZResource.bundle in Resources */,
+				91E1308C231FA90900D4D346 /* TYRZResource.bundle in Resources */,
 				8D1D484422BBA728008561DA /* LICENSE in Resources */,
 				2E1F44FE22B25AE100E07E2D /* LaunchScreen.storyboard in Resources */,
 				8D60F3CA22E56E670030A0D9 /* SVProgressHUD.bundle in Resources */,
@@ -543,6 +548,7 @@
 				2EA289FD22A006740095D259 /* AFURLSessionManager.m in Sources */,
 				8D1D484B22BBA728008561DA /* View+MASAdditions.m in Sources */,
 				8D1D484822BBA728008561DA /* MASConstraintMaker.m in Sources */,
+				91CDB997231CD161001D3D48 /* SVDVerifyNaviationViewController.m in Sources */,
 				2EA289FB22A006740095D259 /* AFURLResponseSerialization.m in Sources */,
 				2EA289FE22A006740095D259 /* AFURLRequestSerialization.m in Sources */,
 				8D1D484522BBA728008561DA /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,

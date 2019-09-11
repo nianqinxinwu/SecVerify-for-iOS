@@ -21,6 +21,14 @@ typedef NS_OPTIONS(NSUInteger, SVSDKLoginItemType) {
     SVSDKLoginItemTypeCheck = 1 << 6,  //复选框
 };
 
+
+typedef NS_ENUM(NSInteger, SVDScreenStatus) {
+    //竖屏
+    SVDScreenStatusPortrait = 0,
+    //横屏
+    SVDScreenStatusLandscape,
+};
+
 @interface SVSDKLoginManager : NSObject
 
 /**
@@ -58,6 +66,12 @@ typedef NS_OPTIONS(NSUInteger, SVSDKLoginItemType) {
 
  */
 + (void)setLoginVCEnable:(BOOL)enable;
+
+/**
+ 获取当前屏幕状态
+ 
+ */
++ (void)getScreenStatus:(void(^)(SVDScreenStatus status, CGSize size))status;
 
 @end
 

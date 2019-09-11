@@ -10,7 +10,7 @@
 #import <Bugly/Bugly.h>
 
 #import "SVDVerifyViewController.h"
-
+#import "SVDVerifyNaviationViewController.h"
 
 
 @interface AppDelegate ()
@@ -27,7 +27,7 @@
     
     self.window.backgroundColor = [UIColor whiteColor];
     
-    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[SVDVerifyViewController new]];
+    self.window.rootViewController = [[SVDVerifyNaviationViewController alloc] initWithRootViewController:[SVDVerifyViewController new]];
     
     [Bugly startWithAppId:@"e21ce79e66"];
     

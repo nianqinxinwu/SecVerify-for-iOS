@@ -69,16 +69,42 @@
 //运营商品牌(切记,不可设置隐藏)
 @property (nonatomic,strong)SecVerifyLayout * sloganLayout;
 
+//背景视图
+@property (nonatomic,strong)SecVerifyLayout * bgViewLayout;
+
+//左边按钮
+@property (nonatomic,strong)SecVerifyLayout * leftControlLayout;
+
+@property (nonatomic,strong)SecVerifyLayout * rightControlLayout;
+
 @end
 
-//针对于电信新版本做动画处理
-typedef NS_ENUM(NSInteger, SVDCtccAnimateStyle) {
+//动画样式
+typedef NS_ENUM(NSInteger, SVDAnimateStyle) {
+    //默认
+    SVDAnimateStyleCoverVertical = 0,
+    //翻转
+    SVDAnimateStyleFlipHorizontal,
+    //淡入淡出
+    SVDAnimateStyleCrossDissolve,
     //中间弹窗
-    SVDCtccAnimateStyleAlert = 1,
+    SVDAnimateStyleAlert,
     //push
-    SVDCtccAnimateStylePush,
+    SVDAnimateStylePush,
     //底部弹窗
-    SVDCtccAnimateStyleSheet
+    SVDAnimateStyleSheet
+};
+
+//显示样式
+typedef NS_ENUM(NSInteger, SVDShowStyle) {
+    //默认
+    SVDShowStyleDefault = 0,
+    //
+    SVDShowStyleAlert,
+    //
+    SVDShowStylePush,
+    //
+    SVDShowStyleSheet,
 };
 
 @interface SecVerifyCustomModel : NSObject
@@ -93,8 +119,40 @@ typedef NS_ENUM(NSInteger, SVDCtccAnimateStyle) {
  */
 @property (nonatomic,strong)NSNumber * manualDismiss;
 
-//针对于电信新版本做动画处理
-@property (nonatomic, strong) NSNumber *animateCtccType;
+//动画类型 0:默认 1:淡入淡出 2:翻转 3: Alert 4: Push 5:sheet
+@property (nonatomic, strong) NSNumber *animateType;
+
+//展示样式 = 动画类型 + 默认布局
+@property (nonatomic, strong) NSNumber *showType;
+
+#pragma mark - 默认自定义动画页面
+//左边按钮样式
+@property (nonatomic, strong) UIImage *leftControlImage;
+//左边按钮是否显示
+@property (nonatomic, strong) NSNumber *leftControlHidden;
+//左边按钮样式
+@property (nonatomic, strong) UIImage *rightControlImage;
+//右边按钮是否显示
+@property (nonatomic, strong) NSNumber *rightControlHidden;
+//背景视图是否展示
+@property (nonatomic, strong) NSNumber *bgViewHidden;
+//背景视图的圆角
+@property (nonatomic, strong) NSNumber *bgViewCorner;
+
+//背景视图颜色
+@property (nonatomic, strong) UIColor *bgViewColor;
+
+//背景视图展示图片
+@property (nonatomic, strong) UIImage *bgViewImage;
+
+//关闭按钮显示在左边还是右边 YES:左边 NO:右边
+@property (nonatomic, strong) NSNumber *closeType;
+
+//左侧按钮自定义事件
+@property (nonatomic, assign) SEL leftTouchAction;
+
+//右侧按钮自定义事件
+@property (nonatomic, assign) SEL rightTouchAction;
 
 #pragma mark - 导航条设置
 //  导航栏背景色(default is white)
@@ -136,8 +194,6 @@ typedef NS_ENUM(NSInteger, SVDCtccAnimateStyle) {
 @property (nonatomic, strong) NSNumber *navBarStyle;
 //  导航栏背景透明(例:@(YES))
 @property (nonatomic, strong) NSNumber *navBackgroundClear;
-
-
 #pragma mark - 授权页
 // 授权页背景颜色
 @property (nonatomic, strong) UIColor *backgroundColor;
@@ -299,7 +355,19 @@ typedef NS_ENUM(NSInteger, SVDCtccAnimateStyle) {
 @property (nonatomic,copy) void(^customViewBlock)(UIView *customView);
 
 #pragma mark - 布局
-@property (nonatomic,strong) SecVerifyCustomLayouts *layouts;
+//布局 竖布局
+@property (nonatomic,strong) SecVerifyCustomLayouts *portraitLayouts;
+//布局 横布局
+@property (nonatomic,strong) SecVerifyCustomLayouts *landscapeLayouts;
+
+
+#pragma mark - 横竖屏支持
+//横竖屏 是否支持自动转屏 (例:@(NO))
+@property (nonatomic,strong) NSNumber *shouldAutorotate;
+//横竖屏 设备支持方向 (例:@(UIInterfaceOrientationMaskAll))
+@property (nonatomic,strong) NSNumber *supportedInterfaceOrientations;
+//横竖屏 默认方向 (例:@(UIInterfaceOrientationPortrait))
+@property (nonatomic,strong) NSNumber *preferredInterfaceOrientationForPresentation;
 
 @end
 
