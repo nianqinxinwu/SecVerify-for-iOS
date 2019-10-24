@@ -27,8 +27,8 @@
 
 #ifdef SVD_TEST
 //测试
-//#define SVD_LoginURL @"http://10.18.97.63:22345/demo/sdkLogin"
-#define SVD_LoginURL @"http://verity.test.mob.com/demo/demo/sdkLogin"
+#define SVD_LoginURL @"http://10.18.97.63:22345/demo/sdkLogin"
+//#define SVD_LoginURL @"http://verity.test.mob.com/demo/demo/sdkLogin"
 
 #else
 

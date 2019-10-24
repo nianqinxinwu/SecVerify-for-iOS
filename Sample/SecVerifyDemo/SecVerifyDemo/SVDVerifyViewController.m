@@ -329,6 +329,9 @@ static BOOL resetPushModel = NO;
     // 手机号对其方式
     model.numberTextAlignment = @(NSTextAlignmentLeft);
     
+    model.phoneBorderWidth = @(1);
+    model.phoneBorderColor =  [UIColor redColor];
+    model.phoneCorner = @(6);
     //*******切换账号设置*******
     // 切换账号字体颜色
     model.switchColor = [UIColor orangeColor];
@@ -397,9 +400,10 @@ static BOOL resetPushModel = NO;
     model.loginBtnTextFont = [UIFont boldSystemFontOfSize:20];
     // 登录按钮背景图片
     model.loginBtnBgImgArr = @[
+                               [self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
+
                                [self createImageWithColor:[UIColor blueColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor grayColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)]
+                               [self createImageWithColor:[UIColor grayColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)]
                                ];
     
     //*******运营商品牌标签*******
@@ -410,6 +414,9 @@ static BOOL resetPushModel = NO;
     //运营商品牌文字对齐方式
     model.sloganTextAlignment = @(NSTextAlignmentCenter);
 
+    model.sloganBorderColor = [UIColor redColor];
+    model.sloganBorderWidth = @(1);
+    model.sloganCorner = @(6);
     
     //*******loading 视图*******
     // loading 是否显示
@@ -691,8 +698,6 @@ static BOOL resetPushModel = NO;
             //自定义按钮事件
             model.leftTouchAction = @selector(clickAction);
 
-//            model.loginBtnBgColor = [UIColor redColor];
-            
             if(translucentBg)
             {
                 //左边按钮隐藏
@@ -701,6 +706,8 @@ static BOOL resetPushModel = NO;
                 model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
                 model.cancelBySingleClick = @(YES);
                 model.showType = @(SVDShowStyleSheet);
+//                model.animateBgColor = [UIColor clearColor];
+
             }
             else if(resetModel)
             {
@@ -716,7 +723,7 @@ static BOOL resetPushModel = NO;
                 model.shouldAutorotate = @(YES);
                 model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
                 model.showType = @(SVDShowStyleAlert);
-                
+
             }
             else if(resetFuModel)
             {
@@ -750,7 +757,6 @@ static BOOL resetPushModel = NO;
                     [SVProgressHUD showWithStatus:@"加载中..."];
                     
                     [[SVDSerive sharedSerive] phoneLogin:resultDic completion:^(NSError *error, NSString * _Nonnull phone) {
-                        
                         
                         //手动关闭界面的时候使用
                         if(dismissLoginVcBySelf)

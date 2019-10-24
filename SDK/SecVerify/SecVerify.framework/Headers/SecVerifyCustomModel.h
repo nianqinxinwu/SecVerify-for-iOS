@@ -126,6 +126,8 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 @property (nonatomic, strong) NSNumber *showType;
 
 #pragma mark - 默认自定义动画页面
+//弹窗控制器的背景色
+@property (nonatomic, strong) UIColor *animateBgColor;
 //左边按钮样式
 @property (nonatomic, strong) UIImage *leftControlImage;
 //左边按钮是否显示
@@ -227,6 +229,13 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 @property (nonatomic, strong) UIColor *numberBgColor;
 //手机号码是否隐藏
 @property (nonatomic, strong)  NSNumber *phoneHidden;
+//phone边框颜色
+@property (nonatomic, strong) UIColor *phoneBorderColor;
+//phone边框宽度
+@property (nonatomic, strong) NSNumber *phoneBorderWidth;
+//phone圆角
+@property (nonatomic, strong) NSNumber *phoneCorner;
+
 
 #pragma mark - 切换账号设置
 // 切换账号背景颜色
@@ -326,8 +335,15 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 @property (nonatomic, strong) UIColor  *sloganBgColor;
 //运营商品牌文字(不建议修改)
 @property (nonatomic, copy) NSString  *sloganText;
-//手机号码是否隐藏
+//slogan是否隐藏
 @property (nonatomic, strong) NSNumber *sloganHidden;
+//slogan边框颜色
+@property (nonatomic, strong) UIColor *sloganBorderColor;
+//slogan边框宽度
+@property (nonatomic, strong) NSNumber *sloganBorderWidth;
+//slogan圆角
+@property (nonatomic, strong) NSNumber *sloganCorner;
+
 
 #pragma mark - loading 视图
 // loading 是否隐藏 (例:@(NO))
