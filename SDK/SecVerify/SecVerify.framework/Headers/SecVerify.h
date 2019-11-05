@@ -14,12 +14,6 @@
 @interface SecVerify : NSObject
 
 /**
- 
- 初始化秒验
- */
-//+ (void)initSecVerify;
-
-/**
  预登录
 
  @param handler 返回字典和error , 字典中包含运营商类型. error为nil即为成功.
@@ -65,5 +59,9 @@
  */
 + (void)finishLoginVc: (void (^ __nullable)(void))completion;
 
+/**
+当前运营商类型
+*/
++ (NSString *_Nullable)opearatorType;
 
 @end

@@ -29,7 +29,7 @@
     
     self.window.rootViewController = [[SVDVerifyNaviationViewController alloc] initWithRootViewController:[SVDVerifyViewController new]];
     
-    [Bugly startWithAppId:@"e21ce79e66"];
+    [Bugly startWithAppId:@"1f142d8b3a"];
     
     [self.window makeKeyAndVisible];
     

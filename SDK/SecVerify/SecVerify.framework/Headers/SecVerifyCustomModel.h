@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-
-
 @interface SecVerifyCheckPrivacyLayout : NSObject
 
 //与隐私协议顶部 (例:@(10))
@@ -125,7 +123,8 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 //展示样式 = 动画类型 + 默认布局
 @property (nonatomic, strong) NSNumber *showType;
 
-#pragma mark - 默认自定义动画页面
+#pragma mark - 默认自定义动画页面(只针对于Alert/Sheet视图)
+
 //弹窗控制器的背景色
 @property (nonatomic, strong) UIColor *animateBgColor;
 //左边按钮样式
@@ -296,12 +295,19 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 /** (获取本机号码)*/
 @property (nonatomic, copy) NSString *privacyNormalTextThird;
 
-// 隐私条款WEB页面标题
-@property (nonatomic, strong)NSAttributedString *privacyWebTitle;
+
 // 隐私条款WEB页面返回按钮图片
 @property (nonatomic, strong)UIImage *privacyWebBackBtnImage;
-//手机号码是否隐藏
+//隐私条款是否隐藏
 @property (nonatomic, strong)  NSNumber *privacyHidden;
+
+// 隐私条款WEB页面标题
+@property (nonatomic, strong)NSAttributedString *privacyWebTitle;
+
+//隐私协议WEB页面标题数组
+//若设置了 privacyWebTitle 则不生效
+//若采用 privacytitleArray 来设置WEB页面标题 请添加一个默认标题用于在默认运营商协议WEB页面中进行展示
+@property (nonatomic, strong)  NSArray<NSMutableAttributedString *> *privacytitleArray;
 
 #pragma mark - 登陆按钮设置
 
@@ -344,7 +350,6 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 //slogan圆角
 @property (nonatomic, strong) NSNumber *sloganCorner;
 
-
 #pragma mark - loading 视图
 // loading 是否隐藏 (例:@(NO))
 @property (nonatomic,strong) NSNumber *hiddenLoading;
@@ -359,7 +364,6 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 //Loading Indicator渲染色
 @property (nonatomic,strong) UIColor *loadingTintColor;
 
-
 #pragma mark - 自定义loading视图
 /*
  * 大小 ,背景色,style,圆角,Indicator渲染色 将失效
@@ -368,7 +372,17 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 @property (nonatomic,copy)void(^loadingView)(UIView * contentView);
 
 #pragma mark - 自定义视图
+// YES 依赖于vc.view布局 NO:依赖于弹窗布局 默认为@(0)
+//对于旧版弹窗用户 可以将其设置为@(1)继续使用原先的布局
+@property (nonatomic,strong) NSNumber * relyVcView;
+
+//默认授权页面添加自定义控件和获取控件位置请再次block中执行
+//默认全屏布局样式 customView = vc.view
 @property (nonatomic,copy) void(^customViewBlock)(UIView *customView);
+
+//弹窗授权页面添加自定义控件和获取控件位置请再次block中执行
+//针对弹窗视图 containView = 弹窗背景视图
+@property (nonatomic,copy) void(^alertContainViewBlock)(UIView *containView);
 
 #pragma mark - 布局
 //布局 竖布局

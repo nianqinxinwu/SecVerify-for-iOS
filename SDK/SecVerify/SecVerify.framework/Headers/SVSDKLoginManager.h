@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "SVSDKWidgetLayout.h"
+#import "SecVerifyCustomModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +23,6 @@ typedef NS_OPTIONS(NSUInteger, SVSDKLoginItemType) {
     SVSDKLoginItemTypeCheck = 1 << 6,  //复选框
 };
 
-
 typedef NS_ENUM(NSInteger, SVDScreenStatus) {
     //竖屏
     SVDScreenStatusPortrait = 0,
@@ -31,6 +32,7 @@ typedef NS_ENUM(NSInteger, SVDScreenStatus) {
 
 @interface SVSDKLoginManager : NSObject
 
++ (instancetype)defaultManager;
 /**
  显示loading 视图
  适用于自定义事件，需要在登录界面显示loading场景
@@ -49,7 +51,6 @@ typedef NS_ENUM(NSInteger, SVDScreenStatus) {
  适用于自定义背景视图动画
  */
 + (void)setLoginVcBgColor:(UIColor *)color;
-
 
 
 /**
@@ -72,6 +73,42 @@ typedef NS_ENUM(NSInteger, SVDScreenStatus) {
  
  */
 + (void)getScreenStatus:(void(^)(SVDScreenStatus status, CGSize size))status;
+
+
+#pragma mark WidgetLayout -- 获取控件位置
+
+/**
+用户获取控件位置方便用户调整授权页控件位置
+
+*/
+
+//弹窗视图
++ (SVSDKWidgetLayout *)alertWidgetLayout;
+
+//logo视图
++ (SVSDKWidgetLayout *)logoWidgetLayout;
+
+//手机号码视图
++ (SVSDKWidgetLayout *)phoneWidgetLayout;
+
+//登录按钮视图
++ (SVSDKWidgetLayout *)loginWidgetLayout;
+
+//其他登录方式
++ (SVSDKWidgetLayout *)otherLoginWidgetLayout;
+
+//Slogan标签视图
++ (SVSDKWidgetLayout *)sloganWidgetLayout;
+
+//隐私条款视图
++ (SVSDKWidgetLayout *)privacyWidgetLayout;
+
+//弹窗左侧按钮视图
++ (SVSDKWidgetLayout *)leftControlWidgetLayout;
+
+//弹窗右侧按钮视图
++ (SVSDKWidgetLayout *)rightControlWidgetLayout;
+
 
 @end
 

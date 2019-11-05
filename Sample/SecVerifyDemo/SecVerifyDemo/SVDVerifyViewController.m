@@ -16,6 +16,7 @@
 #import <SecVerify/SecVerify.h>
 #import <SecVerify/SVSDKHelpExt.h>
 #import <SecVerify/SVSDKLoginManager.h>
+#import <Secverify/SVSDKWidgetLayout.h>
 #import "Masonry.h"
 
 #import "SVProgressHUD.h"
@@ -55,6 +56,8 @@ static BOOL resetPushModel = NO;
 @property (nonatomic, weak) UIView *topArrowView;
 
 @property (nonatomic, weak) UIView *borderBtn;
+
+@property (strong, nonatomic) UIView *tempView;
 
 @end
 
@@ -103,9 +106,7 @@ static BOOL resetPushModel = NO;
 {
     [super viewDidAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
-    
 }
-
 
 // 预取号
 - (void)preLogin:(void (^) (NSDictionary *resultDic, NSError *error))compeletion
@@ -379,7 +380,12 @@ static BOOL resetPushModel = NO;
     // 隐私条款多行时行距
     model.privacyLineSpacing = @(4.0);
     // 隐私条款WEB页面标题
-    model.privacyWebTitle = attStr;
+//    model.privacyWebTitle = attStr;
+    
+    NSMutableAttributedString *privacyprivacyTitle1 = [[NSMutableAttributedString alloc] initWithString:@"协议名称"];
+    
+    model.privacytitleArray = @[attStr, privacyprivacyTitle1];
+    
     // 隐私条款WEB页面返回按钮图片
     model.privacyWebBackBtnImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(40, 40)];
     
@@ -477,10 +483,10 @@ static BOOL resetPushModel = NO;
         }
         
         //获取当前横竖屏状态
-        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
-            bottomView.hidden = status;
-            NSLog(@"currentSize: %@", NSStringFromCGSize(size));
-        }];
+//        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
+//            bottomView.hidden = status;
+//            NSLog(@"currentSize: %@", NSStringFromCGSize(size));
+//        }];
         
         [customView bringSubviewToFront:bottomView];
     }];
@@ -673,15 +679,59 @@ static BOOL resetPushModel = NO;
     model.landscapeLayouts = landscapeLayouts;
 }
 
+- (void)addCustomWidget:(SecVerifyCustomModel *)model {
+    
+    
+    //添加自定义View
+    //此方法针对于弹窗布局
+    //默认登录界面请使用 model.customViewBlock
+    [model setAlertContainViewBlock:^(UIView *containView) {
+        UIView *view = [UIView new];
+        view.backgroundColor = [UIColor redColor];
+        [containView addSubview:view];
+        
+        //获取当前横竖屏状态
+        //若需适配横竖屏 请将对应的Fame/Layout放到此回调中
+        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
+            
+//            SVSDKWidgetLayout *alertLayout = SVSDKLoginManager.alertWidgetLayout;
+//            view.frame = CGRectMake(0, 0, alertLayout.widgetWidth, 50);
+            
+            [view mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.right.equalTo(containView).offset(0);
+                make.height.equalTo(@(50));
+                make.bottom.mas_equalTo(0);
+            }];
+            
+            
+            SVSDKWidgetLayout *logoLayout = SVSDKLoginManager.logoWidgetLayout;
+            NSLog(@"logoLayout: %f - %f - %f -%f", logoLayout.widgetLeft, logoLayout.widgetTop, logoLayout.widgetWidth, logoLayout.widgetHeight);
+ 
+        }];
+        
+        //获取控件位置
+        //可根据获取到的控件位置 来赋值给对应的Layout用于调整布局
+//        [self getWidgetLayout:containView];
+    }];
+    
 
-
+//    SecVerifyCustomLayouts *layouts = [[SecVerifyCustomLayouts alloc] init];
+//    SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+//    layout.layoutTop = @(60);
+//    layout.layoutWidth = @(40);
+//    layout.layoutHeight = @(40);
+//    layout.layoutCenterX = @(0);
+//    layouts.logoLayout = layout;
+//
+//    model.portraitLayouts = layouts;
+}
 
 // 登录
 - (void)login
 {
     WeakSelf
     [self enableVerifyBtn:NO];
-    
+        
     [self preLogin:^(NSDictionary *resultDic, NSError *error) {
         
         if(!error)
@@ -695,8 +745,6 @@ static BOOL resetPushModel = NO;
             //外部手动管理关闭界面
             model.manualDismiss = @(dismissLoginVcBySelf);
             model.leftControlImage = [UIImage imageNamed:@"success"];
-            //自定义按钮事件
-            model.leftTouchAction = @selector(clickAction);
 
             if(translucentBg)
             {
@@ -706,7 +754,6 @@ static BOOL resetPushModel = NO;
                 model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
                 model.cancelBySingleClick = @(YES);
                 model.showType = @(SVDShowStyleSheet);
-//                model.animateBgColor = [UIColor clearColor];
 
             }
             else if(resetModel)
@@ -723,7 +770,13 @@ static BOOL resetPushModel = NO;
                 model.shouldAutorotate = @(YES);
                 model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
                 model.showType = @(SVDShowStyleAlert);
-
+                
+                //对于旧版弹窗用户 可以将其设置为@(1)继续使用原先的布局
+                model.relyVcView= @(0);
+                
+                //添加自定义布局
+//                [self addCustomWidget:model];
+               
             }
             else if(resetFuModel)
             {
@@ -732,11 +785,15 @@ static BOOL resetPushModel = NO;
             
             else if (resetPushModel) {
                 
-                model.showType = @(SVDShowStylePush);
+                model.animateType = @(SVDAnimateStylePush);
+
             }
 
-            model.navLeftControlHidden = @(NO);
+//            [model setCustomViewBlock:^(UIView *customView) {
+//               [self getWidgetLayout:customView];
+//            }];
 
+            model.navLeftControlHidden = @(NO);
             
             [SecVerify loginWithModel:model showLoginVc:^{
                 
@@ -762,7 +819,7 @@ static BOOL resetPushModel = NO;
                         if(dismissLoginVcBySelf)
                         {
                             [SecVerify finishLoginVc:^{
-                                
+                                NSLog(@"手动关闭界面");
                             }];
                         }
                         
@@ -815,7 +872,7 @@ static BOOL resetPushModel = NO;
                     if(dismissLoginVcBySelf && error.code != 170602 && error.code != 170204)
                     {
                         [SecVerify finishLoginVc:^{
-                            
+                            NSLog(@"手动关闭");
                         }];
                     }
                     
@@ -867,6 +924,77 @@ static BOOL resetPushModel = NO;
         }
     }];
 }
+
+//获取控件位置
+- (void)getWidgetLayout:(UIView *)customView {
+    SVSDKWidgetLayout *logoLayout = SVSDKLoginManager.logoWidgetLayout;
+    NSLog(@"logoLayout: %f - %f - %f -%f", logoLayout.widgetLeft, logoLayout.widgetTop, logoLayout.widgetWidth, logoLayout.widgetHeight);
+    
+    SVSDKWidgetLayout *leftLayout = SVSDKLoginManager.leftControlWidgetLayout;
+    NSLog(@"leftLayout: %f - %f - %f -%f", leftLayout.widgetLeft, leftLayout.widgetTop, leftLayout.widgetWidth, leftLayout.widgetHeight);
+    
+    SVSDKWidgetLayout *rightLayout = SVSDKLoginManager.rightControlWidgetLayout;
+    NSLog(@"rightLayout: %f - %f - %f -%f", rightLayout.widgetLeft, rightLayout.widgetTop, rightLayout.widgetWidth, rightLayout.widgetHeight);
+    
+    SVSDKWidgetLayout *phoneLayout = SVSDKLoginManager.phoneWidgetLayout;
+    NSLog(@"phoneLayout: %f - %f - %f -%f", phoneLayout.widgetLeft, phoneLayout.widgetTop, phoneLayout.widgetWidth, phoneLayout.widgetHeight);
+    
+    SVSDKWidgetLayout *loginLayout = SVSDKLoginManager.loginWidgetLayout;
+    NSLog(@"loginLayout: %f - %f - %f -%f", loginLayout.widgetLeft, loginLayout.widgetTop, loginLayout.widgetWidth, loginLayout.widgetHeight);
+    
+    SVSDKWidgetLayout *otherLayout = SVSDKLoginManager.otherLoginWidgetLayout;
+    NSLog(@"otherLayout: %f - %f - %f -%f", otherLayout.widgetLeft, otherLayout.widgetTop, otherLayout.widgetWidth, otherLayout.widgetHeight);
+    
+    SVSDKWidgetLayout *privacyLayout = SVSDKLoginManager.privacyWidgetLayout;
+    NSLog(@"privacyLayout: %f - %f - %f -%f", privacyLayout.widgetLeft, privacyLayout.widgetTop, privacyLayout.widgetWidth, privacyLayout.widgetHeight);
+    
+    SVSDKWidgetLayout *sloganLayout = SVSDKLoginManager.sloganWidgetLayout;
+    NSLog(@"sloganLayout: %f - %f - %f -%f", sloganLayout.widgetLeft, sloganLayout.widgetTop, sloganLayout.widgetWidth, sloganLayout.widgetHeight);
+    
+    
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(logoLayout.widgetLeft, logoLayout.widgetTop, logoLayout.widgetWidth, logoLayout.widgetHeight)];
+        view.backgroundColor = [UIColor greenColor];
+        [customView addSubview:view];
+    }
+    
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(leftLayout.widgetLeft, leftLayout.widgetTop, leftLayout.widgetWidth, leftLayout.widgetHeight)];
+        view.backgroundColor = [UIColor greenColor];
+        [customView addSubview:view];
+    }
+    
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(rightLayout.widgetLeft, rightLayout.widgetTop, rightLayout.widgetWidth, rightLayout.widgetHeight)];
+        view.backgroundColor = [UIColor greenColor];
+        [customView addSubview:view];
+    }
+    
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(phoneLayout.widgetLeft, phoneLayout.widgetTop, phoneLayout.widgetWidth, phoneLayout.widgetHeight)];
+        view.backgroundColor = [UIColor greenColor];
+        [customView addSubview:view];
+    }
+    
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(loginLayout.widgetLeft, loginLayout.widgetTop, loginLayout.widgetWidth, loginLayout.widgetHeight)];
+        view.backgroundColor = [UIColor greenColor];
+        [customView addSubview:view];
+    }
+    
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(privacyLayout.widgetLeft, privacyLayout.widgetTop, privacyLayout.widgetWidth, privacyLayout.widgetHeight)];
+        view.backgroundColor = [UIColor greenColor];
+        [customView addSubview:view];
+    }
+    
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(sloganLayout.widgetLeft, sloganLayout.widgetTop, sloganLayout.widgetWidth, sloganLayout.widgetHeight)];
+        view.backgroundColor = [UIColor greenColor];
+        [customView addSubview:view];
+    }
+}
+
 - (void)clickAction {
     NSLog(@"自定义事件");
     [self weixinLoginAction];
@@ -1005,6 +1133,7 @@ static BOOL resetPushModel = NO;
     
     //自定义视图
     [model setCustomViewBlock:^(UIView *customView) {
+        
         
         float height = [SVDVerifyViewController isPhoneX]?(160+36.0):160;
         
