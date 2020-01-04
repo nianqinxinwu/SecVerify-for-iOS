@@ -19,15 +19,14 @@
     // Do any additional setup after loading the view.
 }
 
-////支持旋转
+//支持旋转
 -(BOOL)shouldAutorotate{
-
     return NO;
 }
 
 //支持的方向
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-
+    
     return UIInterfaceOrientationMaskPortrait;
 }
 

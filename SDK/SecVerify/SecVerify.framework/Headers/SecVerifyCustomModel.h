@@ -113,7 +113,8 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 
 //外部手动管理关闭界面 @(BOOL)
 /*
- 注意：设置为YES 时，点击(登录操作，切换其他用户操作) 回调成功或者失败时，一定要手动关闭登录页面
+ 注意：设置为YES 时，点击(登录操作，切换其他用户操作) 回调成功或者失败时，
+      一定要调用 `finishLoginVc:` 方法手动关闭登录页面
  */
 @property (nonatomic,strong)NSNumber * manualDismiss;
 
@@ -255,11 +256,11 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 @property (nonatomic, strong) UIImage *checkedImg;
 // 复选框未选中时的图片
 @property (nonatomic, strong) UIImage *uncheckedImg;
-// 隐私条款check框默认状态，默认为YES(例:@(YES))
+// 隐私条款check框默认状态，默认为NO(例:@(YES))
 @property (nonatomic, strong) NSNumber *checkDefaultState;
 // 复选框尺寸 (例:[NSValue valueWithCGSize:CGSizeMake(30, 30)])
 @property (nonatomic, strong) NSValue *checkSize;
-// 隐私条款check框是否隐藏，默认为YES(例:@(YES))
+// 隐私条款check框是否隐藏，默认为NO(例:@(YES))
 @property (nonatomic, strong) NSNumber *checkHidden;
 
 #pragma mark - 隐私条款设置(切记,不可隐藏)
@@ -286,6 +287,10 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 //开发者隐私条款协议默认名称(不建议修改)
 @property (nonatomic, copy) NSString  *privacyDefaultText;
 
+//隐私协议下划线样式
+//NSUnderlineStyleSingle NSUnderlineStyleThick
+@property (nonatomic, strong) NSNumber * privacyUnderlineStyle;
+
 /** (登录即同意)*/
 @property (nonatomic, copy) NSString *privacyNormalTextFirst;
 
@@ -296,18 +301,30 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 @property (nonatomic, copy) NSString *privacyNormalTextThird;
 
 
-// 隐私条款WEB页面返回按钮图片
-@property (nonatomic, strong)UIImage *privacyWebBackBtnImage;
 //隐私条款是否隐藏
 @property (nonatomic, strong)  NSNumber *privacyHidden;
 
-// 隐私条款WEB页面标题
-@property (nonatomic, strong)NSAttributedString *privacyWebTitle;
 
 //隐私协议WEB页面标题数组
 //若设置了 privacyWebTitle 则不生效
 //若采用 privacytitleArray 来设置WEB页面标题 请添加一个默认标题用于在默认运营商协议WEB页面中进行展示
 @property (nonatomic, strong)  NSArray<NSMutableAttributedString *> *privacytitleArray;
+
+//运营商协议在排序在后 默认为NO(例:@(YES))
+@property (nonatomic, strong)  NSNumber *isPrivacyOperatorsLast;
+
+#pragma mark - 隐私条款 具体协议页面
+// 隐私条款WEB页面返回按钮图片
+@property (nonatomic, strong)UIImage *privacyWebBackBtnImage;
+
+// 隐私条款WEB页面标题
+@property (nonatomic, strong)NSAttributedString *privacyWebTitle;
+
+// 隐私条款导航style UIStatusBarStyle (例:@(UIStatusBarStyleDefault))
+@property (nonatomic, strong)NSNumber *privacyWebNavBarStyle;
+
+// 隐私条款页面返回按钮 (外界不用传入返回事件)
+@property (nonatomic, strong)UIButton *privacyBackButton;
 
 #pragma mark - 登陆按钮设置
 
@@ -372,24 +389,23 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 @property (nonatomic,copy)void(^loadingView)(UIView * contentView);
 
 #pragma mark - 自定义视图
-// YES 依赖于vc.view布局 NO:依赖于弹窗布局 默认为@(0)
-//对于旧版弹窗用户 可以将其设置为@(1)继续使用原先的布局
-@property (nonatomic,strong) NSNumber * relyVcView;
-
 //默认授权页面添加自定义控件和获取控件位置请再次block中执行
 //默认全屏布局样式 customView = vc.view
 @property (nonatomic,copy) void(^customViewBlock)(UIView *customView);
 
-//弹窗授权页面添加自定义控件和获取控件位置请再次block中执行
-//针对弹窗视图 containView = 弹窗背景视图
-@property (nonatomic,copy) void(^alertContainViewBlock)(UIView *containView);
+//自定义布局的时候，设置布局
+@property (nonatomic,copy) void(^manualLayoutBlock)(UIView *containView);
+
+//check按钮点击事件(设置后，将由app处理相关弹窗事件)
+@property (nonatomic,copy) void(^hasNotSelectedCheckViewBlock)(UIView *checkView);
 
 #pragma mark - 布局
 //布局 竖布局
 @property (nonatomic,strong) SecVerifyCustomLayouts *portraitLayouts;
 //布局 横布局
 @property (nonatomic,strong) SecVerifyCustomLayouts *landscapeLayouts;
-
+//布局 手动自定义布局,不设置横竖布局
+@property (nonatomic,strong) NSNumber *manualLayout;
 
 #pragma mark - 横竖屏支持
 //横竖屏 是否支持自动转屏 (例:@(NO))

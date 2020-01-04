@@ -14,9 +14,7 @@
 #import "FLAnimatedImage.h"
 
 #import <SecVerify/SecVerify.h>
-#import <SecVerify/SVSDKHelpExt.h>
-#import <SecVerify/SVSDKLoginManager.h>
-#import <Secverify/SVSDKWidgetLayout.h>
+
 #import "Masonry.h"
 
 #import "SVProgressHUD.h"
@@ -39,9 +37,6 @@ static BOOL resetFuModel = NO;
 static BOOL resetPushModel = NO;
 
 @interface SVDVerifyViewController () <UIViewControllerTransitioningDelegate>
-
-@property (nonatomic) dispatch_queue_t svdQueue;
-@property (nonatomic) dispatch_semaphore_t svdSemaphore;
 
 @property (nonatomic, strong) SVDSuccessViewController *successVC;
 
@@ -81,8 +76,6 @@ static BOOL resetPushModel = NO;
 {
     [super viewDidLoad];
     
-    self.svdQueue = dispatch_queue_create("Verify_Queue", DISPATCH_QUEUE_SERIAL);
-    self.svdSemaphore = dispatch_semaphore_create(1);
     self.isPreLogin = NO;
     self.isLogining = NO;
     
@@ -111,53 +104,37 @@ static BOOL resetPushModel = NO;
 // 预取号
 - (void)preLogin:(void (^) (NSDictionary *resultDic, NSError *error))compeletion
 {
-    dispatch_async(self.svdQueue, ^{
-        
-        dispatch_semaphore_wait(self.svdSemaphore, DISPATCH_TIME_FOREVER);
-        
-        if (!self.isPreLogin)
-        {
-            [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-                
-                [self enableVerifyBtn:YES];
-                
-                if (!error)
-                {
-                    NSLog(@"预取号成功");
-                    self.isPreLogin = YES;
-                }
-                else
-                {
-                    NSLog(@"预取号失败%@", error);
-                }
-                dispatch_semaphore_signal(self.svdSemaphore);
-                
-                if(compeletion)
-                {
-                    compeletion(resultDic,error);
-                }
-                
-                
-            }];
-        }
-        else
-        {
-            dispatch_semaphore_signal(self.svdSemaphore);
+    if (!self.isPreLogin)
+    {
+        [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+            
             [self enableVerifyBtn:YES];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                if(compeletion)
-                {
-                    compeletion(nil,nil);
-                }
-            });
+            if (!error)
+            {
+                NSLog(@"### 预取号成功");
+                self.isPreLogin = YES;
+            }
+            else
+            {
+                NSLog(@"### 预取号失败%@", error);
+            }
             
-            
-            
-        }
+            if(compeletion)
+            {
+                compeletion(resultDic,error);
+            }
+        }];
+    }
+    else
+    {
+        [self enableVerifyBtn:YES];
         
-    });
+        if(compeletion)
+        {
+            compeletion(nil,nil);
+        }
+    }
 }
 
 
@@ -177,21 +154,18 @@ static BOOL resetPushModel = NO;
 {
     dismissLoginVcBySelf = !dismissLoginVcBySelf;
     btn.selected = !btn.selected;
-    
 }
 
 - (void)translucentAction:(UIButton *)btn
 {
     translucentBg = !translucentBg;
     btn.selected = !btn.selected;
-    
 }
 
 - (void)resetAlertAction:(UIButton *)btn
 {
     resetAlertModel = !resetAlertModel;
     btn.selected = !btn.selected;
-    
 }
 
 
@@ -199,13 +173,11 @@ static BOOL resetPushModel = NO;
 {
     resetFuModel = !resetFuModel;
     btn.selected = !btn.selected;
-    
 }
 
 - (void)resetPushAction:(UIButton *)btn {
     resetPushModel = !resetPushModel;
     btn.selected = !btn.selected;
-
 }
 //test login
 
@@ -352,7 +324,7 @@ static BOOL resetPushModel = NO;
     // 复选框未选中时的图片
     model.uncheckedImg = [UIImage imageNamed:@"unchecked"];
     // 隐私条款check框默认状态
-    model.checkDefaultState = @(YES);
+    model.checkDefaultState = @(NO);
     // 复选框尺寸
     model.checkSize = [NSValue valueWithCGSize:CGSizeMake(20, 20)];
     // 隐私条款check框是否隐藏
@@ -368,7 +340,7 @@ static BOOL resetPushModel = NO;
     // 隐私条款协议文字颜色
     model.privacyAgreementColor = [UIColor redColor];
     // 隐私条款协议背景颜色
-
+    model.privacyUnderlineStyle= @(NSUnderlineStyleSingle);
     // 隐私条款应用名称
     model.privacyAppName = @"秒验";
     // 协议文本前后符号@[@"《",@"》"]
@@ -389,6 +361,8 @@ static BOOL resetPushModel = NO;
     // 隐私条款WEB页面返回按钮图片
     model.privacyWebBackBtnImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(40, 40)];
     
+    model.isPrivacyOperatorsLast = @(YES);
+    
     //*******登陆按钮设置*******
     // 登录按钮文本
     model.loginBtnText = @"登录";
@@ -407,10 +381,9 @@ static BOOL resetPushModel = NO;
     // 登录按钮背景图片
     model.loginBtnBgImgArr = @[
                                [self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-
-                               [self createImageWithColor:[UIColor blueColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor grayColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)]
+                               [self createImageWithColor:[UIColor blueColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)]
                                ];
+    
     
     //*******运营商品牌标签*******
     //运营商品牌文字字体
@@ -434,6 +407,11 @@ static BOOL resetPushModel = NO;
         [SVProgressHUD showWithStatus:@"数据加载中..."];
         
     }];
+    
+    [model setHasNotSelectedCheckViewBlock:^(UIView *checkView) {
+        [[[UIAlertView alloc] initWithTitle:nil message:@"请勾选协议" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil] show];
+    }];
+    
     float realScreenWidth = (SVD_ScreenWidth > SVD_ScreenHeight)?SVD_ScreenHeight:SVD_ScreenWidth;
     float realScreenHeight = (SVD_ScreenWidth > SVD_ScreenHeight)?SVD_ScreenWidth:SVD_ScreenHeight;
     //自定义视图
@@ -483,10 +461,9 @@ static BOOL resetPushModel = NO;
         }
         
         //获取当前横竖屏状态
-//        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
-//            bottomView.hidden = status;
-//            NSLog(@"currentSize: %@", NSStringFromCGSize(size));
-//        }];
+        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
+            bottomView.hidden = status;
+        }];
         
         [customView bringSubviewToFront:bottomView];
     }];
@@ -681,49 +658,6 @@ static BOOL resetPushModel = NO;
 
 - (void)addCustomWidget:(SecVerifyCustomModel *)model {
     
-    
-    //添加自定义View
-    //此方法针对于弹窗布局
-    //默认登录界面请使用 model.customViewBlock
-    [model setAlertContainViewBlock:^(UIView *containView) {
-        UIView *view = [UIView new];
-        view.backgroundColor = [UIColor redColor];
-        [containView addSubview:view];
-        
-        //获取当前横竖屏状态
-        //若需适配横竖屏 请将对应的Fame/Layout放到此回调中
-        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
-            
-//            SVSDKWidgetLayout *alertLayout = SVSDKLoginManager.alertWidgetLayout;
-//            view.frame = CGRectMake(0, 0, alertLayout.widgetWidth, 50);
-            
-            [view mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.left.right.equalTo(containView).offset(0);
-                make.height.equalTo(@(50));
-                make.bottom.mas_equalTo(0);
-            }];
-            
-            
-            SVSDKWidgetLayout *logoLayout = SVSDKLoginManager.logoWidgetLayout;
-            NSLog(@"logoLayout: %f - %f - %f -%f", logoLayout.widgetLeft, logoLayout.widgetTop, logoLayout.widgetWidth, logoLayout.widgetHeight);
- 
-        }];
-        
-        //获取控件位置
-        //可根据获取到的控件位置 来赋值给对应的Layout用于调整布局
-//        [self getWidgetLayout:containView];
-    }];
-    
-
-//    SecVerifyCustomLayouts *layouts = [[SecVerifyCustomLayouts alloc] init];
-//    SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-//    layout.layoutTop = @(60);
-//    layout.layoutWidth = @(40);
-//    layout.layoutHeight = @(40);
-//    layout.layoutCenterX = @(0);
-//    layouts.logoLayout = layout;
-//
-//    model.portraitLayouts = layouts;
 }
 
 // 登录
@@ -731,21 +665,23 @@ static BOOL resetPushModel = NO;
 {
     WeakSelf
     [self enableVerifyBtn:NO];
-        
     [self preLogin:^(NSDictionary *resultDic, NSError *error) {
-        
         if(!error)
         {
             weakSelf.isLogining = YES;
 
             SecVerifyCustomModel *model = [[SecVerifyCustomModel alloc] init];
-            
             //当前VC,用于呈现登录视图
             model.currentViewController = weakSelf;
-            //外部手动管理关闭界面
+        
             model.manualDismiss = @(dismissLoginVcBySelf);
-            model.leftControlImage = [UIImage imageNamed:@"success"];
-
+            
+//            model.manualLayout = @(YES);
+//            model.navBarHidden = @(1);
+//            model.animateType = @(SVDAnimateStyleAlert);
+//            model.backgroundColor = [UIColor clearColor];
+//            model.animateBgColor = [UIColor clearColor];
+            
             if(translucentBg)
             {
                 //左边按钮隐藏
@@ -762,7 +698,6 @@ static BOOL resetPushModel = NO;
                 model.shouldAutorotate = @(YES);
                 model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
                 [weakSelf resetCustomModel:model];
-                
             }
             else if(resetAlertModel)
             {
@@ -770,13 +705,7 @@ static BOOL resetPushModel = NO;
                 model.shouldAutorotate = @(YES);
                 model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
                 model.showType = @(SVDShowStyleAlert);
-                
-                //对于旧版弹窗用户 可以将其设置为@(1)继续使用原先的布局
-                model.relyVcView= @(0);
-                
-                //添加自定义布局
-//                [self addCustomWidget:model];
-               
+                model.leftControlHidden = @(YES);
             }
             else if(resetFuModel)
             {
@@ -784,21 +713,16 @@ static BOOL resetPushModel = NO;
             }
             
             else if (resetPushModel) {
-                
                 model.animateType = @(SVDAnimateStylePush);
-
             }
 
-//            [model setCustomViewBlock:^(UIView *customView) {
-//               [self getWidgetLayout:customView];
-//            }];
-
             model.navLeftControlHidden = @(NO);
-            
+            model.navBarStyle = @(UIStatusBarStyleLightContent);
+            model.privacyWebNavBarStyle = @(UIStatusBarStyleDefault);
             [SecVerify loginWithModel:model showLoginVc:^{
-                
+                //
             } loginBtnClicked:^{
-                
+                //
             } willHiddenLoading:^{
                 
                 //自定义loading,隐藏
@@ -819,7 +743,7 @@ static BOOL resetPushModel = NO;
                         if(dismissLoginVcBySelf)
                         {
                             [SecVerify finishLoginVc:^{
-                                NSLog(@"手动关闭界面");
+                                NSLog(@"****************手动关闭界面***************");
                             }];
                         }
                         
@@ -925,76 +849,6 @@ static BOOL resetPushModel = NO;
     }];
 }
 
-//获取控件位置
-- (void)getWidgetLayout:(UIView *)customView {
-    SVSDKWidgetLayout *logoLayout = SVSDKLoginManager.logoWidgetLayout;
-    NSLog(@"logoLayout: %f - %f - %f -%f", logoLayout.widgetLeft, logoLayout.widgetTop, logoLayout.widgetWidth, logoLayout.widgetHeight);
-    
-    SVSDKWidgetLayout *leftLayout = SVSDKLoginManager.leftControlWidgetLayout;
-    NSLog(@"leftLayout: %f - %f - %f -%f", leftLayout.widgetLeft, leftLayout.widgetTop, leftLayout.widgetWidth, leftLayout.widgetHeight);
-    
-    SVSDKWidgetLayout *rightLayout = SVSDKLoginManager.rightControlWidgetLayout;
-    NSLog(@"rightLayout: %f - %f - %f -%f", rightLayout.widgetLeft, rightLayout.widgetTop, rightLayout.widgetWidth, rightLayout.widgetHeight);
-    
-    SVSDKWidgetLayout *phoneLayout = SVSDKLoginManager.phoneWidgetLayout;
-    NSLog(@"phoneLayout: %f - %f - %f -%f", phoneLayout.widgetLeft, phoneLayout.widgetTop, phoneLayout.widgetWidth, phoneLayout.widgetHeight);
-    
-    SVSDKWidgetLayout *loginLayout = SVSDKLoginManager.loginWidgetLayout;
-    NSLog(@"loginLayout: %f - %f - %f -%f", loginLayout.widgetLeft, loginLayout.widgetTop, loginLayout.widgetWidth, loginLayout.widgetHeight);
-    
-    SVSDKWidgetLayout *otherLayout = SVSDKLoginManager.otherLoginWidgetLayout;
-    NSLog(@"otherLayout: %f - %f - %f -%f", otherLayout.widgetLeft, otherLayout.widgetTop, otherLayout.widgetWidth, otherLayout.widgetHeight);
-    
-    SVSDKWidgetLayout *privacyLayout = SVSDKLoginManager.privacyWidgetLayout;
-    NSLog(@"privacyLayout: %f - %f - %f -%f", privacyLayout.widgetLeft, privacyLayout.widgetTop, privacyLayout.widgetWidth, privacyLayout.widgetHeight);
-    
-    SVSDKWidgetLayout *sloganLayout = SVSDKLoginManager.sloganWidgetLayout;
-    NSLog(@"sloganLayout: %f - %f - %f -%f", sloganLayout.widgetLeft, sloganLayout.widgetTop, sloganLayout.widgetWidth, sloganLayout.widgetHeight);
-    
-    
-    {
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(logoLayout.widgetLeft, logoLayout.widgetTop, logoLayout.widgetWidth, logoLayout.widgetHeight)];
-        view.backgroundColor = [UIColor greenColor];
-        [customView addSubview:view];
-    }
-    
-    {
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(leftLayout.widgetLeft, leftLayout.widgetTop, leftLayout.widgetWidth, leftLayout.widgetHeight)];
-        view.backgroundColor = [UIColor greenColor];
-        [customView addSubview:view];
-    }
-    
-    {
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(rightLayout.widgetLeft, rightLayout.widgetTop, rightLayout.widgetWidth, rightLayout.widgetHeight)];
-        view.backgroundColor = [UIColor greenColor];
-        [customView addSubview:view];
-    }
-    
-    {
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(phoneLayout.widgetLeft, phoneLayout.widgetTop, phoneLayout.widgetWidth, phoneLayout.widgetHeight)];
-        view.backgroundColor = [UIColor greenColor];
-        [customView addSubview:view];
-    }
-    
-    {
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(loginLayout.widgetLeft, loginLayout.widgetTop, loginLayout.widgetWidth, loginLayout.widgetHeight)];
-        view.backgroundColor = [UIColor greenColor];
-        [customView addSubview:view];
-    }
-    
-    {
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(privacyLayout.widgetLeft, privacyLayout.widgetTop, privacyLayout.widgetWidth, privacyLayout.widgetHeight)];
-        view.backgroundColor = [UIColor greenColor];
-        [customView addSubview:view];
-    }
-    
-    {
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(sloganLayout.widgetLeft, sloganLayout.widgetTop, sloganLayout.widgetWidth, sloganLayout.widgetHeight)];
-        view.backgroundColor = [UIColor greenColor];
-        [customView addSubview:view];
-    }
-}
-
 - (void)clickAction {
     NSLog(@"自定义事件");
     [self weixinLoginAction];
@@ -1074,7 +928,7 @@ static BOOL resetPushModel = NO;
     
     //*******复选框*******
     // 隐私条款check框默认状态
-    model.checkDefaultState = @(YES);
+    model.checkDefaultState = @(NO);
     // 隐私条款check框是否隐藏
     model.checkHidden = @(NO);
     
@@ -1351,21 +1205,24 @@ static BOOL resetPushModel = NO;
 
 - (void)weixinLoginAction
 {
-    
-    
+//
+//    UIViewController *vc = [SVSDKLoginManager defaultManager].secLoginViewController;
+//
+//    SVDSuccessViewController *success = [SVDSuccessViewController new];
+//    [vc.navigationController pushViewController:success animated:YES];
     [SVSDKLoginManager showLoadingViewOnLoginVc];
-    
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        
+
         //自定义loading,注意回收
         [SVProgressHUD dismiss];
         [SVSDKLoginManager hiddenLoadingViewOnLoginVc];
-        
+
         //关闭登录视图
         [SecVerify finishLoginVc:^{
             NSLog(@"微信登录");
         }];
-        
+
         self.isLogining = NO;
     });
     
@@ -1396,7 +1253,7 @@ static BOOL resetPushModel = NO;
     
     UILabel *verifyLabel = [[UILabel alloc] init];
     verifyLabel.textAlignment = NSTextAlignmentCenter;
-    verifyLabel.text = @"开始验证!";
+    verifyLabel.text = [NSString stringWithFormat:@"开始验证! v%@", [SecVerify sdkVersion]];
     verifyLabel.font = [UIFont fontWithName:@"PingFangSC-Semibold" size:22.f]? : [UIFont systemFontOfSize:22.f];
     verifyLabel.textColor = [UIColor colorWithRed:47/255.0 green:51/255.0 blue:51/255.0 alpha:1/1.0];
     
