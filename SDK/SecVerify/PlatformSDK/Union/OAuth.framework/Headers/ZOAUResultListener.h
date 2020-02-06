@@ -9,9 +9,8 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, ServiceType) {
-    ServiceTypeNil,//标识位
-    ServiceTypeMobile,//免密登录
-    ServiceTypeOAuth,//号码认证
+    ServiceTypeMobile,
+    ServiceTypeOAuth,
 };
 
 

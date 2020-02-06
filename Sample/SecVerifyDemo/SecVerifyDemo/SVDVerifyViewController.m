@@ -183,7 +183,9 @@ static BOOL resetPushModel = NO;
 
 - (void)leftAction
 {
-    [SecVerify finishLoginVc:nil];
+    [SecVerify finishLoginVc:^{
+        NSLog(@"手动关闭");
+    }];
     self.isLogining = NO;
 }
 
@@ -403,8 +405,8 @@ static BOOL resetPushModel = NO;
  
     //自定义loading视图
     [model setLoadingView:^(UIView *contentView) {
-        [SVProgressHUD setContainerView:contentView];
-        [SVProgressHUD showWithStatus:@"数据加载中..."];
+//        [SVProgressHUD setContainerView:contentView];
+//        [SVProgressHUD showWithStatus:@"数据加载中..."];
         
     }];
     
@@ -762,8 +764,6 @@ static BOOL resetPushModel = NO;
                             NSLog(@"服务器验证失败");
                             if(showRealError)
                             {
-                                
-                                
                                 [weakSelf showAlert:error.userInfo[@"description"] message:[NSString stringWithFormat:@"%ld", (long)error.code]];
                             }
                             else

@@ -4,86 +4,71 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Headers/ZOAUCustomModel.h</key>
-		<data>
-		W5zawlNSg/9RpKfgbLl8ZDZFaVs=
-		</data>
 		<key>Headers/ZOAUResultListener.h</key>
 		<data>
-		3OzoL3JMnpuXT4x4ZF2YrDVgIaQ=
+		1+hIfUWPgBKBJwG90sCOlea7q3s=
 		</data>
 		<key>Headers/ZOAuthManager.h</key>
 		<data>
-		ltbrA9zMHWmAAeSFZTCMq8dI8ko=
+		+XxfsGXJEnDC5YOQUE+DaiXFjUE=
 		</data>
 		<key>Headers/ZTOAuthManager.h</key>
 		<data>
-		GpphIX21tbpC8rS6JGinDXZ3PmU=
+		5ZYHLHRkwGx7LPvyWs79gjiOMwY=
 		</data>
 		<key>Headers/ZUOAuthManager.h</key>
 		<data>
-		dvaYlPYe74J8s2bzp1dFTPi0K1w=
+		itK0oE5MxeUG8YgEjd4oq6aA+Go=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		ku/R/6bAz3FVrEi7fo8YqoNwPJI=
+		1WSlBzvWajV2eGSpWb3Wnvwf6T0=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Headers/ZOAUCustomModel.h</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			W5zawlNSg/9RpKfgbLl8ZDZFaVs=
-			</data>
-			<key>hash2</key>
-			<data>
-			a7z1daybcwZwwBjr9J3K5CyktYBE72n40qXFKGU3Qws=
-			</data>
-		</dict>
 		<key>Headers/ZOAUResultListener.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			3OzoL3JMnpuXT4x4ZF2YrDVgIaQ=
+			1+hIfUWPgBKBJwG90sCOlea7q3s=
 			</data>
 			<key>hash2</key>
 			<data>
-			KIhKScLjR5TmA49Dsj1EYx+U5vZPhHIBt5osV0nbGs0=
+			bNJsHw6b6tRCw7v7+mX2PGaHstgju4mHVwefLW/lyEk=
 			</data>
 		</dict>
 		<key>Headers/ZOAuthManager.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			ltbrA9zMHWmAAeSFZTCMq8dI8ko=
+			+XxfsGXJEnDC5YOQUE+DaiXFjUE=
 			</data>
 			<key>hash2</key>
 			<data>
-			BgoMXUJGePQS+7T8ApgZMRVAVo1X9ANHJ6JMH/EtU+Y=
+			2IMPSGwzkqq9TEiNWSdsww0zYi3nGdU6ZuV3k/vtAzQ=
 			</data>
 		</dict>
 		<key>Headers/ZTOAuthManager.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			GpphIX21tbpC8rS6JGinDXZ3PmU=
+			5ZYHLHRkwGx7LPvyWs79gjiOMwY=
 			</data>
 			<key>hash2</key>
 			<data>
-			A42tEvCvPT2Lk3k0/67rFQGm2WvGpTRMAOhzfONrCHI=
+			Hz7+WtQ733mTI7TNiSIiRjwI+GgwxhCZi4fCPIFJ0Ls=
 			</data>
 		</dict>
 		<key>Headers/ZUOAuthManager.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			dvaYlPYe74J8s2bzp1dFTPi0K1w=
+			itK0oE5MxeUG8YgEjd4oq6aA+Go=
 			</data>
 			<key>hash2</key>
 			<data>
-			/D4ee+VtOg+dI4daUeJSvkCHLWm+sBhDsLRVw9Mo9sI=
+			IrRcL94I3MvsAMNS2uIBLgOfqTr1SK8KmbF/60Ju/wk=
 			</data>
 		</dict>
 	</dict>

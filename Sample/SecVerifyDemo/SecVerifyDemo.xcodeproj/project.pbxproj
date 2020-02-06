@@ -20,14 +20,6 @@
 		9199DDDC231CBC7B00B8F428 /* SVDSerive.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199DDD9231CBC7A00B8F428 /* SVDSerive.m */; };
 		9199DDE3231CBED900B8F428 /* SVDSuccessViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199DDE1231CBED900B8F428 /* SVDSuccessViewController.m */; };
 		9199DDE4231CBED900B8F428 /* SVDSuccessViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199DDE1231CBED900B8F428 /* SVDSuccessViewController.m */; };
-		91A2D97523ACAC1300C211EF /* SecVerify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91A2D96823ACAC1200C211EF /* SecVerify.framework */; };
-		91A2D97623ACAC1300C211EF /* EAccountHYSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91A2D96B23ACAC1200C211EF /* EAccountHYSDK.framework */; };
-		91A2D97723ACAC1300C211EF /* EAccountOpenPageResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 91A2D96C23ACAC1200C211EF /* EAccountOpenPageResource.bundle */; };
-		91A2D97823ACAC1300C211EF /* TYRZResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 91A2D96E23ACAC1200C211EF /* TYRZResource.bundle */; };
-		91A2D97923ACAC1300C211EF /* TYRZSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91A2D96F23ACAC1200C211EF /* TYRZSDK.framework */; };
-		91A2D97A23ACAC1300C211EF /* OAuth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91A2D97123ACAC1200C211EF /* OAuth.framework */; };
-		91A2D97B23ACAC1300C211EF /* SecVerify.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 91A2D97223ACAC1200C211EF /* SecVerify.bundle */; };
-		91A2D97C23ACAC1300C211EF /* MOBFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91A2D97423ACAC1200C211EF /* MOBFoundation.framework */; };
 		91CDB9F1231CEE39001D3D48 /* Bugly.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91CDB9B4231CEE39001D3D48 /* Bugly.framework */; };
 		91CDB9F2231CEE39001D3D48 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 91CDB9B6231CEE39001D3D48 /* FLAnimatedImage.m */; };
 		91CDB9F3231CEE39001D3D48 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 91CDB9B7231CEE39001D3D48 /* FLAnimatedImageView.m */; };
@@ -54,6 +46,14 @@
 		91CDBA0A231CEE39001D3D48 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 91CDB9EE231CEE39001D3D48 /* AFSecurityPolicy.m */; };
 		91CDBAA2231CFC2F001D3D48 /* SVDVerifyNaviationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 91CDBAA1231CFC2F001D3D48 /* SVDVerifyNaviationViewController.m */; };
 		91CDBAA4231CFCCE001D3D48 /* GIF.gif in Resources */ = {isa = PBXBuildFile; fileRef = 91CDBAA3231CFCCE001D3D48 /* GIF.gif */; };
+		B145211D23E9235400D3259A /* SecVerify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211023E9235400D3259A /* SecVerify.framework */; };
+		B145211E23E9235400D3259A /* EAccountHYSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211323E9235400D3259A /* EAccountHYSDK.framework */; };
+		B145211F23E9235400D3259A /* EAccountOpenPageResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B145211423E9235400D3259A /* EAccountOpenPageResource.bundle */; };
+		B145212023E9235400D3259A /* TYRZResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B145211623E9235400D3259A /* TYRZResource.bundle */; };
+		B145212123E9235400D3259A /* TYRZSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211723E9235400D3259A /* TYRZSDK.framework */; };
+		B145212223E9235400D3259A /* OAuth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211923E9235400D3259A /* OAuth.framework */; };
+		B145212323E9235400D3259A /* SecVerify.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B145211A23E9235400D3259A /* SecVerify.bundle */; };
+		B145212423E9235400D3259A /* MOBFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211C23E9235400D3259A /* MOBFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,14 +87,6 @@
 		9199DDDD231CBC8A00B8F428 /* SVDPrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVDPrefixHeader.pch; sourceTree = "<group>"; };
 		9199DDE1231CBED900B8F428 /* SVDSuccessViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVDSuccessViewController.m; sourceTree = "<group>"; };
 		9199DDE2231CBED900B8F428 /* SVDSuccessViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVDSuccessViewController.h; sourceTree = "<group>"; };
-		91A2D96823ACAC1200C211EF /* SecVerify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SecVerify.framework; sourceTree = "<group>"; };
-		91A2D96B23ACAC1200C211EF /* EAccountHYSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EAccountHYSDK.framework; sourceTree = "<group>"; };
-		91A2D96C23ACAC1200C211EF /* EAccountOpenPageResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = EAccountOpenPageResource.bundle; sourceTree = "<group>"; };
-		91A2D96E23ACAC1200C211EF /* TYRZResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TYRZResource.bundle; sourceTree = "<group>"; };
-		91A2D96F23ACAC1200C211EF /* TYRZSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TYRZSDK.framework; sourceTree = "<group>"; };
-		91A2D97123ACAC1200C211EF /* OAuth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OAuth.framework; sourceTree = "<group>"; };
-		91A2D97223ACAC1200C211EF /* SecVerify.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SecVerify.bundle; sourceTree = "<group>"; };
-		91A2D97423ACAC1200C211EF /* MOBFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MOBFoundation.framework; sourceTree = "<group>"; };
 		91CDB9B4231CEE39001D3D48 /* Bugly.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bugly.framework; sourceTree = "<group>"; };
 		91CDB9B6231CEE39001D3D48 /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
 		91CDB9B7231CEE39001D3D48 /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImageView.m; sourceTree = "<group>"; };
@@ -156,6 +148,14 @@
 		91CDBAA3231CFCCE001D3D48 /* GIF.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = GIF.gif; sourceTree = "<group>"; };
 		B10AC17123B4B3BC001DB377 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B10AC17323B4B495001DB377 /* libXCTestBundleInject.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libXCTestBundleInject.dylib; path = Platforms/iPhoneOS.platform/Developer/usr/lib/libXCTestBundleInject.dylib; sourceTree = DEVELOPER_DIR; };
+		B145211023E9235400D3259A /* SecVerify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SecVerify.framework; sourceTree = "<group>"; };
+		B145211323E9235400D3259A /* EAccountHYSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EAccountHYSDK.framework; sourceTree = "<group>"; };
+		B145211423E9235400D3259A /* EAccountOpenPageResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = EAccountOpenPageResource.bundle; sourceTree = "<group>"; };
+		B145211623E9235400D3259A /* TYRZResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TYRZResource.bundle; sourceTree = "<group>"; };
+		B145211723E9235400D3259A /* TYRZSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TYRZSDK.framework; sourceTree = "<group>"; };
+		B145211923E9235400D3259A /* OAuth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OAuth.framework; sourceTree = "<group>"; };
+		B145211A23E9235400D3259A /* SecVerify.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SecVerify.bundle; sourceTree = "<group>"; };
+		B145211C23E9235400D3259A /* MOBFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MOBFoundation.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,14 +163,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91A2D97623ACAC1300C211EF /* EAccountHYSDK.framework in Frameworks */,
+				B145211E23E9235400D3259A /* EAccountHYSDK.framework in Frameworks */,
 				91CDB9F1231CEE39001D3D48 /* Bugly.framework in Frameworks */,
 				9199DDD8231CBB4900B8F428 /* SystemConfiguration.framework in Frameworks */,
 				9199DDD6231CBB2200B8F428 /* libc++.tbd in Frameworks */,
-				91A2D97A23ACAC1300C211EF /* OAuth.framework in Frameworks */,
-				91A2D97523ACAC1300C211EF /* SecVerify.framework in Frameworks */,
-				91A2D97C23ACAC1300C211EF /* MOBFoundation.framework in Frameworks */,
-				91A2D97923ACAC1300C211EF /* TYRZSDK.framework in Frameworks */,
+				B145212223E9235400D3259A /* OAuth.framework in Frameworks */,
+				B145211D23E9235400D3259A /* SecVerify.framework in Frameworks */,
+				B145212423E9235400D3259A /* MOBFoundation.framework in Frameworks */,
+				B145212123E9235400D3259A /* TYRZSDK.framework in Frameworks */,
 				9199DDD4231CB72D00B8F428 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -207,7 +207,7 @@
 		9199DD07231CB4D900B8F428 /* SecVerifyDemo */ = {
 			isa = PBXGroup;
 			children = (
-				91A2D96623ACAC1200C211EF /* SDK */,
+				B145210E23E9235400D3259A /* SDK */,
 				9199DD08231CB4D900B8F428 /* AppDelegate.h */,
 				9199DD09231CB4D900B8F428 /* AppDelegate.m */,
 				9199DD0B231CB4D900B8F428 /* SVDVerifyViewController.h */,
@@ -244,69 +244,6 @@
 				9199DDD3231CB72D00B8F428 /* libz.tbd */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		91A2D96623ACAC1200C211EF /* SDK */ = {
-			isa = PBXGroup;
-			children = (
-				91A2D96723ACAC1200C211EF /* SecVerify */,
-				91A2D97323ACAC1200C211EF /* Required */,
-			);
-			path = SDK;
-			sourceTree = "<group>";
-		};
-		91A2D96723ACAC1200C211EF /* SecVerify */ = {
-			isa = PBXGroup;
-			children = (
-				91A2D96823ACAC1200C211EF /* SecVerify.framework */,
-				91A2D96923ACAC1200C211EF /* PlatformSDK */,
-				91A2D97223ACAC1200C211EF /* SecVerify.bundle */,
-			);
-			path = SecVerify;
-			sourceTree = "<group>";
-		};
-		91A2D96923ACAC1200C211EF /* PlatformSDK */ = {
-			isa = PBXGroup;
-			children = (
-				91A2D96A23ACAC1200C211EF /* Telecom */,
-				91A2D96D23ACAC1200C211EF /* Mobile */,
-				91A2D97023ACAC1200C211EF /* Union */,
-			);
-			path = PlatformSDK;
-			sourceTree = "<group>";
-		};
-		91A2D96A23ACAC1200C211EF /* Telecom */ = {
-			isa = PBXGroup;
-			children = (
-				91A2D96B23ACAC1200C211EF /* EAccountHYSDK.framework */,
-				91A2D96C23ACAC1200C211EF /* EAccountOpenPageResource.bundle */,
-			);
-			path = Telecom;
-			sourceTree = "<group>";
-		};
-		91A2D96D23ACAC1200C211EF /* Mobile */ = {
-			isa = PBXGroup;
-			children = (
-				91A2D96E23ACAC1200C211EF /* TYRZResource.bundle */,
-				91A2D96F23ACAC1200C211EF /* TYRZSDK.framework */,
-			);
-			path = Mobile;
-			sourceTree = "<group>";
-		};
-		91A2D97023ACAC1200C211EF /* Union */ = {
-			isa = PBXGroup;
-			children = (
-				91A2D97123ACAC1200C211EF /* OAuth.framework */,
-			);
-			path = Union;
-			sourceTree = "<group>";
-		};
-		91A2D97323ACAC1200C211EF /* Required */ = {
-			isa = PBXGroup;
-			children = (
-				91A2D97423ACAC1200C211EF /* MOBFoundation.framework */,
-			);
-			path = Required;
 			sourceTree = "<group>";
 		};
 		91CDB9B3231CEE39001D3D48 /* ThirdLibs */ = {
@@ -424,6 +361,70 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		B145210E23E9235400D3259A /* SDK */ = {
+			isa = PBXGroup;
+			children = (
+				B145210F23E9235400D3259A /* SecVerify */,
+				B145211B23E9235400D3259A /* Required */,
+			);
+			name = SDK;
+			path = ../../../SDK;
+			sourceTree = "<group>";
+		};
+		B145210F23E9235400D3259A /* SecVerify */ = {
+			isa = PBXGroup;
+			children = (
+				B145211023E9235400D3259A /* SecVerify.framework */,
+				B145211123E9235400D3259A /* PlatformSDK */,
+				B145211A23E9235400D3259A /* SecVerify.bundle */,
+			);
+			path = SecVerify;
+			sourceTree = "<group>";
+		};
+		B145211123E9235400D3259A /* PlatformSDK */ = {
+			isa = PBXGroup;
+			children = (
+				B145211223E9235400D3259A /* Telecom */,
+				B145211523E9235400D3259A /* Mobile */,
+				B145211823E9235400D3259A /* Union */,
+			);
+			path = PlatformSDK;
+			sourceTree = "<group>";
+		};
+		B145211223E9235400D3259A /* Telecom */ = {
+			isa = PBXGroup;
+			children = (
+				B145211323E9235400D3259A /* EAccountHYSDK.framework */,
+				B145211423E9235400D3259A /* EAccountOpenPageResource.bundle */,
+			);
+			path = Telecom;
+			sourceTree = "<group>";
+		};
+		B145211523E9235400D3259A /* Mobile */ = {
+			isa = PBXGroup;
+			children = (
+				B145211623E9235400D3259A /* TYRZResource.bundle */,
+				B145211723E9235400D3259A /* TYRZSDK.framework */,
+			);
+			path = Mobile;
+			sourceTree = "<group>";
+		};
+		B145211823E9235400D3259A /* Union */ = {
+			isa = PBXGroup;
+			children = (
+				B145211923E9235400D3259A /* OAuth.framework */,
+			);
+			path = Union;
+			sourceTree = "<group>";
+		};
+		B145211B23E9235400D3259A /* Required */ = {
+			isa = PBXGroup;
+			children = (
+				B145211C23E9235400D3259A /* MOBFoundation.framework */,
+			);
+			path = Required;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -504,12 +505,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91A2D97723ACAC1300C211EF /* EAccountOpenPageResource.bundle in Resources */,
-				91A2D97823ACAC1300C211EF /* TYRZResource.bundle in Resources */,
-				91A2D97B23ACAC1300C211EF /* SecVerify.bundle in Resources */,
 				9199DD15231CB4DC00B8F428 /* LaunchScreen.storyboard in Resources */,
+				B145211F23E9235400D3259A /* EAccountOpenPageResource.bundle in Resources */,
+				B145212323E9235400D3259A /* SecVerify.bundle in Resources */,
 				91CDBAA4231CFCCE001D3D48 /* GIF.gif in Resources */,
 				9199DD12231CB4DC00B8F428 /* Assets.xcassets in Resources */,
+				B145212023E9235400D3259A /* TYRZResource.bundle in Resources */,
 				91CDBA04231CEE39001D3D48 /* SVProgressHUD.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -706,17 +707,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20007;
+				CURRENT_PROJECT_VERSION = 20008;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DEVELOPMENT_TEAM = LW5266U92D;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Telecom",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Mobile",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Union",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/Required",
+					"$(PROJECT_DIR)/../../SDK/SecVerify",
+					"$(PROJECT_DIR)/../../SDK/SecVerify/PlatformSDK/Telecom",
+					"$(PROJECT_DIR)/../../SDK/SecVerify/PlatformSDK/Mobile",
+					"$(PROJECT_DIR)/../../SDK/SecVerify/PlatformSDK/Union",
+					"$(PROJECT_DIR)/../../SDK/Required",
 					"$(PROJECT_DIR)/SecVerifyDemo/ThirdLibs",
 					"$(inherited)",
 				);
@@ -727,6 +728,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0.8;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mob.product.SecVerifyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -741,15 +743,15 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20007;
+				CURRENT_PROJECT_VERSION = 20008;
 				DEVELOPMENT_TEAM = LW5266U92D;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Telecom",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Mobile",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Union",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/Required",
+					"$(PROJECT_DIR)/../../SDK/SecVerify",
+					"$(PROJECT_DIR)/../../SDK/SecVerify/PlatformSDK/Telecom",
+					"$(PROJECT_DIR)/../../SDK/SecVerify/PlatformSDK/Mobile",
+					"$(PROJECT_DIR)/../../SDK/SecVerify/PlatformSDK/Union",
+					"$(PROJECT_DIR)/../../SDK/Required",
 					"$(PROJECT_DIR)/SecVerifyDemo/ThirdLibs",
 					"$(inherited)",
 				);
@@ -760,6 +762,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0.8;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mob.product.SecVerifyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
