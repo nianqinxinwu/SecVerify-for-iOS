@@ -7,17 +7,13 @@
 //
 
 #import "SVDVerifyViewController.h"
-
 #import "SVDSuccessViewController.h"
 #import "SVDSerive.h"
-
 #import "FLAnimatedImage.h"
-
 #import <SecVerify/SecVerify.h>
-
 #import "Masonry.h"
-
 #import "SVProgressHUD.h"
+#import "SVDPolicyManager.h"
 
 //是否重置model 属性
 static BOOL resetModel = NO;
@@ -173,6 +169,11 @@ static BOOL resetPushModel = NO;
 {
     resetFuModel = !resetFuModel;
     btn.selected = !btn.selected;
+}
+
+- (void)qingBtnClicked:(UIButton *)qingBtn {
+    [[SVDPolicyManager defaultManager] clearCache];
+    [self showAlert:@"提示" message:@"缓存清理完成, 请重启App!"];
 }
 
 - (void)resetPushAction:(UIButton *)btn {
@@ -1326,6 +1327,16 @@ static BOOL resetPushModel = NO;
     [fuBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
     [fuBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
     
+    UIButton *qingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [qingBtn setTitle:@"清" forState:UIControlStateNormal];
+    [qingBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    qingBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
+    [qingBtn addTarget:self action:@selector(qingBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [qingBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
+    [qingBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    
+    [self.view addSubview:qingBtn];
+    
     [self.view addSubview:fuBtn];
     
     [self.view addSubview:verifyLabel];
@@ -1395,6 +1406,12 @@ static BOOL resetPushModel = NO;
         make.width.height.mas_equalTo(30);
         make.left.mas_equalTo(0);
         make.top.mas_equalTo(200);
+    }];
+    
+    [qingBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(30);
+        make.left.mas_equalTo(0);
+        make.top.mas_equalTo(250);
     }];
     
     [verifyLabel mas_makeConstraints:^(MASConstraintMaker *make) {

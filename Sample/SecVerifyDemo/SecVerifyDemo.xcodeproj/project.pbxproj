@@ -46,6 +46,8 @@
 		91CDBA0A231CEE39001D3D48 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 91CDB9EE231CEE39001D3D48 /* AFSecurityPolicy.m */; };
 		91CDBAA2231CFC2F001D3D48 /* SVDVerifyNaviationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 91CDBAA1231CFC2F001D3D48 /* SVDVerifyNaviationViewController.m */; };
 		91CDBAA4231CFCCE001D3D48 /* GIF.gif in Resources */ = {isa = PBXBuildFile; fileRef = 91CDBAA3231CFCCE001D3D48 /* GIF.gif */; };
+		B10610F123ED59B900BECF0A /* SVDPolicyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B10610F023ED59B900BECF0A /* SVDPolicyManager.m */; };
+		B10610F423ED5C3400BECF0A /* SVDPolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B10610F323ED5C3400BECF0A /* SVDPolicyViewController.m */; };
 		B145211D23E9235400D3259A /* SecVerify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211023E9235400D3259A /* SecVerify.framework */; };
 		B145211E23E9235400D3259A /* EAccountHYSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211323E9235400D3259A /* EAccountHYSDK.framework */; };
 		B145211F23E9235400D3259A /* EAccountOpenPageResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B145211423E9235400D3259A /* EAccountOpenPageResource.bundle */; };
@@ -53,7 +55,8 @@
 		B145212123E9235400D3259A /* TYRZSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211723E9235400D3259A /* TYRZSDK.framework */; };
 		B145212223E9235400D3259A /* OAuth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211923E9235400D3259A /* OAuth.framework */; };
 		B145212323E9235400D3259A /* SecVerify.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B145211A23E9235400D3259A /* SecVerify.bundle */; };
-		B145212423E9235400D3259A /* MOBFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B145211C23E9235400D3259A /* MOBFoundation.framework */; };
+		B167829323ED7EC2009BE319 /* SVDPolicyWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B167829223ED7EC2009BE319 /* SVDPolicyWebViewController.m */; };
+		B1A6A9BC23F6783F003C0FAE /* MOBFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1A6A9BB23F6783F003C0FAE /* MOBFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -146,6 +149,10 @@
 		91CDBAA0231CFC2F001D3D48 /* SVDVerifyNaviationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVDVerifyNaviationViewController.h; sourceTree = "<group>"; };
 		91CDBAA1231CFC2F001D3D48 /* SVDVerifyNaviationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVDVerifyNaviationViewController.m; sourceTree = "<group>"; };
 		91CDBAA3231CFCCE001D3D48 /* GIF.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = GIF.gif; sourceTree = "<group>"; };
+		B10610EF23ED59B900BECF0A /* SVDPolicyManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVDPolicyManager.h; sourceTree = "<group>"; };
+		B10610F023ED59B900BECF0A /* SVDPolicyManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVDPolicyManager.m; sourceTree = "<group>"; };
+		B10610F223ED5C3400BECF0A /* SVDPolicyViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVDPolicyViewController.h; sourceTree = "<group>"; };
+		B10610F323ED5C3400BECF0A /* SVDPolicyViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVDPolicyViewController.m; sourceTree = "<group>"; };
 		B10AC17123B4B3BC001DB377 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B10AC17323B4B495001DB377 /* libXCTestBundleInject.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libXCTestBundleInject.dylib; path = Platforms/iPhoneOS.platform/Developer/usr/lib/libXCTestBundleInject.dylib; sourceTree = DEVELOPER_DIR; };
 		B145211023E9235400D3259A /* SecVerify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SecVerify.framework; sourceTree = "<group>"; };
@@ -155,7 +162,9 @@
 		B145211723E9235400D3259A /* TYRZSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TYRZSDK.framework; sourceTree = "<group>"; };
 		B145211923E9235400D3259A /* OAuth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OAuth.framework; sourceTree = "<group>"; };
 		B145211A23E9235400D3259A /* SecVerify.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SecVerify.bundle; sourceTree = "<group>"; };
-		B145211C23E9235400D3259A /* MOBFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MOBFoundation.framework; sourceTree = "<group>"; };
+		B167829123ED7EC2009BE319 /* SVDPolicyWebViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVDPolicyWebViewController.h; sourceTree = "<group>"; };
+		B167829223ED7EC2009BE319 /* SVDPolicyWebViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVDPolicyWebViewController.m; sourceTree = "<group>"; };
+		B1A6A9BB23F6783F003C0FAE /* MOBFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MOBFoundation.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,7 +178,7 @@
 				9199DDD6231CBB2200B8F428 /* libc++.tbd in Frameworks */,
 				B145212223E9235400D3259A /* OAuth.framework in Frameworks */,
 				B145211D23E9235400D3259A /* SecVerify.framework in Frameworks */,
-				B145212423E9235400D3259A /* MOBFoundation.framework in Frameworks */,
+				B1A6A9BC23F6783F003C0FAE /* MOBFoundation.framework in Frameworks */,
 				B145212123E9235400D3259A /* TYRZSDK.framework in Frameworks */,
 				9199DDD4231CB72D00B8F428 /* libz.tbd in Frameworks */,
 			);
@@ -219,6 +228,7 @@
 				9199DDDA231CBC7B00B8F428 /* SVDSerive.h */,
 				9199DDD9231CBC7A00B8F428 /* SVDSerive.m */,
 				9199DDDD231CBC8A00B8F428 /* SVDPrefixHeader.pch */,
+				B10610EE23ED598400BECF0A /* SVDPolicy */,
 				91CDB9B3231CEE39001D3D48 /* ThirdLibs */,
 				B1147A1A23B5B20300C94854 /* Supporting Files */,
 			);
@@ -349,6 +359,19 @@
 			path = AFNetworking;
 			sourceTree = "<group>";
 		};
+		B10610EE23ED598400BECF0A /* SVDPolicy */ = {
+			isa = PBXGroup;
+			children = (
+				B10610EF23ED59B900BECF0A /* SVDPolicyManager.h */,
+				B10610F023ED59B900BECF0A /* SVDPolicyManager.m */,
+				B10610F223ED5C3400BECF0A /* SVDPolicyViewController.h */,
+				B10610F323ED5C3400BECF0A /* SVDPolicyViewController.m */,
+				B167829123ED7EC2009BE319 /* SVDPolicyWebViewController.h */,
+				B167829223ED7EC2009BE319 /* SVDPolicyWebViewController.m */,
+			);
+			path = SVDPolicy;
+			sourceTree = "<group>";
+		};
 		B1147A1A23B5B20300C94854 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -420,7 +443,7 @@
 		B145211B23E9235400D3259A /* Required */ = {
 			isa = PBXGroup;
 			children = (
-				B145211C23E9235400D3259A /* MOBFoundation.framework */,
+				B1A6A9BB23F6783F003C0FAE /* MOBFoundation.framework */,
 			);
 			path = Required;
 			sourceTree = "<group>";
@@ -539,6 +562,7 @@
 				91CDB9FE231CEE39001D3D48 /* MASViewAttribute.m in Sources */,
 				91CDB9F2231CEE39001D3D48 /* FLAnimatedImage.m in Sources */,
 				91CDBA07231CEE39001D3D48 /* AFURLSessionManager.m in Sources */,
+				B10610F423ED5C3400BECF0A /* SVDPolicyViewController.m in Sources */,
 				91CDBA0A231CEE39001D3D48 /* AFSecurityPolicy.m in Sources */,
 				91CDB9F9231CEE39001D3D48 /* MASLayoutConstraint.m in Sources */,
 				91CDB9FB231CEE39001D3D48 /* View+MASAdditions.m in Sources */,
@@ -549,6 +573,8 @@
 				91CDBA06231CEE39001D3D48 /* AFHTTPSessionManager.m in Sources */,
 				9199DD18231CB4DC00B8F428 /* main.m in Sources */,
 				91CDB9F6231CEE39001D3D48 /* ViewController+MASAdditions.m in Sources */,
+				B167829323ED7EC2009BE319 /* SVDPolicyWebViewController.m in Sources */,
+				B10610F123ED59B900BECF0A /* SVDPolicyManager.m in Sources */,
 				91CDBA08231CEE39001D3D48 /* AFURLRequestSerialization.m in Sources */,
 				9199DDDB231CBC7B00B8F428 /* SVDSerive.m in Sources */,
 				9199DD0A231CB4D900B8F428 /* AppDelegate.m in Sources */,
@@ -707,7 +733,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20008;
+				CURRENT_PROJECT_VERSION = 20009;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DEVELOPMENT_TEAM = LW5266U92D;
@@ -724,11 +750,12 @@
 				GCC_PREFIX_HEADER = SecVerifyDemo/SVDPrefixHeader.pch;
 				INFOPLIST_FILE = "SecVerifyDemo/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_GENERATE_MAP_FILE = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.8;
+				MARKETING_VERSION = 2.0.9;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mob.product.SecVerifyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -743,7 +770,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20008;
+				CURRENT_PROJECT_VERSION = 20009;
 				DEVELOPMENT_TEAM = LW5266U92D;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -758,11 +785,12 @@
 				GCC_PREFIX_HEADER = SecVerifyDemo/SVDPrefixHeader.pch;
 				INFOPLIST_FILE = "SecVerifyDemo/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_GENERATE_MAP_FILE = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.8;
+				MARKETING_VERSION = 2.0.9;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mob.product.SecVerifyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

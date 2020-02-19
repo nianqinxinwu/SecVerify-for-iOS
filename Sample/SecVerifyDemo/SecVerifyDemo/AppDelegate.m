@@ -12,6 +12,7 @@
 #import "SVDVerifyViewController.h"
 #import "SVDVerifyNaviationViewController.h"
 #import <MOBFoundation/MOBFoundation.h>
+#import "SVDPolicyManager.h"
 
 @interface AppDelegate ()
 
@@ -33,6 +34,10 @@
 //    [MobSDK registerAppKey:@"moba6b6c6d6" appSecret:@"b89d2427a3bc7ad1aea1e1e8c1d36bf3"];
     
     [self.window makeKeyAndVisible];
+    
+    // 展示隐私协议
+    [[SVDPolicyManager defaultManager] show];
+    
     return YES;
 }
 
