@@ -24,7 +24,7 @@
     return instance;
 }
 
-- (void)phoneLogin:(NSDictionary *)result completion:(void (^) (NSError *error, NSString *phone))handler
+- (void)verifyGetPhoneNumberWith:(NSDictionary *)result completion:(void (^) (NSError *error, NSString *phone))handler
 {
     NSDictionary *params = nil;
     if ([result isKindOfClass:[NSDictionary class]])
@@ -175,6 +175,5 @@
     
    
 }
-
 
 @end

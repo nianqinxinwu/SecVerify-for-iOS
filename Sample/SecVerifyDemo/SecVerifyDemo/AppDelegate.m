@@ -14,6 +14,8 @@
 #import <MOBFoundation/MOBFoundation.h>
 #import "SVDPolicyManager.h"
 
+#import <SecVerify/SecVerify.h>
+
 @interface AppDelegate ()
 
 @end
@@ -37,6 +39,9 @@
     
     // 展示隐私协议
     [[SVDPolicyManager defaultManager] show];
+    
+    // 开启调试模式
+    [SecVerify setDebug:YES];
     
     return YES;
 }

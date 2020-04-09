@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E01DE8424247F6C0073CFB3 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E01DE8324247F6C0073CFB3 /* CoreTelephony.framework */; };
 		9199DD0A231CB4D900B8F428 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199DD09231CB4D900B8F428 /* AppDelegate.m */; };
 		9199DD0D231CB4D900B8F428 /* SVDVerifyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199DD0C231CB4D900B8F428 /* SVDVerifyViewController.m */; };
 		9199DD12231CB4DC00B8F428 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9199DD11231CB4DC00B8F428 /* Assets.xcassets */; };
@@ -70,6 +71,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5E01DE8324247F6C0073CFB3 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		9199DD05231CB4D900B8F428 /* SecVerifyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SecVerifyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9199DD08231CB4D900B8F428 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9199DD09231CB4D900B8F428 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -172,15 +174,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E01DE8424247F6C0073CFB3 /* CoreTelephony.framework in Frameworks */,
 				B145211E23E9235400D3259A /* EAccountHYSDK.framework in Frameworks */,
 				91CDB9F1231CEE39001D3D48 /* Bugly.framework in Frameworks */,
 				9199DDD8231CBB4900B8F428 /* SystemConfiguration.framework in Frameworks */,
 				9199DDD6231CBB2200B8F428 /* libc++.tbd in Frameworks */,
 				B145212223E9235400D3259A /* OAuth.framework in Frameworks */,
-				B145211D23E9235400D3259A /* SecVerify.framework in Frameworks */,
 				B1A6A9BC23F6783F003C0FAE /* MOBFoundation.framework in Frameworks */,
 				B145212123E9235400D3259A /* TYRZSDK.framework in Frameworks */,
 				9199DDD4231CB72D00B8F428 /* libz.tbd in Frameworks */,
+				B145211D23E9235400D3259A /* SecVerify.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,6 +250,7 @@
 		9199DDD2231CB72D00B8F428 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5E01DE8324247F6C0073CFB3 /* CoreTelephony.framework */,
 				B10AC17323B4B495001DB377 /* libXCTestBundleInject.dylib */,
 				B10AC17123B4B3BC001DB377 /* XCTest.framework */,
 				9199DDD7231CBB4900B8F428 /* SystemConfiguration.framework */,
@@ -733,7 +737,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20009;
+				CURRENT_PROJECT_VERSION = 20100;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DEVELOPMENT_TEAM = LW5266U92D;
@@ -755,7 +759,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.9;
+				MARKETING_VERSION = 2.1.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mob.product.SecVerifyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -770,7 +774,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20009;
+				CURRENT_PROJECT_VERSION = 20100;
 				DEVELOPMENT_TEAM = LW5266U92D;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -790,7 +794,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.9;
+				MARKETING_VERSION = 2.1.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mob.product.SecVerifyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -808,11 +812,8 @@
 				DEVELOPMENT_TEAM = LW5266U92D;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Telecom",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Mobile",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Union",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/Required",
+					"$(PROJECT_DIR)/../../SDK/SecVerify/**",
+					"$(PROJECT_DIR)/../../SDK/Required/**",
 				);
 				GCC_PREFIX_HEADER = SecVerifyDemo/SVDPrefixHeader.pch;
 				INFOPLIST_FILE = SecVerifyDemoTests/Info.plist;
@@ -839,11 +840,8 @@
 				DEVELOPMENT_TEAM = LW5266U92D;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Telecom",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Mobile",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/SecVerify/PlatformSDK/Union",
-					"$(PROJECT_DIR)/SecVerifyDemo/SDK/Required",
+					"$(PROJECT_DIR)/../../SDK/SecVerify/**",
+					"$(PROJECT_DIR)/../../SDK/Required/**",
 				);
 				GCC_PREFIX_HEADER = SecVerifyDemo/SVDPrefixHeader.pch;
 				INFOPLIST_FILE = SecVerifyDemoTests/Info.plist;

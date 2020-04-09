@@ -48,13 +48,9 @@
     contentView.backgroundColor = [UIColor whiteColor];
     contentView.layer.cornerRadius = 17.0;
     contentView.layer.masksToBounds = YES;
+    
     [self.view addSubview:contentView];
-    [contentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_offset(120);
-        make.left.mas_offset(30);
-        make.bottom.mas_offset(-100);
-        make.right.mas_offset(-30);
-    }];
+    
     
     // 隐私条款title
     UILabel *titleLabel = [[UILabel alloc] init];
@@ -63,13 +59,9 @@
     titleLabel.font = [UIFont fontWithName:@"PingFangSC-Semibold" size:17];
     titleLabel.textColor = [UIColor blackColor];
     titleLabel.textAlignment = NSTextAlignmentCenter;
+    [titleLabel sizeToFit];
+    
     [self.contentView addSubview:titleLabel];
-    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(self.contentView);
-        make.top.mas_offset(20);
-        make.left.mas_offset(15);
-        make.right.mas_offset(-15);
-    }];
     
     // 最近更新
     UILabel *recentUpdateLabel = [[UILabel alloc] init];
@@ -78,13 +70,11 @@
     recentUpdateLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
     recentUpdateLabel.textColor = [UIColor colorWithWhite:0 alpha:0.45];
     recentUpdateLabel.textAlignment = NSTextAlignmentCenter;
+    [recentUpdateLabel sizeToFit];
+    
     [self.contentView addSubview:recentUpdateLabel];
-    [recentUpdateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(self.contentView);
-        make.top.equalTo(self.titleLabel.mas_bottom).mas_offset(15);
-        make.left.mas_offset(15);
-        make.right.mas_offset(-15);
-    }];
+    
+    
     
     // 版本生效日期
     UILabel *effectedLabel = [[UILabel alloc] init];
@@ -93,13 +83,9 @@
     effectedLabel.font = [UIFont fontWithName:@"PingFangSC-Light" size:13];
     effectedLabel.textColor = [UIColor colorWithWhite:0 alpha:0.45];
     effectedLabel.textAlignment = NSTextAlignmentCenter;
+    [effectedLabel sizeToFit];
+    
     [self.contentView addSubview:effectedLabel];
-    [effectedLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(self.contentView);
-        make.top.equalTo(self.recentUpdateLabel.mas_bottom).mas_offset(1);
-        make.left.mas_offset(15);
-        make.right.mas_offset(-15);
-    }];
     
     // 拒绝Button 232 233 232
     UIButton *rejectBtn = [[UIButton alloc] init];
@@ -111,14 +97,8 @@
     rejectBtn.layer.cornerRadius = 20.0;
     rejectBtn.layer.masksToBounds = YES;
     [rejectBtn addTarget:self action:@selector(rejectButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.contentView addSubview:rejectBtn];
-    [rejectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(128);
-        make.height.mas_equalTo(40);
-        make.bottom.mas_offset(-20);
-        make.right.equalTo(self.contentView.mas_centerX).offset(-9.5);
-    }];
     
+    [self.contentView addSubview:rejectBtn];
     
     // 同意Button 253 92 8
     UIButton *acceptBtn = [[UIButton alloc] init];
@@ -131,12 +111,7 @@
     acceptBtn.layer.masksToBounds = YES;
     [acceptBtn addTarget:self action:@selector(acceptButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:acceptBtn];
-    [acceptBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(128);
-        make.height.mas_equalTo(40);
-        make.bottom.mas_offset(-20);
-        make.left.equalTo(self.contentView.mas_centerX).offset(9.5);
-    }];
+    
     
     // 隐私协议内容
     UITextView *contentTextView = [[UITextView alloc] init];
@@ -146,16 +121,74 @@
     contentTextView.editable = NO;
     contentTextView.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
     contentTextView.textColor = [UIColor blackColor];
+    contentTextView.showsVerticalScrollIndicator = NO;
+    contentTextView.showsHorizontalScrollIndicator = NO;
+    
     [self.contentView addSubview:contentTextView];
-    [contentTextView mas_makeConstraints:^(MASConstraintMaker *make) {
+    
+    // 刷新布局
+    [self refreshSubviewsLayoutWithSize:self.view.frame.size];
+    
+}
+
+
+- (void)refreshSubviewsLayoutWithSize:(CGSize)viewSize
+{
+    CGFloat width = viewSize.width;
+    CGFloat height = viewSize.height;
+    BOOL isPortrait = height > width;
+    
+    [self.contentView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.centerX.centerY.mas_equalTo(0);
+            make.width.mas_equalTo(width * 0.8);
+            make.height.mas_equalTo(height * 0.7);
+        } else {
+            make.centerX.centerY.mas_equalTo(0);
+            make.width.mas_equalTo(width * 0.7);
+            make.height.mas_equalTo(height * 0.9);
+        }
+    }];
+    
+    [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.contentView);
+        make.top.mas_offset(20);
+    }];
+    
+    [self.recentUpdateLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.contentView);
+        make.top.equalTo(self.titleLabel.mas_bottom).mas_offset(15);
+    }];
+    
+    [self.effectedLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.contentView);
+        make.top.equalTo(self.recentUpdateLabel.mas_bottom).mas_offset(5);
+    }];
+    
+    [self.rejectButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(self.contentView.mas_width).with.multipliedBy(0.4);
+        make.height.mas_equalTo(40);
+        make.bottom.mas_offset(-20);
+        make.left.mas_equalTo(10);
+    }];
+    
+    [self.acceptButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(self.contentView.mas_width).with.multipliedBy(0.4);
+        make.height.mas_equalTo(40);
+        make.bottom.mas_offset(-20);
+        make.right.mas_equalTo(-10);
+    }];
+    
+    [self.contentTextView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.effectedLabel.mas_bottom).offset(10);
         make.left.mas_offset(20);
         make.right.mas_offset(-20);
         make.bottom.equalTo(self.rejectButton.mas_top).offset(-20);
     }];
     
-    
 }
+
+
 
 - (void)rejectButtonClicked:(UIButton *)rejectBtn {
     if (self.policyAcceptedStatus) {
@@ -185,7 +218,9 @@
         NSForegroundColorAttributeName: [UIColor colorWithRed:233/255.0 green:120/255.0 blue:0 alpha:1.0]
     };
     __weak typeof(self) weakSelf = self;
-    [MobSDK getPrivacyPolicy:@"1" compeletion:^(NSDictionary * _Nullable data, NSError * _Nullable error) {
+    [MobSDK getPrivacyPolicy:@"1"
+                    language:@"cn"
+                 compeletion:^(NSDictionary * _Nullable data, NSError * _Nullable error) {
         NSString *linkText = data[@"content"]?:@"";
         NSString *urlDescription = @"《MobService隐私条款》";
         [attribute appendAttributedString:[[NSAttributedString alloc] initWithString:urlDescription attributes:@{
@@ -204,6 +239,14 @@
     webVC.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:webVC animated:NO completion:nil];
     return NO;
+}
+
+
+#pragma mark - 屏幕旋转
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    NSLog(@"----> %@", NSStringFromCGSize(size));
+    [self refreshSubviewsLayoutWithSize:size];
 }
 
 

@@ -21,13 +21,13 @@
 
 //支持旋转
 -(BOOL)shouldAutorotate{
-    return NO;
+    return YES;
 }
 
 //支持的方向
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     
-    return UIInterfaceOrientationMaskPortrait;
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
 }
 
 /*

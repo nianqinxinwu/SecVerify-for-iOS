@@ -11,6 +11,7 @@
 #import "SVDSerive.h"
 #import "FLAnimatedImage.h"
 #import <SecVerify/SecVerify.h>
+#import <SecVerify/SVSDKLoginManager.h>
 #import "Masonry.h"
 #import "SVProgressHUD.h"
 #import "SVDPolicyManager.h"
@@ -34,13 +35,42 @@ static BOOL resetPushModel = NO;
 
 @interface SVDVerifyViewController () <UIViewControllerTransitioningDelegate>
 
-@property (nonatomic, strong) SVDSuccessViewController *successVC;
+/// GIF image view
+@property (nonatomic, strong) FLAnimatedImageView *gifImageView;
+
+/// 一键验证Label
+@property (nonatomic, strong) UILabel *verifyLabel;
+
+/// 一键验证Button
+@property (nonatomic, strong) UIButton *verifyButton;
+
+/// 自定义授权页面UI按钮
+@property (nonatomic, strong) UIButton *customUIButton;
+
+/// 展示详细错误信息按钮
+@property (nonatomic, strong) UIButton *detailErrorButton;
+
+/// 手动关闭授权页面
+@property (nonatomic, strong) UIButton *manualDismissButton;
+
+/// 授权页从底部向上弹出按钮
+@property (nonatomic, strong) UIButton *translucentButton;
+
+/// 授权页弹出按钮
+@property (nonatomic, strong) UIButton *alertButton;
+
+/// 授权页Push推出
+@property (nonatomic, strong) UIButton *pushButton;
+
+/// 展示复杂授权页效果按钮
+@property (nonatomic, strong) UIButton *complexButton;
+
+/// 清空隐私协议授权结果缓存按钮
+@property (nonatomic, strong) UIButton *clearPrivacyButton;
 
 @property (nonatomic, assign) BOOL isPreLogin;
 
 @property (nonatomic, assign) BOOL isLogining;
-
-@property (nonatomic, strong) UIButton *verifyBtn;
 
 @property (nonatomic, weak) UIView *otherView;
 
@@ -72,17 +102,12 @@ static BOOL resetPushModel = NO;
 {
     [super viewDidLoad];
     
+    [self setupSubViews];
+    
     self.isPreLogin = NO;
     self.isLogining = NO;
     
-    [self setupSubViews];
-    
-    [self preLogin:^(NSDictionary *resultDic, NSError *error) {
-        
-        [self enableVerifyBtn:YES];
-    }];
-    
-    self.verifyBtn.enabled = YES;
+    [self startPreLogin];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -91,48 +116,220 @@ static BOOL resetPushModel = NO;
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
-}
+//- (void)viewDidAppear:(BOOL)animated
+//{
+//    [super viewDidAppear:animated];
+//    [self.navigationController setNavigationBarHidden:YES animated:NO];
+//}
+
+
+
+
+#pragma mark - 预取号
 
 // 预取号
-- (void)preLogin:(void (^) (NSDictionary *resultDic, NSError *error))compeletion
+- (void)startPreLogin
 {
     if (!self.isPreLogin)
     {
         [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-            
             [self enableVerifyBtn:YES];
             
             if (!error)
             {
-                NSLog(@"### 预取号成功");
+                NSLog(@"### 预取号成功: %@", resultDic);
                 self.isPreLogin = YES;
             }
             else
             {
                 NSLog(@"### 预取号失败%@", error);
             }
-            
-            if(compeletion)
-            {
-                compeletion(resultDic,error);
-            }
         }];
     }
     else
     {
         [self enableVerifyBtn:YES];
-        
-        if(compeletion)
-        {
-            compeletion(nil,nil);
-        }
     }
 }
 
+
+#pragma mark - 登陆
+- (void)login
+{
+    WeakSelf
+    [self enableVerifyBtn:NO];
+    [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+        NSLog(@"---> 预取号 resultDic: %@ error: %@", resultDic, error);
+        if (!error) {
+            // 预取号成功
+            weakSelf.isLogining = YES;
+            SecVerifyCustomModel *model = [[SecVerifyCustomModel alloc] init];
+            //当前VC,用于呈现登录视图(必须设置)
+            model.currentViewController = weakSelf;
+            // 设置是否手动关闭授权页面
+            model.manualDismiss = @(dismissLoginVcBySelf);
+            
+            // 支持横屏
+            model.shouldAutorotate = @(YES);
+            model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight);
+            
+            if (translucentBg) {
+                //左边按钮隐藏
+                model.leftControlHidden = @(YES);
+                model.cancelBySingleClick = @(YES);
+                model.showType = @(SVDShowStyleSheet);
+            }
+            else if (resetModel)
+            {
+                model.animateType = @(SVDAnimateStylePush);
+                [weakSelf resetCustomModel:model];
+            }
+            else if (resetAlertModel)
+            {
+                model.leftControlHidden = @(YES);
+                model.cancelBySingleClick = @(YES);
+                model.showType = @(SVDShowStyleAlert);
+            }
+            else if (resetFuModel)
+            {
+                [weakSelf resetFuModel:model];
+            }
+            else if (resetPushModel)
+            {
+                model.animateType = @(SVDAnimateStylePush);
+            }
+            
+            // 导航栏设置
+            model.navLeftControlHidden = @(NO);
+            model.navBarStyle = @(UIStatusBarStyleLightContent);
+            model.privacyWebNavBarStyle = @(UIBarStyleDefault);
+            
+            
+            [SecVerify loginWithModel:model
+                          showLoginVc:^{
+                // 授权页面成功展示回调
+                NSLog(@"---> 授权页面成功展示");
+            }
+                      loginBtnClicked:^{
+                // 授权页登陆按钮点击回调
+                NSLog(@"---> 授权页登陆按钮点击");
+            }
+                    willHiddenLoading:^{
+                //自定义loading,隐藏
+                [SVProgressHUD dismiss];
+            }
+                           completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+                NSLog(@"登陆验证 resultDic: %@ error: %@",resultDic, error);
+                weakSelf.isPreLogin = NO;
+                weakSelf.isLogining = NO;
+                if (!error) {
+                    [SVProgressHUD showWithStatus:@"加载中..."];
+                    // 授权成功,获取完整手机号
+                    [[SVDSerive sharedSerive] verifyGetPhoneNumberWith:resultDic completion:^(NSError *error, NSString * _Nonnull phone) {
+                        NSLog(@"获取完整手机号 phone: %@ error: %@",phone, error);
+                        [SVProgressHUD dismiss];
+                        //手动关闭界面的时候使用
+                        if(dismissLoginVcBySelf)
+                        {
+                            [SecVerify finishLoginVc:^{
+                                NSLog(@"****************手动关闭界面***************");
+                            }];
+                        }
+                        
+                        if (!error)
+                        {
+                            SVDSuccessViewController *successVC = [[SVDSuccessViewController alloc] init];
+                            successVC.phone = phone;
+                            [weakSelf.navigationController pushViewController:successVC animated:YES];
+                        }
+                        else
+                        {
+                            if(showRealError)
+                            {
+                                [weakSelf showAlert:error.userInfo[@"description"] message:[NSString stringWithFormat:@"%ld", (long)error.code]];
+                            }
+                            else
+                            {
+                                NSString *des = error.userInfo[@"description"];
+                                NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+                                NSString *retStr = [[NSString alloc] initWithData:[des dataUsingEncoding:enc] encoding:enc];
+                                
+                                if(error.code == 170601)
+                                {
+                                    [weakSelf showAlert:retStr message:nil];
+                                }
+                                else
+                                {
+                                    [weakSelf showAlert:@"当前网络状态不稳定" message:nil];
+                                }
+                            }
+                        }
+                    }];
+                    
+                }
+                else
+                {
+                    //手动关闭界面的时候使用
+                    //170602 自定义事件，手动关闭登录vc
+                    //170204 取消登录
+                    if(dismissLoginVcBySelf && error.code != 170602 && error.code != 170204)
+                    {
+                        [SecVerify finishLoginVc:^{
+                            NSLog(@"****************手动关闭界面***************");
+                        }];
+                    }
+                    
+                    if(showRealError)
+                    {
+                        [weakSelf showAlert:error.userInfo.description message:error.userInfo[@"description"]];
+                    }
+                    else
+                    {
+                        [weakSelf showAlert:@"提示" message:error.userInfo[@"error_message"] ?: error.userInfo[@"description"]];
+                    }
+                }
+                
+                // 提前预取号
+                [weakSelf startPreLogin];
+            }];
+            
+            
+        }
+        else
+        {
+            NSString *title = @"当前网络状态不稳定";
+            if (error.code == 170005)
+            {
+                title = @"当前手机无SIM卡，请插入后重试";
+            }
+            if (error.code == 170003)
+            {
+                title = @"不支持的运营商";
+            }
+            
+            if(error.code == 170601)
+            {
+                title = @"请打开蜂窝网络";
+            }
+            if(error.code == 170606)
+            {
+                title = @"获取授权码数量超限";
+            }
+            if(showRealError)
+            {
+                [weakSelf showAlert:error.userInfo[@"error_message"] message:[NSString stringWithFormat:@"%ld", (long)error.code]];
+            }
+            else
+            {
+                [weakSelf showAlert:title message:nil];
+            }
+            
+            [weakSelf enableVerifyBtn:YES];
+        }
+    }];
+}
+
+#pragma mark - Actions
 
 - (void)resetModelAction:(UIButton *)btn
 {
@@ -180,7 +377,6 @@ static BOOL resetPushModel = NO;
     resetPushModel = !resetPushModel;
     btn.selected = !btn.selected;
 }
-//test login
 
 - (void)leftAction
 {
@@ -352,6 +548,8 @@ static BOOL resetPushModel = NO;
     model.privacyFirstTextArr = @[@"服务协议",@"https://www.mob.com",@"、"];
     // 开发者隐私条款协议名称（第二组协议）
     model.privacySecondTextArr =  @[@"百度协议",@"https://www.baidu.com",@"、"];
+    // 开发者隐私条款协议名称（第三组协议）
+    model.privacyThirdTextArr =  @[@"谷歌协议",@"https://www.google.com",@"、"];
     // 隐私条款多行时行距
     model.privacyLineSpacing = @(4.0);
     // 隐私条款WEB页面标题
@@ -364,7 +562,7 @@ static BOOL resetPushModel = NO;
     // 隐私条款WEB页面返回按钮图片
     model.privacyWebBackBtnImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(40, 40)];
     
-    model.isPrivacyOperatorsLast = @(YES);
+    model.isPrivacyOperatorsLast = @(NO);
     
     //*******登陆按钮设置*******
     // 登录按钮文本
@@ -419,7 +617,6 @@ static BOOL resetPushModel = NO;
     float realScreenHeight = (SVD_ScreenWidth > SVD_ScreenHeight)?SVD_ScreenWidth:SVD_ScreenHeight;
     //自定义视图
     [model setCustomViewBlock:^(UIView *customView) {
-        
         float height = [SVDVerifyViewController isPhoneX]?(115+36.0):115;
         
         UIView *bottomView = [[UIView alloc] init];
@@ -465,7 +662,8 @@ static BOOL resetPushModel = NO;
         
         //获取当前横竖屏状态
         [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
-            bottomView.hidden = status;
+//            bottomView.hidden = status;
+            NSLog(@"---> 当前横竖屏状态: %zd viewSize: %@", status, NSStringFromCGSize(size));
         }];
         
         [customView bringSubviewToFront:bottomView];
@@ -485,8 +683,7 @@ static BOOL resetPushModel = NO;
         layouts = model.portraitLayouts;
     }
     
-    //布局
-    
+    // 竖屏布局
     if (!layouts.logoLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
         layout.layoutTop = @(topHeight);
@@ -532,7 +729,6 @@ static BOOL resetPushModel = NO;
     
     
     //check(相对隐私协议)复选框
-    
     if (!layouts.checkPrivacyLayout) {
         SecVerifyCheckPrivacyLayout *layout = [[SecVerifyCheckPrivacyLayout alloc] init];
         layout.layoutCenterY = @(0);
@@ -565,8 +761,8 @@ static BOOL resetPushModel = NO;
         layouts.sloganLayout = layout;
     }
     
-    
     model.portraitLayouts = layouts;
+    
     
     SecVerifyCustomLayouts *landscapeLayouts = nil;
     if (!model.landscapeLayouts) {
@@ -575,17 +771,16 @@ static BOOL resetPushModel = NO;
         landscapeLayouts = model.landscapeLayouts;
     }
     
-    //横屏
+    // 横屏布局
     float landscapeTopOffset = realScreenWidth*0.1;
     
     //logo
-    
     if (!landscapeLayouts.logoLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
         layout.layoutTop = @(landscapeTopOffset-10);
         layout.layoutWidth = @(60);
         layout.layoutHeight = @(60);
-        layout.layoutCenterX = @(0);
+        layout.layoutCenterX = @(-65);
         
         landscapeLayouts.logoLayout = layout;
     }
@@ -593,20 +788,20 @@ static BOOL resetPushModel = NO;
     //phone
     if (!landscapeLayouts.phoneLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(landscapeTopOffset + 60);
-        layout.layoutCenterX = @(0);
+        layout.layoutTop = @(landscapeTopOffset);
+        layout.layoutCenterX = @(25);
         layout.layoutHeight = @(20);
         layout.layoutWidth = @(100);
         
         landscapeLayouts.phoneLayout = layout;
     }
     
+    //切换按钮
     if (!landscapeLayouts.switchLayout) {
-        //切换按钮
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(topHeight + 75);
+        layout.layoutTop = @(landscapeTopOffset + 30);
+        layout.layoutCenterX = @(25);
         layout.layoutHeight = @(20);
-        layout.layoutCenterX = @(0);
         layout.layoutWidth = @(80);
         
         landscapeLayouts.switchLayout = layout;
@@ -615,8 +810,7 @@ static BOOL resetPushModel = NO;
     //登录按钮
     if (!landscapeLayouts.loginLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(topHeight + 100);
-
+        layout.layoutTop = @(landscapeTopOffset + 60);
         layout.layoutCenterX = @(0);
         layout.layoutWidth = @(realScreenWidth * 0.8);
         layout.layoutHeight = @(40);
@@ -636,14 +830,14 @@ static BOOL resetPushModel = NO;
     }
     
     //隐私条款
-//    if (!landscapeLayouts.privacyLayout) {
-//        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-//        layout.layoutRight = @(-20-landscapeLeftOffset);
-//        layout.layoutTop = @(landscapeTopOffset +160);
-//        layout.layoutLeft = @(50+landscapeLeftOffset);
-//        layout.layoutHeight = @(size.height);
-//        landscapeLayouts.privacyLayout = layout;
-//    }
+    if (!landscapeLayouts.privacyLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutTop = @(landscapeTopOffset + 110);
+        layout.layoutWidth = @(realScreenWidth * 0.86);
+        layout.layoutHeight = @(size.height);
+        layout.layoutCenterX = @(15);
+        landscapeLayouts.privacyLayout = layout;
+    }
     
     //运营商品牌
     if (!landscapeLayouts.sloganLayout) {
@@ -659,201 +853,7 @@ static BOOL resetPushModel = NO;
     model.landscapeLayouts = landscapeLayouts;
 }
 
-- (void)addCustomWidget:(SecVerifyCustomModel *)model {
-    
-}
-
-// 登录
-- (void)login
-{
-    WeakSelf
-    [self enableVerifyBtn:NO];
-    [self preLogin:^(NSDictionary *resultDic, NSError *error) {
-        if(!error)
-        {
-            weakSelf.isLogining = YES;
-
-            SecVerifyCustomModel *model = [[SecVerifyCustomModel alloc] init];
-            //当前VC,用于呈现登录视图
-            model.currentViewController = weakSelf;
-        
-            model.manualDismiss = @(dismissLoginVcBySelf);
-            
-//            model.manualLayout = @(YES);
-//            model.navBarHidden = @(1);
-//            model.animateType = @(SVDAnimateStyleAlert);
-//            model.backgroundColor = [UIColor clearColor];
-//            model.animateBgColor = [UIColor clearColor];
-            
-            if(translucentBg)
-            {
-                //左边按钮隐藏
-                model.leftControlHidden = @(YES);
-                model.shouldAutorotate = @(YES);
-                model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
-                model.cancelBySingleClick = @(YES);
-                model.showType = @(SVDShowStyleSheet);
-
-            }
-            else if(resetModel)
-            {
-                model.animateType = @(SVDAnimateStylePush);
-                model.shouldAutorotate = @(YES);
-                model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
-                [weakSelf resetCustomModel:model];
-            }
-            else if(resetAlertModel)
-            {
-                model.cancelBySingleClick = @(YES);
-                model.shouldAutorotate = @(YES);
-                model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskAll);
-                model.showType = @(SVDShowStyleAlert);
-                model.leftControlHidden = @(YES);
-            }
-            else if(resetFuModel)
-            {
-                [weakSelf resetFuModel:model];
-            }
-            
-            else if (resetPushModel) {
-                model.animateType = @(SVDAnimateStylePush);
-            }
-
-            model.navLeftControlHidden = @(NO);
-            model.navBarStyle = @(UIStatusBarStyleLightContent);
-            model.privacyWebNavBarStyle = @(UIStatusBarStyleDefault);
-            [SecVerify loginWithModel:model showLoginVc:^{
-                //
-            } loginBtnClicked:^{
-                //
-            } willHiddenLoading:^{
-                
-                //自定义loading,隐藏
-                [SVProgressHUD dismiss];
-                
-            } completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-                
-                weakSelf.isPreLogin = NO;
-                weakSelf.isLogining = NO;
-                
-                if (!error)
-                {
-                    [SVProgressHUD showWithStatus:@"加载中..."];
-                    
-                    [[SVDSerive sharedSerive] phoneLogin:resultDic completion:^(NSError *error, NSString * _Nonnull phone) {
-                        
-                        //手动关闭界面的时候使用
-                        if(dismissLoginVcBySelf)
-                        {
-                            [SecVerify finishLoginVc:^{
-                                NSLog(@"****************手动关闭界面***************");
-                            }];
-                        }
-                        
-                        if (!error)
-                        {
-                            
-                            weakSelf.successVC = [[SVDSuccessViewController alloc] init];
-                            weakSelf.successVC.phone = phone;
-                            if(![weakSelf.navigationController.viewControllers containsObject:self.successVC])
-                            {
-                                [weakSelf.navigationController pushViewController:self.successVC animated:YES];
-                            }
-                        }
-                        else
-                        {
-                            NSLog(@"服务器验证失败");
-                            if(showRealError)
-                            {
-                                [weakSelf showAlert:error.userInfo[@"description"] message:[NSString stringWithFormat:@"%ld", (long)error.code]];
-                            }
-                            else
-                            {
-                                NSString *des = error.userInfo[@"description"];
-                                NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
-                                NSString *retStr = [[NSString alloc] initWithData:[des dataUsingEncoding:enc] encoding:enc];
-                                
-                                if(error.code == 170601)
-                                {
-                                    [weakSelf showAlert:retStr message:nil];
-                                }
-                                else
-                                {
-                                    [weakSelf showAlert:@"当前网络状态不稳定" message:nil];
-                                }
-                            }
-                        }
-                        [weakSelf preLogin:nil];
-                        
-                        [SVProgressHUD dismiss];
-                        
-                    }];
-                }
-                else
-                {
-                    //手动关闭界面的时候使用
-                    //170602 自定义事件，手动关闭登录vc
-                    //170204 取消登录
-                    if(dismissLoginVcBySelf && error.code != 170602 && error.code != 170204)
-                    {
-                        [SecVerify finishLoginVc:^{
-                            NSLog(@"手动关闭");
-                        }];
-                    }
-                    
-                    NSLog(@"登录失败:%@", error);
-                    if(showRealError)
-                    {
-                        [weakSelf showAlert:error.userInfo.description message:error.userInfo[@"description"]];
-                    }
-                    else
-                    {
-                        [weakSelf showAlert:@"提示" message:error.userInfo[@"error_message"] ?: error.userInfo[@"description"]];
-                    }
-                    [weakSelf preLogin:nil];
-                }
-                
-            }];
-            
-        }
-        else
-        {
-            NSString *title = @"当前网络状态不稳定";
-            if (error.code == 170005)
-            {
-                title = @"当前手机无SIM卡，请插入后重试";
-            }
-            if (error.code == 170003)
-            {
-                title = @"不支持的运营商";
-            }
-            
-            if(error.code == 170601)
-            {
-                title = @"请打开蜂窝网络";
-            }
-            if(error.code == 170606)
-            {
-                title = @"获取授权码数量超限";
-            }
-            if(showRealError)
-            {
-                [weakSelf showAlert:error.userInfo[@"error_message"] message:[NSString stringWithFormat:@"%ld", (long)error.code]];
-            }
-            else
-            {
-                [weakSelf showAlert:title message:nil];
-            }
-            
-            [weakSelf enableVerifyBtn:YES];
-        }
-    }];
-}
-
-- (void)clickAction {
-    NSLog(@"自定义事件");
-    [self weixinLoginAction];
-}
+// 复杂授权页选择“手机”
 - (void)phoneAction
 {
     [self.topArrowView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -869,6 +869,7 @@ static BOOL resetPushModel = NO;
                                hide:NO];
 }
 
+// 复杂授权页选择“其他”
 - (void)otherAction
 {
     [self.topArrowView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -885,7 +886,6 @@ static BOOL resetPushModel = NO;
 
 - (void)resetFuModel:(SecVerifyCustomModel *)model
 {
-    
     //*******导航条设置*******
     // 隐藏导航栏尾部线条
     model.navBottomLineHidden = @(YES);
@@ -1136,7 +1136,7 @@ static BOOL resetPushModel = NO;
     }];
     
     //logo 距离上边距离
-    float topHeight = 50.0/603.0 *(SVD_ScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
+//    float topHeight = 50.0/603.0 *(SVD_ScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
     
     //登录页面协议size
     CGSize size = [SVSDKHelpExt loginProtocolSize:model maxWidth:(SVD_ScreenWidth - 65)];
@@ -1204,13 +1204,9 @@ static BOOL resetPushModel = NO;
     
 }
 
+// 自定义授权页上微信按钮点击事件
 - (void)weixinLoginAction
 {
-//
-//    UIViewController *vc = [SVSDKLoginManager defaultManager].secLoginViewController;
-//
-//    SVDSuccessViewController *success = [SVDSuccessViewController new];
-//    [vc.navigationController pushViewController:success animated:YES];
     [SVSDKLoginManager showLoadingViewOnLoginVc];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -1229,72 +1225,93 @@ static BOOL resetPushModel = NO;
     
 }
 
+
 - (void)enableVerifyBtn:(BOOL)enable
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!self.isLogining)
         {
-            self.verifyBtn.enabled = enable;
+            self.verifyButton.enabled = enable;
         }
         else
         {
-            self.verifyBtn.enabled = NO;
+            self.verifyButton.enabled = NO;
         }
     });
 }
 
+
+
+#pragma mark - Setup SubViews
 - (void)setupSubViews
 {
+    // GIF Image View
     NSString *gifPath = [[NSBundle mainBundle] pathForResource:@"GIF" ofType:@"gif"];
-    
     FLAnimatedImage *image = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfFile:gifPath]];
     FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
     imageView.animatedImage = image;
+    imageView.contentMode = UIViewContentModeScaleToFill;
+    imageView.backgroundColor = [UIColor redColor];
+    self.gifImageView = imageView;
     
+    [self.view addSubview:imageView];
     
+    // 一键验证Label
     UILabel *verifyLabel = [[UILabel alloc] init];
     verifyLabel.textAlignment = NSTextAlignmentCenter;
     verifyLabel.text = [NSString stringWithFormat:@"开始验证! v%@", [SecVerify sdkVersion]];
     verifyLabel.font = [UIFont fontWithName:@"PingFangSC-Semibold" size:22.f]? : [UIFont systemFontOfSize:22.f];
     verifyLabel.textColor = [UIColor colorWithRed:47/255.0 green:51/255.0 blue:51/255.0 alpha:1/1.0];
+    self.verifyLabel = verifyLabel;
     
-    self.verifyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.verifyBtn setTitle:@"一键验证" forState:UIControlStateNormal];
-    //    [self.verifyBtn setTitle:@" 预取号中…" forState:UIControlStateDisabled];
+    [self.view addSubview:verifyLabel];
     
-    [self.verifyBtn addTarget:self action:@selector(login) forControlEvents:UIControlEventTouchUpInside];
+    // 一键验证Button
+    UIButton *verifyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    verifyBtn.enabled = NO;
+    [verifyBtn setTitle:@"一键验证" forState:UIControlStateNormal];
+    [verifyBtn addTarget:self action:@selector(login) forControlEvents:UIControlEventTouchUpInside];
+    [verifyBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0] withSize:CGSizeMake(1.0, 1.0)] forState:UIControlStateNormal];
+    [verifyBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0] withSize:CGSizeMake(1.0, 1.0)] forState:UIControlStateHighlighted];
+    self.verifyButton = verifyBtn;
     
-    [self.verifyBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0] withSize:CGSizeMake(1.0, 1.0)] forState:UIControlStateNormal];
-    [self.verifyBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0] withSize:CGSizeMake(1.0, 1.0)] forState:UIControlStateHighlighted];
-    //    [self.verifyBtn setBackgroundImage:[self createImageWithColor:[UIColor grayColor]] forState:UIControlStateDisabled];
+    [self.view addSubview:verifyBtn];
     
-    self.verifyBtn.enabled = NO;
+    // 使用自定义视图
+    UIButton *customModelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [customModelBtn setTitle:@"定" forState:UIControlStateNormal];
+    [customModelBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [customModelBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
+    [customModelBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    [customModelBtn addTarget:self action:@selector(resetModelAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.customUIButton = customModelBtn;
     
-    UIButton *resetModelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [resetModelBtn setTitle:@"定" forState:UIControlStateNormal];
-    [resetModelBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    [resetModelBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [resetModelBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    [resetModelBtn addTarget:self action:@selector(resetModelAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:resetModelBtn];
+    [self.view addSubview:customModelBtn];
     
+    // 展示详细错误日志
     UIButton *showRealErrbtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [showRealErrbtn setTitle:@"细" forState:UIControlStateNormal];
     [showRealErrbtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
     [showRealErrbtn addTarget:self action:@selector(resetRealErrorAction:) forControlEvents:UIControlEventTouchUpInside];
     [showRealErrbtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
     [showRealErrbtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    self.detailErrorButton = showRealErrbtn;
     
+    [self.view addSubview:showRealErrbtn];
     
-    UIButton *autoDismissbtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [autoDismissbtn setTitle:@"手" forState:UIControlStateNormal];
-    [autoDismissbtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    autoDismissbtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [autoDismissbtn addTarget:self action:@selector(autoDismissAction:) forControlEvents:UIControlEventTouchUpInside];
-    [autoDismissbtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [autoDismissbtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    // 手动关闭授权页面
+    UIButton *manualDismissBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [manualDismissBtn setTitle:@"手" forState:UIControlStateNormal];
+    [manualDismissBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    manualDismissBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
+    [manualDismissBtn addTarget:self action:@selector(autoDismissAction:) forControlEvents:UIControlEventTouchUpInside];
+    [manualDismissBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
+    [manualDismissBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    self.manualDismissButton = manualDismissBtn;
     
+    [self.view addSubview:manualDismissBtn];
     
+    // 授权页从底部向上弹出
     UIButton *translucentBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [translucentBtn setTitle:@"上" forState:UIControlStateNormal];
     [translucentBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
@@ -1302,7 +1319,11 @@ static BOOL resetPushModel = NO;
     [translucentBtn addTarget:self action:@selector(translucentAction:) forControlEvents:UIControlEventTouchUpInside];
     [translucentBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
     [translucentBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    self.translucentButton = translucentBtn;
     
+    [self.view addSubview:translucentBtn];
+    
+    // 授权页弹出
     UIButton *alertBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [alertBtn setTitle:@"弹" forState:UIControlStateNormal];
     [alertBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
@@ -1310,7 +1331,11 @@ static BOOL resetPushModel = NO;
     [alertBtn addTarget:self action:@selector(resetAlertAction:) forControlEvents:UIControlEventTouchUpInside];
     [alertBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
     [alertBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    self.alertButton = alertBtn;
     
+    [self.view addSubview:alertBtn];
+    
+    // 授权页Push推出
     UIButton *pushBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [pushBtn setTitle:@"推" forState:UIControlStateNormal];
     [pushBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
@@ -1318,120 +1343,202 @@ static BOOL resetPushModel = NO;
     [pushBtn addTarget:self action:@selector(resetPushAction:) forControlEvents:UIControlEventTouchUpInside];
     [pushBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
     [pushBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    self.pushButton = pushBtn;
     
-    UIButton *fuBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [fuBtn setTitle:@"复" forState:UIControlStateNormal];
-    [fuBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    fuBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [fuBtn addTarget:self action:@selector(resetFuAction:) forControlEvents:UIControlEventTouchUpInside];
-    [fuBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [fuBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    
-    UIButton *qingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [qingBtn setTitle:@"清" forState:UIControlStateNormal];
-    [qingBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    qingBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [qingBtn addTarget:self action:@selector(qingBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [qingBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [qingBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    
-    [self.view addSubview:qingBtn];
-    
-    [self.view addSubview:fuBtn];
-    
-    [self.view addSubview:verifyLabel];
-    [self.view addSubview:imageView];
-    [self.view addSubview:self.verifyBtn];
-    
-    [self.view addSubview:resetModelBtn];
-    [self.view addSubview:showRealErrbtn];
-    [self.view addSubview:autoDismissbtn];
-    [self.view addSubview:translucentBtn];
-    [self.view addSubview:alertBtn];
     [self.view addSubview:pushBtn];
+    
+    // 展示复杂授权页效果按钮
+    UIButton *complexBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [complexBtn setTitle:@"复" forState:UIControlStateNormal];
+    [complexBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    complexBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
+    [complexBtn addTarget:self action:@selector(resetFuAction:) forControlEvents:UIControlEventTouchUpInside];
+    [complexBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
+    [complexBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    self.complexButton = complexBtn;
+    
+    [self.view addSubview:complexBtn];
+    
+    // 清空隐私协议授权结果缓存
+    UIButton *clearPrivacyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [clearPrivacyBtn setTitle:@"清" forState:UIControlStateNormal];
+    [clearPrivacyBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    clearPrivacyBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
+    [clearPrivacyBtn addTarget:self action:@selector(qingBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [clearPrivacyBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
+    [clearPrivacyBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
+    self.clearPrivacyButton = clearPrivacyBtn;
+    
+    [self.view addSubview:clearPrivacyBtn];
+    
+    // 布局子视图
+    [self refreshSubviewsLayoutWithSize:self.view.frame.size];
+}
 
+
+#pragma mark - 刷新布局
+- (void)refreshSubviewsLayoutWithSize:(CGSize)viewSize
+{
+    CGFloat width = viewSize.width;
+    CGFloat height = viewSize.height;
+    BOOL isPortrait = height > width;
     
-    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.gifImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.mas_equalTo(width * 0.82);
+            make.height.mas_equalTo(width);
+            make.centerX.mas_equalTo(0);
+            make.top.mas_equalTo(SVD_StatusBarSafeBottomMargin);
+        } else {
+            make.top.mas_equalTo(10);
+            make.width.mas_equalTo(height);
+            make.height.mas_equalTo(height * 0.8);
+            make.centerX.mas_equalTo(0);
+        }
+    }];
+    
+    [self.verifyButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.mas_equalTo(width * 0.8);
+            make.height.mas_equalTo(50);
+            make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin - 15);
+            make.centerX.mas_equalTo(0);
+        } else {
+            make.width.mas_equalTo(width * 0.8);
+            make.height.mas_equalTo(40);
+            make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin);
+            make.centerX.mas_equalTo(0);
+        }
         
-        make.width.mas_equalTo(SVD_ScreenWidth * 0.82);
-        make.height.mas_equalTo(SVD_ScreenWidth);
-        make.centerX.mas_equalTo(0);
-        make.top.mas_equalTo(SVD_StatusBarSafeBottomMargin);
     }];
     
-    [showRealErrbtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    
+    [self.verifyLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin - 15 - 65);
+            make.centerX.mas_equalTo(0);
+        } else {
+            make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin - 45);
+            make.centerX.mas_equalTo(0);
+        }
+    }];
+    
+    [self.customUIButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.height.mas_equalTo(30);
+            make.left.mas_equalTo(0);
+            make.top.mas_equalTo(100);
+        } else {
+            make.top.equalTo(self.gifImageView.mas_top).mas_offset(10);
+            make.width.height.mas_equalTo(30);
+            make.right.equalTo(self.gifImageView.mas_left).mas_offset(-10);
+        }
         
-        make.width.height.mas_equalTo(30);
-        make.right.mas_equalTo(0);
-        make.top.mas_equalTo(100);
     }];
     
-    [translucentBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.detailErrorButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.height.mas_equalTo(30);
+            make.right.mas_equalTo(0);
+            make.top.mas_equalTo(100);
+        } else {
+            make.width.height.mas_equalTo(30);
+            make.top.equalTo(self.gifImageView.mas_top).mas_offset(10);
+            make.left.equalTo(self.gifImageView.mas_right).mas_offset(10);
+        }
         
-        make.width.height.mas_equalTo(30);
-        make.right.mas_equalTo(0);
-        make.top.mas_equalTo(150);
     }];
     
-    [alertBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.manualDismissButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.height.mas_equalTo(30);
+            make.left.mas_equalTo(0);
+            make.top.mas_equalTo(150);
+        } else {
+            make.top.equalTo(self.customUIButton.mas_bottom).mas_offset(20);
+            make.width.height.mas_equalTo(30);
+            make.right.equalTo(self.gifImageView.mas_left).mas_offset(-10);
+        }
         
-        make.width.height.mas_equalTo(30);
-        make.right.mas_equalTo(0);
-        make.top.mas_equalTo(200);
     }];
     
-    
-    [pushBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.height.mas_equalTo(30);
-        make.right.mas_equalTo(0);
-        make.top.mas_equalTo(250);
-    }];
-    
-    [resetModelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.translucentButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.height.mas_equalTo(30);
+            make.right.mas_equalTo(0);
+            make.top.mas_equalTo(150);
+        } else {
+            make.width.height.mas_equalTo(30);
+            make.top.equalTo(self.detailErrorButton.mas_bottom).mas_offset(20);
+            make.left.equalTo(self.gifImageView.mas_right).mas_offset(10);
+        }
         
-        make.width.height.mas_equalTo(30);
-        make.left.mas_equalTo(0);
-        make.top.mas_equalTo(100);
     }];
     
-    [autoDismissbtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.alertButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.height.mas_equalTo(30);
+            make.right.mas_equalTo(0);
+            make.top.mas_equalTo(200);
+        } else {
+            make.width.height.mas_equalTo(30);
+            make.top.equalTo(self.translucentButton.mas_bottom).mas_offset(20);
+            make.left.equalTo(self.gifImageView.mas_right).mas_offset(10);
+        }
         
-        make.width.height.mas_equalTo(30);
-        make.left.mas_equalTo(0);
-        make.top.mas_equalTo(150);
     }];
     
-    [fuBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.pushButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.height.mas_equalTo(30);
+            make.right.mas_equalTo(0);
+            make.top.mas_equalTo(250);
+        } else {
+            make.width.height.mas_equalTo(30);
+            make.top.equalTo(self.alertButton.mas_bottom).mas_offset(20);
+            make.left.equalTo(self.gifImageView.mas_right).mas_offset(10);
+        }
         
-        make.width.height.mas_equalTo(30);
-        make.left.mas_equalTo(0);
-        make.top.mas_equalTo(200);
     }];
     
-    [qingBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.height.mas_equalTo(30);
-        make.left.mas_equalTo(0);
-        make.top.mas_equalTo(250);
-    }];
-    
-    [verifyLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.complexButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.height.mas_equalTo(30);
+            make.left.mas_equalTo(0);
+            make.top.mas_equalTo(200);
+        } else {
+            make.top.equalTo(self.manualDismissButton.mas_bottom).mas_offset(20);
+            make.width.height.mas_equalTo(30);
+            make.right.equalTo(self.gifImageView.mas_left).mas_offset(-10);
+        }
         
-        make.right.mas_equalTo(-20);
-        make.height.mas_equalTo(30);
-        make.left.mas_equalTo(20);
-        make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin - 20 - 80);
     }];
     
-    [self.verifyBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.clearPrivacyButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.height.mas_equalTo(30);
+            make.left.mas_equalTo(0);
+            make.top.mas_equalTo(250);
+        } else {
+            make.top.equalTo(self.complexButton.mas_bottom).mas_offset(20);
+            make.width.height.mas_equalTo(30);
+            make.right.equalTo(self.gifImageView.mas_left).mas_offset(-10);
+        }
         
-        make.height.mas_equalTo(50);
-        make.left.mas_equalTo(20);
-        make.right.mas_equalTo(-20);
-        make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin - 20);
     }];
     
 }
 
+
+#pragma mark - 屏幕旋转
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    NSLog(@"----> %@", NSStringFromCGSize(size));
+    [self refreshSubviewsLayoutWithSize:size];
+}
+
+
+#pragma mark - Private
 
 - (void)showAlert:(NSString *)title message:(NSString *)message
 {
@@ -1454,6 +1561,28 @@ static BOOL resetPushModel = NO;
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return theImage;
+}
+
+/// 使用颜色创建带圆角的图片
+/// @param color 颜色
+/// @param size 大小
+/// @param radius 圆角
+- (UIImage *)createImageWithColor:(UIColor *)color withSize:(CGSize)size withRadius:(CGFloat)radius
+{
+    CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
+    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    // 使用Core Graphics设置圆角以避免离屏渲染
+    UIBezierPath * path = [UIBezierPath bezierPathWithRoundedRect:rect byRoundingCorners:UIRectCornerAllCorners cornerRadii:CGSizeMake(radius, radius)];
+    CGContextAddPath(context, path.CGPath);
+    CGContextClip(context);
+    // 设置context颜色
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    // 填充context
     CGContextFillRect(context, rect);
     UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();

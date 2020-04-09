@@ -89,19 +89,22 @@ typedef NS_ENUM(NSInteger, SVDAnimateStyle) {
     SVDAnimateStyleAlert,
     //push
     SVDAnimateStylePush,
-    //底部弹窗
-    SVDAnimateStyleSheet
+    //底部弹出
+    SVDAnimateStyleSheet,
+    
+    //无动画
+    SVDAnimateStyleNone,
 };
 
 //显示样式
 typedef NS_ENUM(NSInteger, SVDShowStyle) {
     //默认
     SVDShowStyleDefault = 0,
-    //
+    //弹窗
     SVDShowStyleAlert,
-    //
+    //push
     SVDShowStylePush,
-    //
+    //底部弹窗
     SVDShowStyleSheet,
 };
 
@@ -282,6 +285,8 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 @property (nonatomic, strong) NSArray<NSString*> *privacyFirstTextArr;
 // 开发者隐私条款协议名称（第二组协议）@[@"名字",@"url",@"分割符"]
 @property (nonatomic, strong) NSArray<NSString*> *privacySecondTextArr;
+// 开发者隐私条款协议名称（第三组协议）@[@"名字",@"url",@"分割符"]
+@property (nonatomic, strong) NSArray<NSString*> *privacyThirdTextArr;
 // 隐私条款多行时行距 CGFloat (例:@(4.0))
 @property (nonatomic,strong)NSNumber* privacyLineSpacing;
 //开发者隐私条款协议默认名称(不建议修改)
@@ -320,7 +325,7 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 // 隐私条款WEB页面标题
 @property (nonatomic, strong)NSAttributedString *privacyWebTitle;
 
-// 隐私条款导航style UIStatusBarStyle (例:@(UIStatusBarStyleDefault))
+// 隐私条款导航style UIBarStyle (例:@(UIBarStyleBlack))
 @property (nonatomic, strong)NSNumber *privacyWebNavBarStyle;
 
 // 隐私条款页面返回按钮 (外界不用传入返回事件)
