@@ -14,6 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSString *phone;
 
+@property (nonatomic, strong) NSError *error;
+
+@property (nonatomic, assign) BOOL isShowRealError;
+
 @end
 
 NS_ASSUME_NONNULL_END

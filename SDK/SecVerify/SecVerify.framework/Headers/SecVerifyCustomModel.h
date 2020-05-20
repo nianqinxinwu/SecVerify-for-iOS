@@ -112,7 +112,7 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 
 #pragma mark - 当前控制器
 // VC，必传
-@property (nonatomic, strong) UIViewController *currentViewController;
+@property (nonatomic, weak) UIViewController *currentViewController;
 
 //外部手动管理关闭界面 @(BOOL)
 /*
@@ -331,6 +331,14 @@ typedef NS_ENUM(NSInteger, SVDShowStyle) {
 // 隐私条款页面返回按钮 (外界不用传入返回事件)
 @property (nonatomic, strong)UIButton *privacyBackButton;
 
+//是否给webview自动添加autolayout
+@property (nonatomic, strong)  NSNumber *privacyWebAutoLayout;
+
+//隐私协议页面视图显示(viewDidLoad)
+@property (nonatomic,copy) void(^privacyVCShowBlock)(UIViewController *privacyVC,UIView *webView);
+
+//隐私协议点击事件,是否自动跳转  autoInteract（是否由sdk自动跳转隐私协议界面）
+@property (nonatomic,copy) void (^privacyAutoShouldInteractWithURLBlock)(UITextView *textView,NSURL *URL,BOOL *autoInteract);
 #pragma mark - 登陆按钮设置
 
 // 登录按钮文本

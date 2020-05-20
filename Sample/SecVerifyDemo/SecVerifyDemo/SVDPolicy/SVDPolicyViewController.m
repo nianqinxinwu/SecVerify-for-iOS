@@ -245,7 +245,6 @@
 #pragma mark - 屏幕旋转
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    NSLog(@"----> %@", NSStringFromCGSize(size));
     [self refreshSubviewsLayoutWithSize:size];
 }
 

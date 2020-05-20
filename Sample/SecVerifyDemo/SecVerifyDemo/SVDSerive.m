@@ -57,7 +57,14 @@
         }
     }
     
-    if (!params) return;
+    if (!params) {
+        NSError *error = [NSError errorWithDomain:@"com.svd.error" code:0 userInfo:@{@"description":@"获取完整手机号参数异常"}];
+        if (handler) {
+            handler(error, nil);
+        }
+        return;
+    }
+        
         
     AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
     session.requestSerializer = [AFJSONRequestSerializer serializer];

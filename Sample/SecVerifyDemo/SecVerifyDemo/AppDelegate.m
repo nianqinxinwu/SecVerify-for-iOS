@@ -12,7 +12,7 @@
 #import "SVDVerifyViewController.h"
 #import "SVDVerifyNaviationViewController.h"
 #import <MOBFoundation/MOBFoundation.h>
-#import "SVDPolicyManager.h"
+#import <MOBFoundation/MobSDK+Privacy.h>
 
 #import <SecVerify/SecVerify.h>
 
@@ -24,24 +24,26 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    NSLog(@"****>>>11: %f", [NSDate date].timeIntervalSince1970);
     // Override point for customization after application launch.
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    
     self.window.backgroundColor = [UIColor whiteColor];
-    
     self.window.rootViewController = [[SVDVerifyNaviationViewController alloc] initWithRootViewController:[SVDVerifyViewController new]];
     
     [Bugly startWithAppId:@"e21ce79e66"];
     
+    // 采用plist自动注册
 //    [MobSDK registerAppKey:@"moba6b6c6d6" appSecret:@"b89d2427a3bc7ad1aea1e1e8c1d36bf3"];
     
     [self.window makeKeyAndVisible];
     
-    // 展示隐私协议
-    [[SVDPolicyManager defaultManager] show];
+    // 默认同意隐私协议
+    [MobSDK uploadPrivacyPermissionStatus:YES onResult:nil];
     
     // 开启调试模式
-    [SecVerify setDebug:YES];
+//    [SecVerify setDebug:YES];
+    // 设置超时时间
+//    [SecVerify setTimeoutInterval:3.0];
     
     return YES;
 }

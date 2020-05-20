@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5E01DE8424247F6C0073CFB3 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E01DE8324247F6C0073CFB3 /* CoreTelephony.framework */; };
+		5EAF3DEF24344B24004A37BA /* SVDemo.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5EAF3DEE24344B24004A37BA /* SVDemo.gif */; };
+		5EAF3DF22435B987004A37BA /* SVDLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EAF3DF12435B987004A37BA /* SVDLoginViewController.m */; };
 		9199DD0A231CB4D900B8F428 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199DD09231CB4D900B8F428 /* AppDelegate.m */; };
 		9199DD0D231CB4D900B8F428 /* SVDVerifyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9199DD0C231CB4D900B8F428 /* SVDVerifyViewController.m */; };
 		9199DD12231CB4DC00B8F428 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9199DD11231CB4DC00B8F428 /* Assets.xcassets */; };
@@ -72,6 +74,9 @@
 
 /* Begin PBXFileReference section */
 		5E01DE8324247F6C0073CFB3 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		5EAF3DEE24344B24004A37BA /* SVDemo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = SVDemo.gif; sourceTree = "<group>"; };
+		5EAF3DF02435B987004A37BA /* SVDLoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVDLoginViewController.h; sourceTree = "<group>"; };
+		5EAF3DF12435B987004A37BA /* SVDLoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVDLoginViewController.m; sourceTree = "<group>"; };
 		9199DD05231CB4D900B8F428 /* SecVerifyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SecVerifyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9199DD08231CB4D900B8F428 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9199DD09231CB4D900B8F428 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -228,6 +233,8 @@
 				9199DDE1231CBED900B8F428 /* SVDSuccessViewController.m */,
 				91CDBAA0231CFC2F001D3D48 /* SVDVerifyNaviationViewController.h */,
 				91CDBAA1231CFC2F001D3D48 /* SVDVerifyNaviationViewController.m */,
+				5EAF3DF02435B987004A37BA /* SVDLoginViewController.h */,
+				5EAF3DF12435B987004A37BA /* SVDLoginViewController.m */,
 				9199DDDA231CBC7B00B8F428 /* SVDSerive.h */,
 				9199DDD9231CBC7A00B8F428 /* SVDSerive.m */,
 				9199DDDD231CBC8A00B8F428 /* SVDPrefixHeader.pch */,
@@ -383,6 +390,7 @@
 				9199DD16231CB4DC00B8F428 /* Info.plist */,
 				9199DD13231CB4DC00B8F428 /* LaunchScreen.storyboard */,
 				91CDBAA3231CFCCE001D3D48 /* GIF.gif */,
+				5EAF3DEE24344B24004A37BA /* SVDemo.gif */,
 				9199DD11231CB4DC00B8F428 /* Assets.xcassets */,
 			);
 			path = "Supporting Files";
@@ -536,6 +544,7 @@
 				B145211F23E9235400D3259A /* EAccountOpenPageResource.bundle in Resources */,
 				B145212323E9235400D3259A /* SecVerify.bundle in Resources */,
 				91CDBAA4231CFCCE001D3D48 /* GIF.gif in Resources */,
+				5EAF3DEF24344B24004A37BA /* SVDemo.gif in Resources */,
 				9199DD12231CB4DC00B8F428 /* Assets.xcassets in Resources */,
 				B145212023E9235400D3259A /* TYRZResource.bundle in Resources */,
 				91CDBA04231CEE39001D3D48 /* SVProgressHUD.bundle in Resources */,
@@ -580,6 +589,7 @@
 				B167829323ED7EC2009BE319 /* SVDPolicyWebViewController.m in Sources */,
 				B10610F123ED59B900BECF0A /* SVDPolicyManager.m in Sources */,
 				91CDBA08231CEE39001D3D48 /* AFURLRequestSerialization.m in Sources */,
+				5EAF3DF22435B987004A37BA /* SVDLoginViewController.m in Sources */,
 				9199DDDB231CBC7B00B8F428 /* SVDSerive.m in Sources */,
 				9199DD0A231CB4D900B8F428 /* AppDelegate.m in Sources */,
 				91CDB9F8231CEE39001D3D48 /* MASConstraintMaker.m in Sources */,

@@ -15,58 +15,48 @@
 #import "Masonry.h"
 #import "SVProgressHUD.h"
 #import "SVDPolicyManager.h"
+#import "SVDLoginViewController.h"
 
-//是否重置model 属性
-static BOOL resetModel = NO;
-
+//是否显示错误弹框(因账号密码登陆关闭的loginVC不需要显示)
+static BOOL showErrorAlert = YES;
 //是否显示具体的错误码
 static BOOL showRealError = NO;
 
 //是否手动销毁登录vc
 static BOOL dismissLoginVcBySelf = NO;
-//半透明页面
-static BOOL translucentBg = NO;
-//弹窗
-static BOOL resetAlertModel = NO;
-//复杂登录
-static BOOL resetFuModel = NO;
-
-static BOOL resetPushModel = NO;
 
 @interface SVDVerifyViewController () <UIViewControllerTransitioningDelegate>
+
+@property (nonatomic, assign) BOOL isSmallScreen;
+
+/// 背景图片 View
+@property (nonatomic, strong) UIImageView *bgImageView;
+
+/// logo按钮
+@property (nonatomic, strong) UIButton *logoButton;
+
+/// 秒验Title Label
+@property (nonatomic, strong) UILabel *secVerifyTitleLabel;
+
+/// 秒验 slogan Label
+@property (nonatomic, strong) UILabel *secVerifySloganLabel;
 
 /// GIF image view
 @property (nonatomic, strong) FLAnimatedImageView *gifImageView;
 
-/// 一键验证Label
-@property (nonatomic, strong) UILabel *verifyLabel;
+/// 底部视图容器
+@property (nonatomic, strong) UIView *bottomContainerView;
 
-/// 一键验证Button
-@property (nonatomic, strong) UIButton *verifyButton;
+/// 一键登陆全屏
+@property (nonatomic, strong) UIButton *fullScreenLoginButton;
 
-/// 自定义授权页面UI按钮
-@property (nonatomic, strong) UIButton *customUIButton;
+/// 一键登陆弹窗
+@property (nonatomic, strong) UIButton *alertLoginButton;
 
-/// 展示详细错误信息按钮
-@property (nonatomic, strong) UIButton *detailErrorButton;
+/// 版本号 Label
+@property (nonatomic, strong) UILabel *verisonLabel;
 
-/// 手动关闭授权页面
-@property (nonatomic, strong) UIButton *manualDismissButton;
 
-/// 授权页从底部向上弹出按钮
-@property (nonatomic, strong) UIButton *translucentButton;
-
-/// 授权页弹出按钮
-@property (nonatomic, strong) UIButton *alertButton;
-
-/// 授权页Push推出
-@property (nonatomic, strong) UIButton *pushButton;
-
-/// 展示复杂授权页效果按钮
-@property (nonatomic, strong) UIButton *complexButton;
-
-/// 清空隐私协议授权结果缓存按钮
-@property (nonatomic, strong) UIButton *clearPrivacyButton;
 
 @property (nonatomic, assign) BOOL isPreLogin;
 
@@ -83,6 +73,20 @@ static BOOL resetPushModel = NO;
 @end
 
 @implementation SVDVerifyViewController
+
++ (BOOL)isPhoneXor11Pro {
+    BOOL isPhoneXor11Pro = NO;
+    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {//判断是否是手机
+        return isPhoneXor11Pro;
+    }
+    if (@available(iOS 11.0, *)) {
+        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
+        if (mainWindow.safeAreaInsets.bottom > 0.0 && [UIScreen mainScreen].bounds.size.width <= 375) {
+            isPhoneXor11Pro = YES;
+        }
+    }
+    return isPhoneXor11Pro;
+}
 
 + (BOOL)isPhoneX {
     BOOL iPhoneX = NO;
@@ -101,12 +105,13 @@ static BOOL resetPushModel = NO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.isSmallScreen = [UIScreen mainScreen].bounds.size.width <= 375 && ![SVDVerifyViewController isPhoneX];
     
     [self setupSubViews];
     
     self.isPreLogin = NO;
     self.isLogining = NO;
-    
+    NSLog(@"****>>>22: %f", [NSDate date].timeIntervalSince1970);
     [self startPreLogin];
 }
 
@@ -120,9 +125,9 @@ static BOOL resetPushModel = NO;
 //{
 //    [super viewDidAppear:animated];
 //    [self.navigationController setNavigationBarHidden:YES animated:NO];
+//    
+//    [self login];
 //}
-
-
 
 
 #pragma mark - 预取号
@@ -133,6 +138,7 @@ static BOOL resetPushModel = NO;
     if (!self.isPreLogin)
     {
         [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+            NSLog(@"****>>>end: %f", [NSDate date].timeIntervalSince1970);
             [self enableVerifyBtn:YES];
             
             if (!error)
@@ -154,166 +160,33 @@ static BOOL resetPushModel = NO;
 
 
 #pragma mark - 登陆
-- (void)login
-{
+- (void)loginClicked:(UIButton *)button {
+    showErrorAlert = YES;
+    
+//    [self enableVerifyBtn:NO];
     WeakSelf
-    [self enableVerifyBtn:NO];
     [SecVerify preLogin:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-        NSLog(@"---> 预取号 resultDic: %@ error: %@", resultDic, error);
-        if (!error) {
-            // 预取号成功
-            weakSelf.isLogining = YES;
-            SecVerifyCustomModel *model = [[SecVerifyCustomModel alloc] init];
-            //当前VC,用于呈现登录视图(必须设置)
-            model.currentViewController = weakSelf;
-            // 设置是否手动关闭授权页面
-            model.manualDismiss = @(dismissLoginVcBySelf);
-            
-            // 支持横屏
-            model.shouldAutorotate = @(YES);
-            model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight);
-            
-            if (translucentBg) {
-                //左边按钮隐藏
-                model.leftControlHidden = @(YES);
-                model.cancelBySingleClick = @(YES);
-                model.showType = @(SVDShowStyleSheet);
-            }
-            else if (resetModel)
-            {
-                model.animateType = @(SVDAnimateStylePush);
-                [weakSelf resetCustomModel:model];
-            }
-            else if (resetAlertModel)
-            {
-                model.leftControlHidden = @(YES);
-                model.cancelBySingleClick = @(YES);
-                model.showType = @(SVDShowStyleAlert);
-            }
-            else if (resetFuModel)
-            {
-                [weakSelf resetFuModel:model];
-            }
-            else if (resetPushModel)
-            {
-                model.animateType = @(SVDAnimateStylePush);
-            }
-            
-            // 导航栏设置
-            model.navLeftControlHidden = @(NO);
-            model.navBarStyle = @(UIStatusBarStyleLightContent);
-            model.privacyWebNavBarStyle = @(UIBarStyleDefault);
-            
-            
-            [SecVerify loginWithModel:model
-                          showLoginVc:^{
-                // 授权页面成功展示回调
-                NSLog(@"---> 授权页面成功展示");
-            }
-                      loginBtnClicked:^{
-                // 授权页登陆按钮点击回调
-                NSLog(@"---> 授权页登陆按钮点击");
-            }
-                    willHiddenLoading:^{
-                //自定义loading,隐藏
-                [SVProgressHUD dismiss];
-            }
-                           completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
-                NSLog(@"登陆验证 resultDic: %@ error: %@",resultDic, error);
-                weakSelf.isPreLogin = NO;
-                weakSelf.isLogining = NO;
-                if (!error) {
-                    [SVProgressHUD showWithStatus:@"加载中..."];
-                    // 授权成功,获取完整手机号
-                    [[SVDSerive sharedSerive] verifyGetPhoneNumberWith:resultDic completion:^(NSError *error, NSString * _Nonnull phone) {
-                        NSLog(@"获取完整手机号 phone: %@ error: %@",phone, error);
-                        [SVProgressHUD dismiss];
-                        //手动关闭界面的时候使用
-                        if(dismissLoginVcBySelf)
-                        {
-                            [SecVerify finishLoginVc:^{
-                                NSLog(@"****************手动关闭界面***************");
-                            }];
-                        }
-                        
-                        if (!error)
-                        {
-                            SVDSuccessViewController *successVC = [[SVDSuccessViewController alloc] init];
-                            successVC.phone = phone;
-                            [weakSelf.navigationController pushViewController:successVC animated:YES];
-                        }
-                        else
-                        {
-                            if(showRealError)
-                            {
-                                [weakSelf showAlert:error.userInfo[@"description"] message:[NSString stringWithFormat:@"%ld", (long)error.code]];
-                            }
-                            else
-                            {
-                                NSString *des = error.userInfo[@"description"];
-                                NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
-                                NSString *retStr = [[NSString alloc] initWithData:[des dataUsingEncoding:enc] encoding:enc];
-                                
-                                if(error.code == 170601)
-                                {
-                                    [weakSelf showAlert:retStr message:nil];
-                                }
-                                else
-                                {
-                                    [weakSelf showAlert:@"当前网络状态不稳定" message:nil];
-                                }
-                            }
-                        }
-                    }];
+        NSLog(@"---> Demo预取号 resultDic: %@ error: %@", resultDic, error);
+        weakSelf.isPreLogin = NO;
+        if (error) {
+            NSString *title = nil;
+            switch (error.code) {
+                case 170005:
+                    title = @"当前手机无SIM卡，请插入后重试";
+                    break;
+                case 170003:
+                    title = @"不支持的运营商";
+                    break;
+                case 170601:
+                    title = @"请打开蜂窝网络";
+                    break;
+                case 170606:
+                    title = @"获取授权码数量超限";
+                    break;
                     
-                }
-                else
-                {
-                    //手动关闭界面的时候使用
-                    //170602 自定义事件，手动关闭登录vc
-                    //170204 取消登录
-                    if(dismissLoginVcBySelf && error.code != 170602 && error.code != 170204)
-                    {
-                        [SecVerify finishLoginVc:^{
-                            NSLog(@"****************手动关闭界面***************");
-                        }];
-                    }
-                    
-                    if(showRealError)
-                    {
-                        [weakSelf showAlert:error.userInfo.description message:error.userInfo[@"description"]];
-                    }
-                    else
-                    {
-                        [weakSelf showAlert:@"提示" message:error.userInfo[@"error_message"] ?: error.userInfo[@"description"]];
-                    }
-                }
-                
-                // 提前预取号
-                [weakSelf startPreLogin];
-            }];
-            
-            
-        }
-        else
-        {
-            NSString *title = @"当前网络状态不稳定";
-            if (error.code == 170005)
-            {
-                title = @"当前手机无SIM卡，请插入后重试";
-            }
-            if (error.code == 170003)
-            {
-                title = @"不支持的运营商";
-            }
-            
-            if(error.code == 170601)
-            {
-                title = @"请打开蜂窝网络";
-            }
-            if(error.code == 170606)
-            {
-                title = @"获取授权码数量超限";
+                default:
+                    title = @"当前网络状态不稳定";
+                    break;
             }
             if(showRealError)
             {
@@ -325,58 +198,92 @@ static BOOL resetPushModel = NO;
             }
             
             [weakSelf enableVerifyBtn:YES];
+            return;
         }
+        
+        // 预取号成功
+        weakSelf.isLogining = YES;
+        SecVerifyCustomModel *model = [[SecVerifyCustomModel alloc] init];
+        //当前VC,用于呈现登录视图(必须设置)
+        model.currentViewController = weakSelf;
+        
+        if (button.tag == 10011) {
+            // 自定义弹窗授权页(可选)
+            [weakSelf resetAlertModel:model];
+        } else {
+            // 自定义授权页(可选)
+            [weakSelf resetCustomModel:model];
+        }
+        
+        // 一键登录
+        [SecVerify loginWithModel:model
+                      showLoginVc:^{
+            //
+        }
+                  loginBtnClicked:^{
+            //
+        }
+                willHiddenLoading:^{
+            //
+        }
+                       completion:^(NSDictionary * _Nullable resultDic, NSError * _Nullable error) {
+            NSLog(@"登陆验证 resultDic: %@ error: %@",resultDic, error);
+            weakSelf.isLogining = NO;
+            
+            // 提前预取号
+            [weakSelf startPreLogin];
+            
+            if (error) {
+                //手动关闭界面的时候使用
+                //170602 自定义事件，手动关闭登录vc
+                //170204 取消登录
+                if(dismissLoginVcBySelf && error.code != 170602 && error.code != 170204)
+                {
+                    [SecVerify finishLoginVc:^{
+                        NSLog(@"****************手动关闭界面***************");
+                    }];
+                }
+                
+                if(showErrorAlert && showRealError)
+                {
+                    [weakSelf showAlert:error.userInfo.description message:error.userInfo[@"description"]];
+                }
+                else if (showErrorAlert)
+                {
+                    [weakSelf showAlert:@"提示" message:error.userInfo[@"error_message"] ?: error.userInfo[@"description"]];
+                }
+                return;
+            }
+            
+            // 授权成功,获取完整手机号
+            [SVProgressHUD showWithStatus:@"加载中..."];
+            [[SVDSerive sharedSerive] verifyGetPhoneNumberWith:resultDic completion:^(NSError *error, NSString * _Nonnull phone) {
+                NSLog(@"获取完整手机号 phone: %@ error: %@",phone, error);
+                [SVProgressHUD dismiss];
+                //手动关闭界面的时候使用
+                if(dismissLoginVcBySelf)
+                {
+                    [SecVerify finishLoginVc:^{
+                        NSLog(@"****************手动关闭界面***************");
+                    }];
+                }
+                
+                // 界面跳转
+                SVDSuccessViewController *successVC = [[SVDSuccessViewController alloc] init];
+                successVC.phone = phone;
+                successVC.error = error;
+                successVC.isShowRealError = showRealError;
+                [weakSelf.navigationController pushViewController:successVC animated:YES];
+                
+            }];
+            
+        }];
+        
     }];
 }
 
+
 #pragma mark - Actions
-
-- (void)resetModelAction:(UIButton *)btn
-{
-    resetModel = !resetModel;
-    btn.selected = !btn.selected;
-}
-
-- (void)resetRealErrorAction:(UIButton *)btn
-{
-    showRealError = !showRealError;
-    btn.selected = !btn.selected;
-}
-
-- (void)autoDismissAction:(UIButton *)btn
-{
-    dismissLoginVcBySelf = !dismissLoginVcBySelf;
-    btn.selected = !btn.selected;
-}
-
-- (void)translucentAction:(UIButton *)btn
-{
-    translucentBg = !translucentBg;
-    btn.selected = !btn.selected;
-}
-
-- (void)resetAlertAction:(UIButton *)btn
-{
-    resetAlertModel = !resetAlertModel;
-    btn.selected = !btn.selected;
-}
-
-
-- (void)resetFuAction:(UIButton *)btn
-{
-    resetFuModel = !resetFuModel;
-    btn.selected = !btn.selected;
-}
-
-- (void)qingBtnClicked:(UIButton *)qingBtn {
-    [[SVDPolicyManager defaultManager] clearCache];
-    [self showAlert:@"提示" message:@"缓存清理完成, 请重启App!"];
-}
-
-- (void)resetPushAction:(UIButton *)btn {
-    resetPushModel = !resetPushModel;
-    btn.selected = !btn.selected;
-}
 
 - (void)leftAction
 {
@@ -386,296 +293,188 @@ static BOOL resetPushModel = NO;
     self.isLogining = NO;
 }
 
-- (void)rightAction
-{
-    [SecVerify finishLoginVc:nil];
-    self.isLogining = NO;
-}
-
-- (UIButton *)backBtn
-{
-    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    backButton.frame = CGRectMake(0, 0, 50, 50);
-    [backButton setTitle:@"返回" forState:UIControlStateNormal];
-    [backButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-    // 让按钮内部的所有内容左对齐
-    backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    [backButton addTarget:self action:@selector(leftAction) forControlEvents:UIControlEventTouchUpInside];
-    backButton.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0); // 这里微调返回键的位置可以让它看上去和左边紧贴
-    
-    return backButton;
-}
-
-- (UIButton *)rightBtn
-{
-    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    backButton.frame = CGRectMake(0, 0, 50, 50);
-    [backButton setTitle:@"关闭" forState:UIControlStateNormal];
-    [backButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-    // 让按钮内部的所有内容左对齐
-    backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-    [backButton addTarget:self action:@selector(rightAction) forControlEvents:UIControlEventTouchUpInside];
-    backButton.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0); // 这里微调返回键的位置可以让它看上去和左边紧贴
-    
-    return backButton;
-}
-
+// 自定义全屏授权页model
 - (void)resetCustomModel:(SecVerifyCustomModel *)model
 {
-    //左侧按钮
-    UIButton *backButton = [self backBtn];
+    WeakSelf
+    // 设置是否手动关闭授权页面
+//    model.manualDismiss = @(YES);
     
-    //右侧按钮
-    UIButton *rightButton = [self rightBtn];
-    
-    //导航title属性文字
-    NSMutableAttributedString *attStr = [[NSMutableAttributedString alloc] initWithString:@"登录验证"];
-    UIColor *titleColor = [UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0];
-    
-    NSRange range = NSMakeRange(0, 4);
-    if(range.location != NSNotFound)
-    {
-        
-        [attStr addAttributes:@{
-                                NSForegroundColorAttributeName : titleColor,
-                                NSFontAttributeName: [UIFont systemFontOfSize:25.0f]
-                                }
-                        range:NSMakeRange(2, 2)];
-    }
-    
+    // 支持横屏
+    model.shouldAutorotate = @(YES);
+    model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight);
     
     //*******导航条设置*******
-    //  导航栏背景色
-    //    model.navBarTintColor = [UIColor grayColor];
-    // 导航栏标题
-    model.navText = @"登录";
-    // 导航返回图标
-    model.navReturnImg = [UIImage imageNamed:@"close"];
-    // 隐藏导航栏尾部线条
-    model.navBottomLineHidden = @(YES);
     // 导航栏隐藏
-    model.navBarHidden = @(NO);
-    // 导航栏隐藏
-    model.navStatusBarHidden = @(NO);
-    // 导航栏返回按钮隐藏
-    model.navTranslucent = @(NO);
-    // 导航栏返回按钮隐藏
-    model.navBackBtnHidden = @(YES);
-    // 导航栏左边按钮
-    model.navLeftControl = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-    // 导航栏右边按钮
-    model.navRightControl = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-    // 导航栏属性标题
-    model.navAttributesText = attStr;
- 
-    //model.navBackgroundImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(SVD_ScreenWidth, 44)];
-    //  导航栏配合背景图片设置，用来控制在不同状态下导航栏的显示(横竖屏是否显示)
-    model.navBarMetrics = @(UIBarMetricsDefault);
-    //  导航栏导航栏底部分割线
-    model.navShadowImage = [self createImageWithColor:[UIColor greenColor] withSize:CGSizeMake(300, 2)];
-    //  导航栏barStyle
-    model.navBarStyle = @(UIBarStyleDefault);
-    //  导航栏背景透明
-    model.navBackgroundClear = @(NO);
+    model.navBarHidden = @(YES);
     
     //*******授权页背景*******
     // 授权页背景颜色
-    model.backgroundColor = [UIColor lightGrayColor];
-    //背景图片
-    model.bgImg = [UIImage imageNamed:@"loginbgimg.jpeg"];
+    model.backgroundColor = [UIColor whiteColor];
     
     
     //*******授权页logo*******
     // Logo图片
-    model.logoImg = [UIImage imageNamed:@"AppIcon"];
-    // Logo是否隐藏
-    model.logoHidden = @(NO);
-    // Logos圆角
-    model.logoCornerRadius = @(10);
+    model.logoImg = [UIImage imageNamed:@"icon_m"];
     
     //*******号码设置*******
     // 手机号码字体颜色
-    model.numberColor = [UIColor grayColor];
+//    model.numberColor = [UIColor blackColor];
     // 字体
-    model.numberFont = [UIFont boldSystemFontOfSize:16];
+    model.numberFont = [UIFont fontWithName:@"PingFangSC-Semibold" size:18];
     // 手机号对其方式
-    model.numberTextAlignment = @(NSTextAlignmentLeft);
+    model.numberTextAlignment = @(NSTextAlignmentCenter);
     
-    model.phoneBorderWidth = @(1);
-    model.phoneBorderColor =  [UIColor redColor];
-    model.phoneCorner = @(6);
     //*******切换账号设置*******
-    // 切换账号字体颜色
-    model.switchColor = [UIColor orangeColor];
-    // 切换账号字体
-    model.switchFont =  [UIFont systemFontOfSize:14];
-    // 切换账号对其方式
-    model.switchTextHorizontalAlignment = @(UIControlContentHorizontalAlignmentLeft);
-    // 切换账号标题
-    model.switchText = @"切换账号";
     // 隐藏切换账号按钮
-    model.switchHidden = @(NO);
+    model.switchHidden = @(YES);
     
     
     //*******复选框*******
     // 复选框选中时的图片
-    model.checkedImg = [UIImage imageNamed:@"checked"];
+//    model.checkedImg = [UIImage imageNamed:@"checked"];
     // 复选框未选中时的图片
-    model.uncheckedImg = [UIImage imageNamed:@"unchecked"];
+//    model.uncheckedImg = [UIImage imageNamed:@"unchecked"];
     // 隐私条款check框默认状态
-    model.checkDefaultState = @(NO);
+    model.checkDefaultState = @(YES);
     // 复选框尺寸
-    model.checkSize = [NSValue valueWithCGSize:CGSizeMake(20, 20)];
+//    model.checkSize = [NSValue valueWithCGSize:CGSizeMake(20, 20)];
     // 隐私条款check框是否隐藏
-    model.checkHidden = @(NO);
+    model.checkHidden = @(YES);
     
     //*******隐私条款设置*******
     // 隐私条款基本文字颜色
-    model.privacyTextColor = [UIColor greenColor];
+    model.privacyTextColor = [UIColor colorWithRed:184/255.0 green:184/255.0 blue:188/255.0 alpha:1/1.0];
     // 隐私条款协议文字字体
-    model.privacyTextFont =  [UIFont systemFontOfSize:12];
+    model.privacyTextFont =  [UIFont fontWithName:@"PingFangSC-Regular" size:11];
     // 隐私条款对其方式
-    model.privacyTextAlignment = @(NSTextAlignmentLeft);
+    model.privacyTextAlignment = @(NSTextAlignmentCenter);
     // 隐私条款协议文字颜色
-    model.privacyAgreementColor = [UIColor redColor];
-    // 隐私条款协议背景颜色
-    model.privacyUnderlineStyle= @(NSUnderlineStyleSingle);
+    model.privacyAgreementColor = [UIColor colorWithRed:0/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0];
     // 隐私条款应用名称
-    model.privacyAppName = @"秒验";
+    model.privacyAppName = @"秒验Demo";
     // 协议文本前后符号@[@"《",@"》"]
     model.privacyProtocolMarkArr = @[@"《",@"》"];
-    // 开发者隐私条款协议名称（第一组协议）
-    model.privacyFirstTextArr = @[@"服务协议",@"https://www.mob.com",@"、"];
-    // 开发者隐私条款协议名称（第二组协议）
-    model.privacySecondTextArr =  @[@"百度协议",@"https://www.baidu.com",@"、"];
-    // 开发者隐私条款协议名称（第三组协议）
-    model.privacyThirdTextArr =  @[@"谷歌协议",@"https://www.google.com",@"、"];
     // 隐私条款多行时行距
     model.privacyLineSpacing = @(4.0);
-    // 隐私条款WEB页面标题
-//    model.privacyWebTitle = attStr;
-    
-    NSMutableAttributedString *privacyprivacyTitle1 = [[NSMutableAttributedString alloc] initWithString:@"协议名称"];
-    
-    model.privacytitleArray = @[attStr, privacyprivacyTitle1];
-    
-    // 隐私条款WEB页面返回按钮图片
-    model.privacyWebBackBtnImage = [self createImageWithColor:[UIColor redColor]withSize:CGSizeMake(40, 40)];
-    
-    model.isPrivacyOperatorsLast = @(NO);
     
     //*******登陆按钮设置*******
     // 登录按钮文本
-    model.loginBtnText = @"登录";
+    model.loginBtnText = @"一键登录";
     // 登录按钮文本颜色
-    //    model.loginBtnTextColor = [UIColor greenColor];
+    model.loginBtnTextColor = [UIColor whiteColor];
     // 登录按钮背景颜色
-    //    model.loginBtnBgColor = [UIColor blueColor];
-    // 登录按钮边框宽度
-    //    model.loginBtnBorderWidth = @(1);
-    // 登录按钮边框颜色
-    //    model.loginBtnBorderColor = [UIColor cyanColor];
+    model.loginBtnBgColor = [UIColor colorWithRed:0/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0];
     // 登录按钮圆角
     model.loginBtnCornerRadius = @(5);
     // 登录按钮文字字体
     model.loginBtnTextFont = [UIFont boldSystemFontOfSize:20];
-    // 登录按钮背景图片
-    model.loginBtnBgImgArr = @[
-                               [self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor blueColor] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)]
-                               ];
-    
     
     //*******运营商品牌标签*******
     //运营商品牌文字字体
-    model.sloganTextFont = [UIFont systemFontOfSize:10];
+    model.sloganTextFont = [UIFont fontWithName:@"PingFangSC-Regular" size:11];
     //运营商品牌文字颜色
-    model.sloganTextColor = [UIColor grayColor];
+    model.sloganTextColor = [UIColor colorWithRed:184/255.0 green:184/255.0 blue:188/255.0 alpha:1/1.0];
     //运营商品牌文字对齐方式
     model.sloganTextAlignment = @(NSTextAlignmentCenter);
-
-    model.sloganBorderColor = [UIColor redColor];
-    model.sloganBorderWidth = @(1);
-    model.sloganCorner = @(6);
-    
-    //*******loading 视图*******
-    // loading 是否显示
-    model.hiddenLoading = @(NO);
- 
-    //自定义loading视图
-    [model setLoadingView:^(UIView *contentView) {
-//        [SVProgressHUD setContainerView:contentView];
-//        [SVProgressHUD showWithStatus:@"数据加载中..."];
-        
-    }];
-    
-    [model setHasNotSelectedCheckViewBlock:^(UIView *checkView) {
-        [[[UIAlertView alloc] initWithTitle:nil message:@"请勾选协议" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil] show];
-    }];
     
     float realScreenWidth = (SVD_ScreenWidth > SVD_ScreenHeight)?SVD_ScreenHeight:SVD_ScreenWidth;
     float realScreenHeight = (SVD_ScreenWidth > SVD_ScreenHeight)?SVD_ScreenWidth:SVD_ScreenHeight;
     //自定义视图
     [model setCustomViewBlock:^(UIView *customView) {
+        // 自定义返回按钮
+        UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [backButton setImage:[UIImage imageNamed:@"fh"] forState:UIControlStateNormal];
+        [backButton setTitle:@"返回" forState:UIControlStateNormal];
+        [backButton setTitleColor:[UIColor colorWithRed:35/255.0 green:35/255.0 blue:38/255.0 alpha:1/1.0] forState:UIControlStateNormal];
+        backButton.titleLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:18];
+        [backButton addTarget:weakSelf action:@selector(leftAction) forControlEvents:UIControlEventTouchUpInside];
+        
+        [customView addSubview:backButton];
+        
         float height = [SVDVerifyViewController isPhoneX]?(115+36.0):115;
         
         UIView *bottomView = [[UIView alloc] init];
-        {
-            [customView addSubview:bottomView];
-            [bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(0);
-                make.centerX.mas_equalTo(customView);
-                make.width.mas_equalTo(realScreenWidth);
-                make.height.mas_equalTo(height);
-            }];
-            
-            UILabel *mLbl = [[UILabel alloc] init];
-            mLbl.textAlignment = NSTextAlignmentCenter;
-            mLbl.font = [UIFont systemFontOfSize:12.0f];
-            mLbl.textColor = [UIColor lightGrayColor];
-            mLbl.backgroundColor = [UIColor clearColor];
-            mLbl.text = @"-- 您可以使用以下方式登录 --";
-            [bottomView addSubview:mLbl];
-            
-            [mLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(10);
-                make.centerX.mas_equalTo(bottomView);
-                make.width.mas_equalTo(200);
-                make.height.mas_equalTo(20);
-            }];
-            
-            
-            UIButton *button = [[UIButton alloc] init];
-            [button setImage:[UIImage imageNamed:@"weixin"] forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:14];
-            [button setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-            [button addTarget:self action:@selector(weixinLoginAction) forControlEvents:UIControlEventTouchUpInside];
-            [bottomView addSubview:button];
-            
-            [button mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(40);
-                make.centerX.mas_equalTo(bottomView);
-                make.width.height.mas_equalTo(40);
-            }];
-            
-        }
+//        bottomView.backgroundColor = [UIColor redColor];
+        [customView addSubview:bottomView];
         
-        //获取当前横竖屏状态
-        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
-//            bottomView.hidden = status;
-            NSLog(@"---> 当前横竖屏状态: %zd viewSize: %@", status, NSStringFromCGSize(size));
-        }];
+        UILabel *mLbl = [[UILabel alloc] init];
+        mLbl.textAlignment = NSTextAlignmentCenter;
+        mLbl.font = [UIFont fontWithName:@"PingFangSC-Regular" size:13];
+        mLbl.textColor = [UIColor colorWithRed:184/255.0 green:184/255.0 blue:188/255.0 alpha:1/1.0];
+        mLbl.text = @"其他方式登录";
+        [mLbl sizeToFit];
+        
+        [bottomView addSubview:mLbl];
+        
+        UIButton *wxBtn = [[UIButton alloc] init];
+        [wxBtn setBackgroundImage:[UIImage imageNamed:@"wc"] forState:UIControlStateNormal];
+        [wxBtn addTarget:weakSelf action:@selector(weixinLoginAction) forControlEvents:UIControlEventTouchUpInside];
+        [bottomView addSubview:wxBtn];
+        
+        UIButton *zhBtn = [[UIButton alloc] init];
+        [zhBtn setBackgroundImage:[UIImage imageNamed:@"zh"] forState:UIControlStateNormal];
+        [zhBtn addTarget:weakSelf action:@selector(usernameLoginAction) forControlEvents:UIControlEventTouchUpInside];
+        [bottomView addSubview:zhBtn];
         
         [customView bringSubviewToFront:bottomView];
+        
+        // 自定义视图根据横竖屏刷新布局
+        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
+            BOOL isPortrait = size.width < size.height;
+            CGFloat topOffset = isPortrait ? 20 : 5;
+            [backButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.width.height.mas_equalTo(50);
+                make.left.mas_equalTo(15);
+                make.top.mas_equalTo(isPortrait ? 34 : 15);
+            }];
+            
+            // bottomView
+            [bottomView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                if (isPortrait) {
+                    make.bottom.mas_equalTo(- SVD_TabbarSafeBottomMargin - 10);
+                    make.centerX.mas_equalTo(customView);
+                    make.width.mas_equalTo(realScreenWidth);
+                    make.height.mas_equalTo(height);
+                } else {
+                    make.bottom.mas_equalTo(- SVD_TabbarSafeBottomMargin - 10);
+                    make.centerX.mas_equalTo(customView);
+                    make.width.mas_equalTo(realScreenWidth);
+                    make.height.mas_equalTo(70+mLbl.bounds.size.height);
+                }
+                
+            }];
+            
+            [mLbl mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(10);
+                make.centerX.mas_equalTo(0);
+            }];
+            
+            [wxBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(mLbl.mas_bottom).offset(topOffset);
+                make.centerX.mas_equalTo(-50);
+                make.width.height.mas_equalTo(48);
+            }];
+            
+            [zhBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(wxBtn);
+                make.centerX.mas_equalTo(50);
+                make.width.height.mas_equalTo(48);
+            }];
+            
+        }];
+        
+        
     }];
     
     
     //登录页面协议size
-    CGSize size = [SVSDKHelpExt loginProtocolSize:model maxWidth:(realScreenWidth - 65)];
+    CGSize privacySize = [SVSDKHelpExt loginProtocolSize:model maxWidth:(realScreenWidth - 110)];
     
     //logo 距离上边距离
-    float topHeight = 50.0/603.0 *(realScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
+    float topHeight = realScreenHeight * 0.15; //50.0/603.0 *(realScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
     
+    // 竖屏布局
     SecVerifyCustomLayouts *layouts = nil;
     if (!model.portraitLayouts) {
         layouts = [[SecVerifyCustomLayouts alloc] init];
@@ -683,11 +482,11 @@ static BOOL resetPushModel = NO;
         layouts = model.portraitLayouts;
     }
     
-    // 竖屏布局
+    // logo
     if (!layouts.logoLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
         layout.layoutTop = @(topHeight);
-        layout.layoutLeft = @(20);
+        layout.layoutCenterX = @(0);
         layout.layoutWidth = @(80);
         layout.layoutHeight = @(80);
         
@@ -697,69 +496,48 @@ static BOOL resetPushModel = NO;
     //phone
     if (!layouts.phoneLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(topHeight + 20);
-        layout.layoutRight = @(-20);
-        layout.layoutLeft = @(150);
-        layout.layoutHeight = @(20);
+        layout.layoutTop = @(topHeight + 110);
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(30);
         
         layouts.phoneLayout = layout;
     }
     
-    //其他方式登录
-    if (!layouts.switchLayout) {
+    //运营商品牌
+    if (!layouts.sloganLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(topHeight + 50);
-        layout.layoutRight = @(-20);
-        layout.layoutLeft = @(150);
-        layout.layoutHeight = @(20);
+        layout.layoutTop = @(topHeight + 150);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(30);
+        layout.layoutCenterX = @(0);
         
-        layouts.switchLayout = layout;
+        layouts.sloganLayout = layout;
     }
     
     //登录按钮
     if (!layouts.loginLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(topHeight + 100);
+        layout.layoutTop = @(topHeight + 200);
         layout.layoutCenterX = @(0);
         layout.layoutWidth = @(realScreenWidth * 0.8);
-        layout.layoutHeight = @(40);
+        layout.layoutHeight = @(48);
         
         layouts.loginLayout = layout;
-    }
-    
-    
-    //check(相对隐私协议)复选框
-    if (!layouts.checkPrivacyLayout) {
-        SecVerifyCheckPrivacyLayout *layout = [[SecVerifyCheckPrivacyLayout alloc] init];
-        layout.layoutCenterY = @(0);
-        layout.layoutRight = @(-5);
-        layout.layoutWidth = @(20);
-        layout.layoutHeight = @(20);
-        
-        layouts.checkPrivacyLayout = layout;
     }
     
     
     //隐私条款
     if (!layouts.privacyLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutRight = @(-20);
-        layout.layoutTop = @(topHeight + 150);
-        layout.layoutLeft = @(50);
-        layout.layoutHeight = @(size.height);
+        layout.layoutTop = @(topHeight + 260);
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(privacySize.width);
+        layout.layoutHeight = @(privacySize.height);
 
         layouts.privacyLayout = layout;
     }
-    //运营商品牌
-    if (!layouts.sloganLayout) {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-//        layout.layoutRight = @(-5);
-        layout.layoutBottom = @(- 10 - SVD_TabbarSafeBottomMargin);
-        layout.layoutWidth = @(120);
-        layout.layoutHeight = @(20);
-        layout.layoutCenterX = @(0);
-        layouts.sloganLayout = layout;
-    }
+    
     
     model.portraitLayouts = layouts;
     
@@ -772,15 +550,15 @@ static BOOL resetPushModel = NO;
     }
     
     // 横屏布局
-    float landscapeTopOffset = realScreenWidth*0.1;
+    float landscapeTopOffset = realScreenWidth * 0.03;
     
     //logo
     if (!landscapeLayouts.logoLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(landscapeTopOffset-10);
-        layout.layoutWidth = @(60);
-        layout.layoutHeight = @(60);
-        layout.layoutCenterX = @(-65);
+        layout.layoutTop = @(landscapeTopOffset);
+        layout.layoutWidth = @(70);
+        layout.layoutHeight = @(70);
+        layout.layoutCenterX = @(0);
         
         landscapeLayouts.logoLayout = layout;
     }
@@ -788,439 +566,346 @@ static BOOL resetPushModel = NO;
     //phone
     if (!landscapeLayouts.phoneLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(landscapeTopOffset);
-        layout.layoutCenterX = @(25);
-        layout.layoutHeight = @(20);
-        layout.layoutWidth = @(100);
-        
-        landscapeLayouts.phoneLayout = layout;
-    }
-    
-    //切换按钮
-    if (!landscapeLayouts.switchLayout) {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(landscapeTopOffset + 30);
-        layout.layoutCenterX = @(25);
-        layout.layoutHeight = @(20);
-        layout.layoutWidth = @(80);
-        
-        landscapeLayouts.switchLayout = layout;
-    }
-    
-    //登录按钮
-    if (!landscapeLayouts.loginLayout) {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(landscapeTopOffset + 60);
+        layout.layoutTop = @(landscapeTopOffset + 70 + 10);
         layout.layoutCenterX = @(0);
         layout.layoutWidth = @(realScreenWidth * 0.8);
-        layout.layoutHeight = @(40);
+        layout.layoutHeight = @(30);
         
-        landscapeLayouts.loginLayout = layout;
-    }
-    
-    //check(相对隐私协议)复选框
-    if (!landscapeLayouts.checkPrivacyLayout) {
-        SecVerifyCheckPrivacyLayout *layout = [[SecVerifyCheckPrivacyLayout alloc] init];
-        //            layout.layoutCenterY = @(0);
-        layout.layoutRight = @(-5);
-        layout.layoutWidth = @(20);
-        layout.layoutHeight = @(20);
-        layout.layoutTop = @(-3);
-        landscapeLayouts.checkPrivacyLayout = layout;
-    }
-    
-    //隐私条款
-    if (!landscapeLayouts.privacyLayout) {
-        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(landscapeTopOffset + 110);
-        layout.layoutWidth = @(realScreenWidth * 0.86);
-        layout.layoutHeight = @(size.height);
-        layout.layoutCenterX = @(15);
-        landscapeLayouts.privacyLayout = layout;
+        landscapeLayouts.phoneLayout = layout;
     }
     
     //运营商品牌
     if (!landscapeLayouts.sloganLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutBottom = @(- 5 - SVD_TabbarSafeBottomMargin);
-        layout.layoutHeight = @(20);
-        layout.layoutWidth = @(250);
+        layout.layoutTop = @(landscapeTopOffset + 70 + 10 + 30);
         layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(30);
         
         landscapeLayouts.sloganLayout = layout;
+    }
+    
+    //登录按钮
+    if (!landscapeLayouts.loginLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutTop = @(landscapeTopOffset + 70 + 10 + 30 + 30 + 10);
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(48);
+        
+        landscapeLayouts.loginLayout = layout;
+    }
+    
+    //隐私条款
+    if (!landscapeLayouts.privacyLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutBottom = @(10);
+        layout.layoutWidth = @(realScreenHeight);
+        layout.layoutHeight = @(privacySize.height);
+        layout.layoutCenterX = @(0);
+        
+        landscapeLayouts.privacyLayout = layout;
     }
     
     model.landscapeLayouts = landscapeLayouts;
 }
 
-// 复杂授权页选择“手机”
-- (void)phoneAction
-{
-    [self.topArrowView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(20);
-        make.centerX.mas_equalTo(-SVD_ScreenWidth/4.0);
-        make.bottom.mas_equalTo(0);
-        make.height.mas_equalTo(20);
-    }];
-    
-    self.otherView.hidden= YES;
-    self.borderBtn.hidden = NO;
-    [SVSDKLoginManager setHideLogin:SVSDKLoginItemTypeLogin |SVSDKLoginItemTypeOtherLogin | SVSDKLoginItemTypePhone | SVSDKLoginItemTypeSlogan | SVSDKLoginItemTypePrivacy | SVSDKLoginItemTypeCheck
-                               hide:NO];
-}
 
-// 复杂授权页选择“其他”
-- (void)otherAction
+// 自定义弹窗授权页model
+- (void)resetAlertModel:(SecVerifyCustomModel *)model
 {
-    [self.topArrowView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(20);
-        make.centerX.mas_equalTo(SVD_ScreenWidth/4.0);
-        make.bottom.mas_equalTo(0);
-        make.height.mas_equalTo(20);
-    }];
+    // 弹窗
+    model.leftControlHidden = @(YES);
+    model.cancelBySingleClick = @(YES);
+    model.showType = @(SVDShowStyleAlert);
     
-    self.otherView.hidden= NO;
-    self.borderBtn.hidden = YES;
-    [SVSDKLoginManager setHideLogin: SVSDKLoginItemTypeLogin|SVSDKLoginItemTypeOtherLogin | SVSDKLoginItemTypePhone | SVSDKLoginItemTypeSlogan | SVSDKLoginItemTypePrivacy | SVSDKLoginItemTypeCheck hide:YES];
-}
-
-- (void)resetFuModel:(SecVerifyCustomModel *)model
-{
+    // 支持横屏
+    model.shouldAutorotate = @(YES);
+    model.supportedInterfaceOrientations = @(UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight);
+    
     //*******导航条设置*******
-    // 隐藏导航栏尾部线条
-    model.navBottomLineHidden = @(YES);
     // 导航栏隐藏
     model.navBarHidden = @(YES);
-    // 导航栏隐藏
-    model.navStatusBarHidden = @(NO);
-    
     
     //*******授权页背景*******
-    //自定义动画效果
-    model.presentAnimationDelegate = self;
+    // 授权页背景颜色
+    model.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     
+    // 弹窗背景视图圆角
+//    model.bgViewColor = [UIColor redColor];
+    model.bgViewCorner = @(10.0);
     
     //*******授权页logo*******
-    // Logo是否隐藏
-    model.logoHidden = @(YES);
+    // Logo图片
+    model.logoImg = [UIImage imageNamed:@"icon_m"];
     
     //*******号码设置*******
     // 手机号码字体颜色
-    model.numberColor = [UIColor lightGrayColor];
+    model.numberColor = [UIColor blackColor];
     // 字体
-    model.numberFont = [UIFont boldSystemFontOfSize:14];
+    model.numberFont = [UIFont fontWithName:@"PingFangSC-Semibold" size:21];
     // 手机号对其方式
-    model.numberTextAlignment = @(NSTextAlignmentLeft);
-    
+    model.numberTextAlignment = @(NSTextAlignmentCenter);
     
     //*******切换账号设置*******
-    
-    // 切换账号字体颜色
-    model.switchColor = [UIColor redColor];
-    // 切换账号字体
-    model.switchFont =  [UIFont systemFontOfSize:14];
-    // 切换账号对其方式
-    model.switchTextHorizontalAlignment = @(UIControlContentHorizontalAlignmentLeft);
-    // 切换账号标题
-    model.switchText = @"更换号码登录";
     // 隐藏切换账号按钮
-    model.switchHidden = @(NO);
-    
+    model.switchHidden = @(YES);
     
     //*******复选框*******
     // 隐私条款check框默认状态
-    model.checkDefaultState = @(NO);
+    model.checkDefaultState = @(YES);
     // 隐私条款check框是否隐藏
-    model.checkHidden = @(NO);
+    model.checkHidden = @(YES);
     
     //*******隐私条款设置*******
-    model.privacyHidden = @(NO);
-//    model.privacyNormalTextFirst = @"同意";
-//    model.privacyNormalTextSecond = @"允许";
-//    model.privacyNormalTextThird = @"获取本机号码";
-    model.privacyAppName = @"秒验";
+    // 隐私条款基本文字颜色
+    model.privacyTextColor = [UIColor colorWithRed:184/255.0 green:184/255.0 blue:188/255.0 alpha:1/1.0];
+    // 隐私条款协议文字字体
+    model.privacyTextFont =  [UIFont fontWithName:@"PingFangSC-Regular" size:13];
+    // 隐私条款对其方式
+    model.privacyTextAlignment = @(NSTextAlignmentCenter);
+    // 隐私条款协议文字颜色
+    model.privacyAgreementColor = [UIColor colorWithRed:0/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0];
+    // 隐私条款应用名称
+    model.privacyAppName = @"秒验Demo";
+    // 协议文本前后符号@[@"《",@"》"]
+    model.privacyProtocolMarkArr = @[@"《",@"》"];
+    // 隐私条款多行时行距
+    model.privacyLineSpacing = @(4.0);
+    
     //*******登陆按钮设置*******
     // 登录按钮文本
-    model.loginBtnText = @"本机号码一键登录";
+    model.loginBtnText = @"一键登录";
     // 登录按钮文本颜色
-    //    model.loginBtnTextColor = [UIColor greenColor];
+    model.loginBtnTextColor = [UIColor whiteColor];
     // 登录按钮背景颜色
-    //    model.loginBtnBgColor = [UIColor blueColor];
-    // 登录按钮边框宽度
-    //    model.loginBtnBorderWidth = @(1);
-    // 登录按钮边框颜色
-    //    model.loginBtnBorderColor = [UIColor cyanColor];
+    model.loginBtnBgColor = [UIColor colorWithRed:0/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0];
     // 登录按钮圆角
-    model.loginBtnCornerRadius = @(20);
+    model.loginBtnCornerRadius = @(5);
     // 登录按钮文字字体
     model.loginBtnTextFont = [UIFont boldSystemFontOfSize:20];
-    // 登录按钮背景图片
-    model.loginBtnBgImgArr = @[
-                               [self createImageWithColor:[UIColor colorWithRed:157/255.0 green:156/255.0 blue:213 /255.0 alpha:1] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor colorWithRed:157/255.0 green:156/255.0 blue:213/255.0 alpha:1] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)],
-                               [self createImageWithColor:[UIColor colorWithRed:157/255.0 green:156/255.0 blue:213/255.0 alpha:1] withSize:CGSizeMake(SVD_ScreenWidth - 40, 40)]
-                               ];
     
     //*******运营商品牌标签*******
     //运营商品牌文字字体
-//    model.sloganTextFont = [UIFont systemFontOfSize:10];
-//    //运营商品牌文字颜色
-//    model.sloganTextColor = [UIColor grayColor];
-//    //运营商品牌文字对齐方式
-//    model.sloganTextAlignment = @(NSTextAlignmentRight);
-    //运营商品牌背景颜色
-    //    model.sloganBgColor = [UIColor redColor];
-    model.sloganHidden = @(NO);
-    //*******loading 视图*******
-    // loading 是否显示
-    model.hiddenLoading = @(NO);
-    //Loading 背景色
-    model.loadingBackgroundColor = [UIColor blackColor];
-    //Loading Indicator渲染色
-    model.loadingTintColor = [UIColor whiteColor];
-    //Loading 圆角
-    model.loadingCornerRadius = @(10);
-    //style (例:@(UIActivityIndicatorViewStyleWhiteLarge))
-    model.loadingIndicatorStyle = @(UIActivityIndicatorViewStyleGray);
-    //Loading 大小
-    model.loadingSize = [NSValue valueWithCGSize:CGSizeMake(100, 100)];
-    
+    model.sloganTextFont = [UIFont fontWithName:@"PingFangSC-Regular" size:13];
+    //运营商品牌文字颜色
+    model.sloganTextColor = [UIColor colorWithRed:184/255.0 green:184/255.0 blue:188/255.0 alpha:1/1.0];
+    //运营商品牌文字对齐方式
+    model.sloganTextAlignment = @(NSTextAlignmentCenter);
     
     //自定义视图
+    float realScreenWidth = (SVD_ScreenWidth > SVD_ScreenHeight) ? SVD_ScreenHeight * 0.8 : SVD_ScreenWidth * 0.8;
+    float realScreenHeight = (SVD_ScreenWidth > SVD_ScreenHeight)?SVD_ScreenWidth:SVD_ScreenHeight;
     [model setCustomViewBlock:^(UIView *customView) {
-        
-        
-        float height = [SVDVerifyViewController isPhoneX]?(160+36.0):160;
-        
-        
-        UIImageView *topImgView = [[UIImageView alloc] init];
-        topImgView.userInteractionEnabled = YES;
-        topImgView.image = [UIImage imageNamed:@"bg12"];
-        [customView addSubview:topImgView];
-        [topImgView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-            make.right.mas_equalTo(0);
-            make.top.mas_equalTo(0);
-            make.height.mas_equalTo(213);
-        }];
-        
-        {
-            UIButton *mLbl = [[UIButton alloc] init];
-            [mLbl.titleLabel setTextAlignment:NSTextAlignmentCenter];
-            [mLbl.titleLabel setFont:[UIFont systemFontOfSize:12.0f]];
-            [mLbl setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            mLbl.backgroundColor = [UIColor colorWithRed:246/255.0 green:246/255.0 blue:246/255.0 alpha:0.2];
-            [mLbl setTitle:@"跳过" forState:UIControlStateNormal];
-            [mLbl addTarget:self action:@selector(weixinLoginAction) forControlEvents:UIControlEventTouchUpInside];
-            [topImgView addSubview:mLbl];
-            
-            [mLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(40);
-                make.right.mas_equalTo(-10);
-                make.width.mas_equalTo(48);
-                make.height.mas_equalTo(22);
-            }];
-        }
-        
         UILabel *mLbl = [[UILabel alloc] init];
         mLbl.textAlignment = NSTextAlignmentCenter;
-        mLbl.font = [UIFont systemFontOfSize:23.0f];
-        mLbl.textColor = [UIColor whiteColor];
-        mLbl.backgroundColor = [UIColor clearColor];
-        mLbl.text = @"即言";
-        [topImgView addSubview:mLbl];
+        mLbl.font = [UIFont fontWithName:@"PingFangSC-Semibold" size:32];
+        mLbl.textColor = [UIColor blackColor];
+        mLbl.text = @"秒验";
+        [mLbl sizeToFit];
         
-        [mLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(-10);
-            make.centerX.mas_equalTo(0);
-            make.width.mas_equalTo(150);
-            make.height.mas_equalTo(50);
+        [customView addSubview:mLbl];
+        
+        // 自定义视图根据横竖屏刷新布局
+        [SVSDKLoginManager getScreenStatus:^(SVDScreenStatus status, CGSize size) {
+            BOOL isPortrait = size.width < size.height;
+            [mLbl mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.equalTo(customView.mas_centerX).offset(5);
+                make.top.mas_equalTo(45);
+            }];
         }];
         
-        {
-            UIButton *mLbl = [[UIButton alloc] init];
-            [mLbl.titleLabel setTextAlignment:NSTextAlignmentCenter];
-            [mLbl.titleLabel setFont:[UIFont systemFontOfSize:12.0f]];
-            [mLbl setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            mLbl.backgroundColor = [UIColor clearColor];
-            [mLbl setTitle:@"手机" forState:UIControlStateNormal];
-            [mLbl addTarget:self action:@selector(phoneAction) forControlEvents:UIControlEventTouchUpInside];
-            [topImgView addSubview:mLbl];
-            
-            [mLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(-30);
-                make.left.mas_equalTo(0);
-                make.width.mas_equalTo(SVD_ScreenWidth/2.0);
-                make.height.mas_equalTo(20);
-            }];
-        }
-        
-        {
-            UIButton *mLbl = [[UIButton alloc] init];
-            [mLbl.titleLabel setTextAlignment:NSTextAlignmentCenter];
-            [mLbl.titleLabel setFont:[UIFont systemFontOfSize:12.0f]];
-            [mLbl setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            mLbl.backgroundColor = [UIColor clearColor];
-            [mLbl setTitle:@"其他" forState:UIControlStateNormal];
-            [mLbl addTarget:self action:@selector(otherAction) forControlEvents:UIControlEventTouchUpInside];
-            [topImgView addSubview:mLbl];
-            
-            [mLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(-30);
-                make.right.mas_equalTo(0);
-                make.width.mas_equalTo(SVD_ScreenWidth/2.0);
-                make.height.mas_equalTo(20);
-            }];
-        }
-        
-        {
-            UIButton *mLbl = [[UIButton alloc] init];
-            mLbl.layer.borderColor = [UIColor colorWithRed:157/255.0 green:156/255.0 blue:213/255.0 alpha:1].CGColor;
-            mLbl.layer.cornerRadius = 20;
-            mLbl.layer.borderWidth = 1;
-            mLbl.layer.masksToBounds = YES;
-            [customView addSubview:mLbl];
-            
-            [mLbl mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(213 + 72);
-                make.right.mas_equalTo(-30);
-                make.left.mas_equalTo(30);
-                make.height.mas_equalTo(40);
-            }];
-            
-            self.borderBtn  = mLbl;
-        }
-        
-        
-        UIImageView *topArrowImgView = [[UIImageView alloc] init];
-        topArrowImgView.image = [UIImage imageNamed:@"success"];
-        [topImgView addSubview:topArrowImgView];
-        [topArrowImgView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(20);
-            make.centerX.mas_equalTo(-SVD_ScreenWidth/4.0);
-            make.bottom.mas_equalTo(0);
-            make.height.mas_equalTo(20);
-        }];
-        
-        self.topArrowView = topArrowImgView;
-        
-        
-        UIView *view = [[UIView alloc] init];
-        {
-
-            [customView addSubview:self.otherView];
-            self.otherView.hidden = YES;
-            
-            [self.otherView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(0);
-                make.centerX.mas_equalTo(customView);
-                make.width.mas_equalTo([UIScreen mainScreen].bounds.size.width);
-                make.height.mas_equalTo(height);
-            }];
-            
-            self.otherView = view;
-            
-            UIButton *button = [[UIButton alloc] init];
-            [button setImage:[UIImage imageNamed:@"weixin"] forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:14];
-            [button setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-            [button addTarget:self action:@selector(weixinLoginAction) forControlEvents:UIControlEventTouchUpInside];
-            [self.otherView addSubview:button];
-            
-            [button mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(40);
-                make.centerX.mas_equalTo(self.otherView);
-                make.width.height.mas_equalTo(50);
-            }];
-        }
     }];
     
-    //logo 距离上边距离
-//    float topHeight = 50.0/603.0 *(SVD_ScreenHeight - SVD_StatusBarSafeBottomMargin - 44 - SVD_TabbarSafeBottomMargin);
-    
     //登录页面协议size
-    CGSize size = [SVSDKHelpExt loginProtocolSize:model maxWidth:(SVD_ScreenWidth - 65)];
+    CGSize privacySize = [SVSDKHelpExt loginProtocolSize:model maxWidth:(realScreenWidth - 50)];
     
+    //logo 距离上边距离
+    float topHeight = 35.0;//realScreenHeight * 0.15;
     
-    //布局
-    SecVerifyCustomLayouts *layouts = [[SecVerifyCustomLayouts alloc] init];
+    // 竖屏布局
+    SecVerifyCustomLayouts *layouts = nil;
+    if (!model.portraitLayouts) {
+        layouts = [[SecVerifyCustomLayouts alloc] init];
+    }else {
+        layouts = model.portraitLayouts;
+    }
+    
+    // logo
+    if (!layouts.logoLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutTop = @(topHeight);
+        layout.layoutCenterX = @(-40);
+        layout.layoutWidth = @(60);
+        layout.layoutHeight = @(60);
+        
+        layouts.logoLayout = layout;
+    }
     
     //phone
-    {
+    if (!layouts.phoneLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(213 + 82);
-        layout.layoutRight = @(-20);
-        layout.layoutLeft = @(60);
-        layout.layoutHeight = @(20);
+        layout.layoutTop = @(topHeight + 80);
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(30);
         
         layouts.phoneLayout = layout;
     }
     
-    //其他方式登录
-    {
+    //运营商品牌
+    if (!layouts.sloganLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(213 + 82);
-        layout.layoutRight = @(-30);
-        layout.layoutWidth = @(100);
-        layout.layoutHeight = @(20);
+        layout.layoutTop = @(topHeight + 110);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(30);
+        layout.layoutCenterX = @(0);
         
-        layouts.switchLayout = layout;
+        layouts.sloganLayout = layout;
     }
     
     //登录按钮
-    {
+    if (!layouts.loginLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutTop = @(213 + 82 + 50);
-        layout.layoutRight = @(-30);
-        layout.layoutLeft = @(30);
-        layout.layoutHeight = @(40);
+        layout.layoutTop = @(topHeight + 150);
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(48);
         
         layouts.loginLayout = layout;
     }
     
-    //check(相对隐私协议)复选框
-    {
-        SecVerifyCheckPrivacyLayout *layout = [[SecVerifyCheckPrivacyLayout alloc] init];
-        layout.layoutTop = @(0);
-        layout.layoutRight = @(-5);
-        layout.layoutWidth = @(20);
-        layout.layoutHeight = @(20);
-        
-        layouts.checkPrivacyLayout = layout;
-    }
     
     //隐私条款
-    {
+    if (!layouts.privacyLayout) {
         SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
-        layout.layoutRight = @(-30);
-        layout.layoutTop = @(213 + 82 + 100);
-        layout.layoutLeft = @(50);
-        layout.layoutHeight = @(size.height);
-        
+        layout.layoutBottom = @(-20);
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(privacySize.width);
+        layout.layoutHeight = @(privacySize.height);
+
         layouts.privacyLayout = layout;
     }
     
     model.portraitLayouts = layouts;
     
+    
+    // 横屏布局
+    SecVerifyCustomLayouts *landscapeLayouts = nil;
+    if (!model.landscapeLayouts)
+    {
+        landscapeLayouts = [[SecVerifyCustomLayouts alloc] init];
+    }
+    else
+    {
+        landscapeLayouts = model.landscapeLayouts;
+    }
+    
+    float landscapeTopOffset = 35; //realScreenWidth * 0.03;
+    
+    //logo
+    if (!landscapeLayouts.logoLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutTop = @(landscapeTopOffset);
+        layout.layoutWidth = @(60);
+        layout.layoutHeight = @(60);
+        layout.layoutCenterX = @(-40);
+        
+        landscapeLayouts.logoLayout = layout;
+    }
+    
+    //phone
+    if (!landscapeLayouts.phoneLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutTop = @(landscapeTopOffset + ((self.isSmallScreen || [SVDVerifyViewController isPhoneXor11Pro])? 65 : 80));
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(30);
+        
+        landscapeLayouts.phoneLayout = layout;
+    }
+    
+    //运营商品牌
+    if (!landscapeLayouts.sloganLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutTop = @(landscapeTopOffset + ((self.isSmallScreen || [SVDVerifyViewController isPhoneXor11Pro]) ? 90 : 110));
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(30);
+        
+        landscapeLayouts.sloganLayout = layout;
+    }
+    
+    //登录按钮
+    if (!landscapeLayouts.loginLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutTop = @(landscapeTopOffset + ((self.isSmallScreen || [SVDVerifyViewController isPhoneXor11Pro]) ? 120 : 150));
+        layout.layoutCenterX = @(0);
+        layout.layoutWidth = @(realScreenWidth * 0.8);
+        layout.layoutHeight = @(48);
+        
+        landscapeLayouts.loginLayout = layout;
+    }
+    
+    //隐私条款
+    if (!landscapeLayouts.privacyLayout) {
+        SecVerifyLayout *layout = [[SecVerifyLayout alloc] init];
+        layout.layoutBottom = @(-5);
+        layout.layoutWidth = @(privacySize.width);
+        layout.layoutHeight = @(privacySize.height);
+        layout.layoutCenterX = @(0);
+        
+        landscapeLayouts.privacyLayout = layout;
+    }
+    
+    model.landscapeLayouts = landscapeLayouts;
+    
 }
+
+
+// 开启详细错误
+- (void)logoButtonClicked:(UIButton *)button {
+    button.selected = !button.isSelected;
+    showRealError = button.isSelected;
+}
+
 
 // 自定义授权页上微信按钮点击事件
 - (void)weixinLoginAction
 {
-    [SVSDKLoginManager showLoadingViewOnLoginVc];
+    showErrorAlert = YES;
+    //关闭登录视图
+    [SecVerify finishLoginVc:^{
+        NSLog(@"点击微信登录...");
+    }];
+    
+    self.isLogining = NO;
+    
+}
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-        //自定义loading,注意回收
-        [SVProgressHUD dismiss];
-        [SVSDKLoginManager hiddenLoadingViewOnLoginVc];
-
-        //关闭登录视图
-        [SecVerify finishLoginVc:^{
-            NSLog(@"微信登录");
-        }];
-
-        self.isLogining = NO;
+// 自定义授权页上账号按钮点击事件
+- (void)usernameLoginAction
+{
+    WeakSelf
+    // 使用授权页push一个账号密码的VC
+    dispatch_async(dispatch_get_main_queue(), ^{
+        SVDLoginViewController *vc = [SVDLoginViewController new];
+        vc.loginButtonClickedBlock = ^(UIButton * _Nonnull button) {
+            // 账号密码登陆页面点击登陆事件回调
+            showErrorAlert = NO;
+            //关闭登录视图
+            [SecVerify finishLoginVc:^{
+                [SVProgressHUD showWithStatus:@"加载中..."];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0), dispatch_get_main_queue(), ^{
+                    [SVProgressHUD dismiss];
+                    // 界面跳转
+                    SVDSuccessViewController *successVC = [[SVDSuccessViewController alloc] init];
+                    successVC.phone = @"admin";
+                    [weakSelf.navigationController pushViewController:successVC animated:YES];
+                });
+            }];
+        };
+        [[SVSDKLoginManager defaultManager].secLoginViewController.navigationController pushViewController:vc animated:YES];
     });
     
 }
@@ -1231,11 +916,13 @@ static BOOL resetPushModel = NO;
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!self.isLogining)
         {
-            self.verifyButton.enabled = enable;
+            self.fullScreenLoginButton.enabled = enable;
+            self.alertLoginButton.enabled = enable;
         }
         else
         {
-            self.verifyButton.enabled = NO;
+            self.fullScreenLoginButton.enabled = NO;
+            self.alertLoginButton.enabled = NO;
         }
     });
 }
@@ -1245,134 +932,134 @@ static BOOL resetPushModel = NO;
 #pragma mark - Setup SubViews
 - (void)setupSubViews
 {
+    // 头部
+    [self setupHeaderViews];
+    
+    // 底部
+    [self setupBottomViews];
+    
+    // 布局子视图
+    [self refreshSubviewsLayoutWithSize:self.view.frame.size];
+}
+
+// 头部视图
+- (void)setupHeaderViews {
+    // bg image view
+    UIImageView *bgImageV = [[UIImageView alloc] init];
+    bgImageV.contentMode = UIViewContentModeScaleToFill;
+    bgImageV.image = [UIImage imageNamed:@"bg_my"];
+    bgImageV.userInteractionEnabled = YES;
+    self.bgImageView = bgImageV;
+    
+    // logo
+    UIButton *logoBtn = [[UIButton alloc] init];
+    [logoBtn setBackgroundImage:[UIImage imageNamed:@"icon_w"] forState:UIControlStateNormal];
+    [logoBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(1, 1)] forState:UIControlStateSelected];
+    [logoBtn addTarget:self action:@selector(logoButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    self.logoButton = logoBtn;
+    
+    [self.bgImageView addSubview:logoBtn];
+    
+    // 秒验 title
+    UILabel *svTitleL = [[UILabel alloc] init];
+    svTitleL.text = @"秒验";
+    svTitleL.font = [UIFont fontWithName:@"PingFangSC-Semibold" size:[UIScreen mainScreen].bounds.size.width > 375 ? 62 : 48];
+    svTitleL.textColor = [UIColor whiteColor];
+    [svTitleL sizeToFit];
+    self.secVerifyTitleLabel = svTitleL;
+    
+    [self.bgImageView addSubview:svTitleL];
+    
+    // 秒验 slogan
+    UILabel *svSloganL = [[UILabel alloc] init];
+    svSloganL.text = @"让用户不再等待";
+    svSloganL.font = [UIFont fontWithName:@"PingFangSC-Regular" size:28];
+    svSloganL.textColor = [UIColor whiteColor];
+    [svSloganL sizeToFit];
+    self.secVerifySloganLabel = svSloganL;
+    
+    [self.bgImageView addSubview:svSloganL];
+    
     // GIF Image View
-    NSString *gifPath = [[NSBundle mainBundle] pathForResource:@"GIF" ofType:@"gif"];
+    NSString *gifPath = [[NSBundle mainBundle] pathForResource:@"SVDemo" ofType:@"gif"];
     FLAnimatedImage *image = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfFile:gifPath]];
     FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
     imageView.animatedImage = image;
     imageView.contentMode = UIViewContentModeScaleToFill;
-    imageView.backgroundColor = [UIColor redColor];
+//    imageView.backgroundColor = [UIColor redColor];
     self.gifImageView = imageView;
     
-    [self.view addSubview:imageView];
+    [self.bgImageView addSubview:imageView];
     
-    // 一键验证Label
-    UILabel *verifyLabel = [[UILabel alloc] init];
-    verifyLabel.textAlignment = NSTextAlignmentCenter;
-    verifyLabel.text = [NSString stringWithFormat:@"开始验证! v%@", [SecVerify sdkVersion]];
-    verifyLabel.font = [UIFont fontWithName:@"PingFangSC-Semibold" size:22.f]? : [UIFont systemFontOfSize:22.f];
-    verifyLabel.textColor = [UIColor colorWithRed:47/255.0 green:51/255.0 blue:51/255.0 alpha:1/1.0];
-    self.verifyLabel = verifyLabel;
+    [self.view addSubview:bgImageV];
+}
+
+// 底部视图
+- (void)setupBottomViews {
+    UIView *containerV = [[UIView alloc] init];
+    containerV.backgroundColor = [UIColor whiteColor];
+    containerV.layer.cornerRadius = 15;
+    containerV.layer.masksToBounds = YES;
+    self.bottomContainerView = containerV;
     
-    [self.view addSubview:verifyLabel];
+    [self.view addSubview:containerV];
     
-    // 一键验证Button
-    UIButton *verifyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    verifyBtn.enabled = NO;
-    [verifyBtn setTitle:@"一键验证" forState:UIControlStateNormal];
-    [verifyBtn addTarget:self action:@selector(login) forControlEvents:UIControlEventTouchUpInside];
-    [verifyBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0] withSize:CGSizeMake(1.0, 1.0)] forState:UIControlStateNormal];
-    [verifyBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:254/255.0 green:122/255.0 blue:78/255.0 alpha:1/1.0] withSize:CGSizeMake(1.0, 1.0)] forState:UIControlStateHighlighted];
-    self.verifyButton = verifyBtn;
+    UIButton *fullScreenLoginBtn = [[UIButton alloc] init];
+    fullScreenLoginBtn.tag = 10010;
+    [fullScreenLoginBtn setTitle:@"一键登录（全屏）" forState:UIControlStateNormal];
+    [fullScreenLoginBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:0/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0] withSize:CGSizeMake([UIScreen mainScreen].bounds.size.width * 0.7, 48) withRadius:7] forState:UIControlStateNormal];
+    [fullScreenLoginBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:182/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0] withSize:CGSizeMake([UIScreen mainScreen].bounds.size.width * 0.7, 48) withRadius:7] forState:UIControlStateDisabled];
+    fullScreenLoginBtn.enabled = NO;
+    [fullScreenLoginBtn addTarget:self action:@selector(loginClicked:) forControlEvents:UIControlEventTouchUpInside];
+    self.fullScreenLoginButton = fullScreenLoginBtn;
     
-    [self.view addSubview:verifyBtn];
+    [self.view addSubview:fullScreenLoginBtn];
     
-    // 使用自定义视图
-    UIButton *customModelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [customModelBtn setTitle:@"定" forState:UIControlStateNormal];
-    [customModelBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    [customModelBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [customModelBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    [customModelBtn addTarget:self action:@selector(resetModelAction:) forControlEvents:UIControlEventTouchUpInside];
-    self.customUIButton = customModelBtn;
+    UIButton *alertLoginBtn = [[UIButton alloc] init];
+    alertLoginBtn.tag = 10011;
+    [alertLoginBtn setTitle:@"一键登录（弹窗）" forState:UIControlStateNormal];
+    [alertLoginBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:0/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0] withSize:CGSizeMake([UIScreen mainScreen].bounds.size.width * 0.7, 48) withRadius:7] forState:UIControlStateNormal];
+    [alertLoginBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:182/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0] withSize:CGSizeMake([UIScreen mainScreen].bounds.size.width * 0.7, 48) withRadius:7] forState:UIControlStateDisabled];
+    alertLoginBtn.enabled = NO;
+    [alertLoginBtn addTarget:self action:@selector(loginClicked:) forControlEvents:UIControlEventTouchUpInside];
+    self.alertLoginButton = alertLoginBtn;
     
-    [self.view addSubview:customModelBtn];
+    [self.view addSubview:alertLoginBtn];
     
-    // 展示详细错误日志
-    UIButton *showRealErrbtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [showRealErrbtn setTitle:@"细" forState:UIControlStateNormal];
-    [showRealErrbtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    [showRealErrbtn addTarget:self action:@selector(resetRealErrorAction:) forControlEvents:UIControlEventTouchUpInside];
-    [showRealErrbtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [showRealErrbtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    self.detailErrorButton = showRealErrbtn;
+    UILabel *versionL = [[UILabel alloc] init];
+    versionL.text = [NSString stringWithFormat:@"版本号 %@", [SecVerify sdkVersion]];
+    versionL.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
+    versionL.textColor = [UIColor colorWithRed:184/255.0 green:184/255.0 blue:188/255.0 alpha:1/1.0];
+    [versionL sizeToFit];
+    self.verisonLabel = versionL;
     
-    [self.view addSubview:showRealErrbtn];
+    [self.view addSubview:versionL];
     
-    // 手动关闭授权页面
-    UIButton *manualDismissBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [manualDismissBtn setTitle:@"手" forState:UIControlStateNormal];
-    [manualDismissBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    manualDismissBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [manualDismissBtn addTarget:self action:@selector(autoDismissAction:) forControlEvents:UIControlEventTouchUpInside];
-    [manualDismissBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [manualDismissBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    self.manualDismissButton = manualDismissBtn;
     
-    [self.view addSubview:manualDismissBtn];
     
-    // 授权页从底部向上弹出
-    UIButton *translucentBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [translucentBtn setTitle:@"上" forState:UIControlStateNormal];
-    [translucentBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    translucentBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [translucentBtn addTarget:self action:@selector(translucentAction:) forControlEvents:UIControlEventTouchUpInside];
-    [translucentBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [translucentBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    self.translucentButton = translucentBtn;
+}
+
+
+// 横竖屏切换时刷新控件状态
+- (void)refrashSubViewsWithViewSize:(CGSize)viewSize {
+    CGFloat width = viewSize.width;
+    CGFloat height = viewSize.height;
+    BOOL isLandScape = width > height;
     
-    [self.view addSubview:translucentBtn];
+    self.gifImageView.hidden = isLandScape;
+    self.bottomContainerView.hidden = isLandScape;
     
-    // 授权页弹出
-    UIButton *alertBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [alertBtn setTitle:@"弹" forState:UIControlStateNormal];
-    [alertBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    alertBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [alertBtn addTarget:self action:@selector(resetAlertAction:) forControlEvents:UIControlEventTouchUpInside];
-    [alertBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [alertBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    self.alertButton = alertBtn;
+    self.bgImageView.image = isLandScape ? [UIImage imageNamed:@"qp_my"] : [UIImage imageNamed:@"bg_my"];
     
-    [self.view addSubview:alertBtn];
+    UIImage *normalImg = isLandScape ? [self createImageWithColor:[UIColor whiteColor] withSize:CGSizeMake([UIScreen mainScreen].bounds.size.height * 0.7, 48) withRadius:7] : [self createImageWithColor:[UIColor colorWithRed:0/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0] withSize:CGSizeMake([UIScreen mainScreen].bounds.size.width * 0.7, 48) withRadius:7];
+    [self.fullScreenLoginButton setBackgroundImage:normalImg forState:UIControlStateNormal];
+    [self.alertLoginButton setBackgroundImage:normalImg forState:UIControlStateNormal];
     
-    // 授权页Push推出
-    UIButton *pushBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [pushBtn setTitle:@"推" forState:UIControlStateNormal];
-    [pushBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    pushBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [pushBtn addTarget:self action:@selector(resetPushAction:) forControlEvents:UIControlEventTouchUpInside];
-    [pushBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [pushBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    self.pushButton = pushBtn;
+    UIColor *titleColor = isLandScape ? [UIColor colorWithRed:0/255.0 green:182/255.0 blue:181/255.0 alpha:1/1.0] : [UIColor whiteColor];
+    [self.fullScreenLoginButton setTitleColor:titleColor forState:UIControlStateNormal];
+    [self.alertLoginButton setTitleColor:titleColor forState:UIControlStateNormal];
     
-    [self.view addSubview:pushBtn];
-    
-    // 展示复杂授权页效果按钮
-    UIButton *complexBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [complexBtn setTitle:@"复" forState:UIControlStateNormal];
-    [complexBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    complexBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [complexBtn addTarget:self action:@selector(resetFuAction:) forControlEvents:UIControlEventTouchUpInside];
-    [complexBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [complexBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    self.complexButton = complexBtn;
-    
-    [self.view addSubview:complexBtn];
-    
-    // 清空隐私协议授权结果缓存
-    UIButton *clearPrivacyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [clearPrivacyBtn setTitle:@"清" forState:UIControlStateNormal];
-    [clearPrivacyBtn setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    clearPrivacyBtn.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3];
-    [clearPrivacyBtn addTarget:self action:@selector(qingBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [clearPrivacyBtn setBackgroundImage:[self createImageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:0.3] withSize:CGSizeMake(30, 30)] forState:UIControlStateNormal];
-    [clearPrivacyBtn setBackgroundImage:[self createImageWithColor:[UIColor redColor] withSize:CGSizeMake(30, 30)] forState:UIControlStateSelected];
-    self.clearPrivacyButton = clearPrivacyBtn;
-    
-    [self.view addSubview:clearPrivacyBtn];
-    
-    // 布局子视图
-    [self refreshSubviewsLayoutWithSize:self.view.frame.size];
+    self.verisonLabel.textColor = isLandScape ? [UIColor whiteColor] : [UIColor colorWithRed:184/255.0 green:184/255.0 blue:188/255.0 alpha:1/1.0];
 }
 
 
@@ -1383,148 +1070,107 @@ static BOOL resetPushModel = NO;
     CGFloat height = viewSize.height;
     BOOL isPortrait = height > width;
     
+    [self.bgImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.mas_equalTo(width);
+            make.height.mas_equalTo(height * 0.6);
+            make.centerX.mas_equalTo(0);
+            make.top.mas_equalTo(0);
+        } else {
+            make.top.left.bottom.right.mas_equalTo(0);
+        }
+    }];
+    
     [self.gifImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
         if (isPortrait) {
-            make.width.mas_equalTo(width * 0.82);
-            make.height.mas_equalTo(width);
-            make.centerX.mas_equalTo(0);
-            make.top.mas_equalTo(SVD_StatusBarSafeBottomMargin);
-        } else {
-            make.top.mas_equalTo(10);
-            make.width.mas_equalTo(height);
-            make.height.mas_equalTo(height * 0.8);
-            make.centerX.mas_equalTo(0);
+            make.width.mas_equalTo(self.isSmallScreen ? (width * 0.82) : (width * 0.9));
+            make.height.mas_equalTo(self.isSmallScreen ? (width * 0.82 * 0.75) : (width * 0.9 * 0.8));
+            make.centerX.mas_equalTo(25);
+            make.bottom.mas_equalTo(-10);
         }
     }];
     
-    [self.verifyButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+    [self.secVerifySloganLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
         if (isPortrait) {
-            make.width.mas_equalTo(width * 0.8);
-            make.height.mas_equalTo(50);
-            make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin - 15);
             make.centerX.mas_equalTo(0);
+            make.bottom.equalTo(self.gifImageView.mas_top).offset(-15);
         } else {
-            make.width.mas_equalTo(width * 0.8);
-            make.height.mas_equalTo(40);
-            make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin);
-            make.centerX.mas_equalTo(0);
-        }
-        
-    }];
-    
-    
-    [self.verifyLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        if (isPortrait) {
-            make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin - 15 - 65);
-            make.centerX.mas_equalTo(0);
-        } else {
-            make.bottom.mas_equalTo( - SVD_TabbarSafeBottomMargin - 45);
+            make.top.mas_equalTo(120);
             make.centerX.mas_equalTo(0);
         }
     }];
     
-    [self.customUIButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+    
+    [self.logoButton mas_remakeConstraints:^(MASConstraintMaker *make) {
         if (isPortrait) {
-            make.width.height.mas_equalTo(30);
-            make.left.mas_equalTo(0);
-            make.top.mas_equalTo(100);
+            make.width.height.mas_equalTo(self.isSmallScreen ? 54 : 64);
+            make.leading.equalTo(self.secVerifySloganLabel.mas_leading).offset(15);
+            make.top.mas_equalTo(SVD_TabbarSafeBottomMargin + (self.isSmallScreen ? 24 : 54));
         } else {
-            make.top.equalTo(self.gifImageView.mas_top).mas_offset(10);
-            make.width.height.mas_equalTo(30);
-            make.right.equalTo(self.gifImageView.mas_left).mas_offset(-10);
+            make.width.height.mas_equalTo(74);
+            make.leading.equalTo(self.secVerifySloganLabel.mas_leading);
+            make.bottom.equalTo(self.secVerifySloganLabel.mas_top).offset(-10);
+        }
+    }];
+    
+    [self.secVerifyTitleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.centerY.equalTo(self.logoButton);
+            make.left.equalTo(self.logoButton.mas_right).offset(10);
+        } else {
+            make.centerY.equalTo(self.logoButton);
+            make.left.equalTo(self.logoButton.mas_right).offset(10);
+        }
+    }];
+    
+    
+    [self.bottomContainerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        if (isPortrait) {
+            make.width.mas_equalTo(width);
+            make.height.mas_equalTo(height * 0.43);
+            make.bottom.mas_equalTo(0);
+            make.centerX.mas_equalTo(0);
         }
         
     }];
     
-    [self.detailErrorButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+    [self.verisonLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
         if (isPortrait) {
-            make.width.height.mas_equalTo(30);
-            make.right.mas_equalTo(0);
-            make.top.mas_equalTo(100);
+            make.centerX.mas_equalTo(0);
+            make.bottom.mas_equalTo(- SVD_TabbarSafeBottomMargin - 10);
         } else {
-            make.width.height.mas_equalTo(30);
-            make.top.equalTo(self.gifImageView.mas_top).mas_offset(10);
-            make.left.equalTo(self.gifImageView.mas_right).mas_offset(10);
+            make.bottom.mas_equalTo(- SVD_TabbarSafeBottomMargin);
+            make.centerX.mas_equalTo(0);
         }
-        
     }];
     
-    [self.manualDismissButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+    [self.alertLoginButton mas_remakeConstraints:^(MASConstraintMaker *make) {
         if (isPortrait) {
-            make.width.height.mas_equalTo(30);
-            make.left.mas_equalTo(0);
-            make.top.mas_equalTo(150);
+            make.bottom.equalTo(self.verisonLabel.mas_top).offset(self.isSmallScreen ? -30 : -50);
+            make.width.mas_equalTo(width * 0.7);
+            make.height.mas_equalTo(48);
+            make.centerX.mas_equalTo(0);
         } else {
-            make.top.equalTo(self.customUIButton.mas_bottom).mas_offset(20);
-            make.width.height.mas_equalTo(30);
-            make.right.equalTo(self.gifImageView.mas_left).mas_offset(-10);
+            make.bottom.equalTo(self.verisonLabel.mas_top).offset(-10);
+            make.width.mas_equalTo(height * 0.7);
+            make.height.mas_equalTo(48);
+            make.centerX.mas_equalTo(0);
         }
-        
     }];
     
-    [self.translucentButton mas_remakeConstraints:^(MASConstraintMaker *make) {
-        if (isPortrait) {
-            make.width.height.mas_equalTo(30);
-            make.right.mas_equalTo(0);
-            make.top.mas_equalTo(150);
-        } else {
-            make.width.height.mas_equalTo(30);
-            make.top.equalTo(self.detailErrorButton.mas_bottom).mas_offset(20);
-            make.left.equalTo(self.gifImageView.mas_right).mas_offset(10);
-        }
-        
-    }];
     
-    [self.alertButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+    [self.fullScreenLoginButton mas_remakeConstraints:^(MASConstraintMaker *make) {
         if (isPortrait) {
-            make.width.height.mas_equalTo(30);
-            make.right.mas_equalTo(0);
-            make.top.mas_equalTo(200);
+            make.bottom.equalTo(self.alertLoginButton.mas_top).offset(self.isSmallScreen ? -40 : -60);
+            make.width.mas_equalTo(width * 0.7);
+            make.height.mas_equalTo(48);
+            make.centerX.mas_equalTo(0);
         } else {
-            make.width.height.mas_equalTo(30);
-            make.top.equalTo(self.translucentButton.mas_bottom).mas_offset(20);
-            make.left.equalTo(self.gifImageView.mas_right).mas_offset(10);
+            make.bottom.equalTo(self.alertLoginButton.mas_top).offset(-20);
+            make.width.mas_equalTo(height * 0.7);
+            make.height.mas_equalTo(48);
+            make.centerX.mas_equalTo(0);
         }
-        
-    }];
-    
-    [self.pushButton mas_remakeConstraints:^(MASConstraintMaker *make) {
-        if (isPortrait) {
-            make.width.height.mas_equalTo(30);
-            make.right.mas_equalTo(0);
-            make.top.mas_equalTo(250);
-        } else {
-            make.width.height.mas_equalTo(30);
-            make.top.equalTo(self.alertButton.mas_bottom).mas_offset(20);
-            make.left.equalTo(self.gifImageView.mas_right).mas_offset(10);
-        }
-        
-    }];
-    
-    [self.complexButton mas_remakeConstraints:^(MASConstraintMaker *make) {
-        if (isPortrait) {
-            make.width.height.mas_equalTo(30);
-            make.left.mas_equalTo(0);
-            make.top.mas_equalTo(200);
-        } else {
-            make.top.equalTo(self.manualDismissButton.mas_bottom).mas_offset(20);
-            make.width.height.mas_equalTo(30);
-            make.right.equalTo(self.gifImageView.mas_left).mas_offset(-10);
-        }
-        
-    }];
-    
-    [self.clearPrivacyButton mas_remakeConstraints:^(MASConstraintMaker *make) {
-        if (isPortrait) {
-            make.width.height.mas_equalTo(30);
-            make.left.mas_equalTo(0);
-            make.top.mas_equalTo(250);
-        } else {
-            make.top.equalTo(self.complexButton.mas_bottom).mas_offset(20);
-            make.width.height.mas_equalTo(30);
-            make.right.equalTo(self.gifImageView.mas_left).mas_offset(-10);
-        }
-        
     }];
     
 }
@@ -1533,7 +1179,7 @@ static BOOL resetPushModel = NO;
 #pragma mark - 屏幕旋转
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    NSLog(@"----> %@", NSStringFromCGSize(size));
+    [self refrashSubViewsWithViewSize:size];
     [self refreshSubviewsLayoutWithSize:size];
 }
 
@@ -1587,6 +1233,12 @@ static BOOL resetPushModel = NO;
     UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return theImage;
+}
+
+
+- (void)dealloc
+{
+    NSLog(@"===> %s", __func__);
 }
 
 @end
